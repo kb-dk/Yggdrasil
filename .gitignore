@@ -1,4 +1,8 @@
 *.class
+# eclipse project files. ignored by default to avoid accidental changes
+.classpath
+.project
+.settings/
 
 *~
 # Package Files #
