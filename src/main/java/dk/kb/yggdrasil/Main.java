@@ -12,7 +12,9 @@ import java.io.File;
  */
 public class Main {
     
-    // TODO This is very tentative. I don't really know how many files we're going to  have!!
+    /** 
+     * The list of settings files that should be present in the configuration directory.
+     */
     public static final String[] SETTINGS_FILES = new String[] {"rabbitmq.yml", "warc.yml"};
     
     public static final String CONFIGURATION_DIRECTORY_PROPERTY = "dk.kb.yggdrasil.confdir";
@@ -27,7 +29,6 @@ public class Main {
 	    File configdir = null;
 	    String configDirFromProperties = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY); 
 	    
-	    System.out.println("user.home: " + ("user.home"));
 	    if ( configDirFromProperties != null) {
 	        configdir = new File(configDirFromProperties);
 	    } else {
