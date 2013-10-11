@@ -16,8 +16,7 @@ public class YamlTools {
      * @throws FileNotFoundException If settings file was not found
      * @return the loaded settings as a {@link LinkedHashMap}
      */
-    @SuppressWarnings("rawtypes")
-    public static LinkedHashMap loadYamlSettings(File ymlFile) throws FileNotFoundException {
+    public static LinkedHashMap<String, LinkedHashMap> loadYamlSettings(File ymlFile) throws FileNotFoundException {
         
         InputStream is = new FileInputStream(ymlFile);
         Object loadedSettings = new Yaml().load(is);
@@ -26,6 +25,6 @@ public class YamlTools {
                     + loadedSettings.getClass().getName() + " instead");
             System.exit(1);
         }
-        return (LinkedHashMap) loadedSettings;
+        return (LinkedHashMap<String, LinkedHashMap>) loadedSettings;
     } 
 }

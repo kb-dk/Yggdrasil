@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 import dk.kb.yggdrasil.utils.YamlTools;
 
@@ -23,14 +23,13 @@ import dk.kb.yggdrasil.utils.YamlTools;
 @RunWith(JUnit4.class)
 public class YamlToolsTester {
 
-    public static String YAML_TEST_FILE = "config/rabbitmq.yml";
-    public static String NOT_YAML_TEST_FILE = "config/rabbitmq.yaml";
-    public static String NOT_YAML_TEST_FILE2 = "config/file_with_no_yaml_content.xml";
+    public static String YAML_TEST_FILE = "src/test/resources/config/rabbitmq.yml";
+    public static String NOT_YAML_TEST_FILE = "src/test/resources/config/rabbitmq.yaml";
+    public static String NOT_YAML_TEST_FILE2 = "src/test/resources/config/file_with_no_yaml_content.xml";
     
     @Test
     public void testReadYamlFailed() throws Exception {
         File f = new File(NOT_YAML_TEST_FILE);
-        Assert.assertFalse(f.exists());
         try {
             YamlTools.loadYamlSettings(f);
             fail("Should throw IOException on non existing file");
@@ -39,26 +38,20 @@ public class YamlToolsTester {
         }
     }
     
-    /** Test does not work, thus set to be ignored for the time being.
-     * 
-     * @throws Exception
-     */
     @Test
-    @Ignore
-    public void testReadYamlFailedOnNonYamlFile() throws Exception {
+    public void testReadNonYamlFile() throws Exception {
         System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, "test");
         File f = new File(NOT_YAML_TEST_FILE2);
-        Assert.assertTrue(f.exists());
         try {
             YamlTools.loadYamlSettings(f);
-            fail("Should throw IOException on non existing file");
-        } catch (IOException e) {
+            fail("Should throw YAML ScannerException on reading non YAML file");
+        } catch (ScannerException e) {
             // expected
         }
     }
     
     @Test
-    public void testReadYaml() throws Exception {
+    public void testReadYamlFile() throws Exception {
         System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, "test");
         File f = new File(YAML_TEST_FILE);
         LinkedHashMap m = YamlTools.loadYamlSettings(f);
@@ -68,10 +61,11 @@ public class YamlToolsTester {
         Assert.assertTrue(m.containsKey(mode));
         LinkedHashMap modeMap = (LinkedHashMap) m.get(mode);
         // Extract RabbitMqSettings from YAML file
-        Assert.assertTrue(modeMap.containsKey(
-                RabbitMqSettings.RABBIT_MQ_YAML_PROPERTY));
-        LinkedHashMap m1 = (LinkedHashMap)modeMap.get(RabbitMqSettings.RABBIT_MQ_YAML_PROPERTY);
-        RabbitMqSettings rmSettings = new RabbitMqSettings(m1);
+        //Assert.assertTrue(modeMap.containsKey(
+        //        RabbitMqSettings.RABBIT_MQ_YAML_PROPERTY));
+        //LinkedHashMap m1 = (LinkedHashMap)modeMap.get(RabbitMqSettings.RABBIT_MQ_YAML_PROPERTY);
+        RabbitMqSettings rmSettings = new RabbitMqSettings(modeMap);
+        
         Assert.assertNotNull(rmSettings);
         Assert.assertNotNull(rmSettings.getBrokerUri());
         Assert.assertNotNull(rmSettings.getPreservationDestination());

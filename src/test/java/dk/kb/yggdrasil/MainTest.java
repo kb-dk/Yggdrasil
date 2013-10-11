@@ -1,9 +1,12 @@
 package dk.kb.yggdrasil;
 
+import java.io.File;
+
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link dk.kb.yggdrasil.Main }
@@ -12,12 +15,21 @@ import org.junit.runners.JUnit4;
 public class MainTest {
 
     @Test
-    public void thisAlwaysPasses() throws Exception {
+    public void testMainMethodWithDefaults() throws Exception {
         Main.main(new String[]{});
     }
 
     @Test
-    @Ignore
-    public void thisIsIgnored() {
+    public void testMainMethodWithBadConfigDir() {
+        String userHome = System.getProperty("user.home");
+        File badConfigDir = new File(userHome + "/configconfig");
+        Assert.assertFalse(badConfigDir.exists());
+        System.setProperty(Main.CONFIGURATION_DIRECTORY_PROPERTY, badConfigDir.getAbsolutePath());
+        try {
+            Main.main(new String[]{});
+            fail("Should throw Exception when given configuration directory was not found");
+        } catch (Exception e) {
+            // Expected
+        }
     }
 }
