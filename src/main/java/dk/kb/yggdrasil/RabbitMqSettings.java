@@ -9,7 +9,7 @@ import java.util.Map;
  *   mq_uri: "amqp://localhost:5672"
  *   preservation:
  *       destination: "dev-queue"
- *    dessemination: 
+ *    dissemination: 
  *       destination: "dev-queue" // Tbd
  */
 public final class RabbitMqSettings {
@@ -51,6 +51,19 @@ public final class RabbitMqSettings {
         }
     }
    
+    /**
+     * Alternate constructor.
+     * @param brokerUri The URI to connect to the broker.
+     * @param preservationDestination The Queue for receiving messages from Valhal
+     * @param disseminationDestination The Queue for receiving messages from Bifrost
+     */
+    public RabbitMqSettings(String brokerUri, String preservationDestination, 
+            String disseminationDestination)  {
+        this.brokerUri = brokerUri;
+        this.preservationDestination = preservationDestination;
+        this.disseminationDestination = disseminationDestination;
+    }
+    
     /**
      * @return the brokerUri
      */
