@@ -13,8 +13,7 @@ git clone https://gitusername@github.com/Det-Kongelige-Bibliotek/Yggdrasil.git
 Replace 'gitusername' with your own gitusername.
 This is necessary, if you want to push commits back to master branch 
 
-Run "mvn clean install" to download dependencies to local Maven repository.
-
+Run "mvn clean -Dmaven.test.skip=true package" to download dependencies to local Maven repository.
 
 Software requisites
 -------------------
@@ -22,8 +21,7 @@ Software requisites
 Eclipse (with git support) : Eclipse 4.2+ (Juno release and above)
 Java Oracle JDK 1.7.0_17+ (currently also compiles with Java Oracle JDK 1.6.0_32+)
 
-Source code level 1.6 (could be 
-
+Source code level 1.6 (changed to 1.7 if needed)
 Apache Maven 3.0.4+
 
 RabbitMQ installed on your development machine. Note that rabbitmq depends on Erlang.
@@ -44,5 +42,15 @@ Then perform the following steps:
 
 You can now edit or add files in eclipse  
 It is probably still preferable to make the commits, pushes, and pull using the commandline git command 
+
+Requirements for making the tests pass
+--------------------------------------
+
+The broker tests require a running rabbitMQ server running locally on port 5672.  
+You can define another host than localhost by setting the environment variable RABBITMQ_HOSTNAME (e.g. export RABBITMQ_HOSTNAME=dia-prod-udv-01.kb.dk) and another port by setting the RABBITMQ_PORT. (e.g. export RABBITMQ_PORT=5673).
+
+Also requires to know the location of the config-files (if the location is different from <user.home>/Yggdrasil/config),
+use the YGGDRASIL_CONFIG_DIR to locate config-files.
+
 
 

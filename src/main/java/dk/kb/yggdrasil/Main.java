@@ -17,7 +17,8 @@ public class Main {
      */
     public static final String[] REQUIRED_SETTINGS_FILES = new String[] {"rabbitmq.yml"};
     /** Java Property to define Yggdrasil configuration directory. */
-    public static final String CONFIGURATION_DIRECTORY_PROPERTY = "dk.kb.yggdrasil.confdir";
+    public static final String CONFIGURATION_DIRECTORY_PROPERTY = "YGGDRASIL_CONF_DIR";
+    
     /** Java Property to define user.home. */
     private static final String USER_HOME_PROPERTY = "user.home";
 

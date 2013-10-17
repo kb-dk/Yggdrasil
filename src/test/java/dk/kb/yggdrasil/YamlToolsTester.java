@@ -59,20 +59,7 @@ public class YamlToolsTester {
         String mode = RunningMode.getMode().toString().toLowerCase();
         Assert.assertEquals(mode, "test");
         Assert.assertTrue(m.containsKey(mode));
-        LinkedHashMap modeMap = (LinkedHashMap) m.get(mode);
-        // Extract RabbitMqSettings from YAML file
-        //Assert.assertTrue(modeMap.containsKey(
-        //        RabbitMqSettings.RABBIT_MQ_YAML_PROPERTY));
-        //LinkedHashMap m1 = (LinkedHashMap)modeMap.get(RabbitMqSettings.RABBIT_MQ_YAML_PROPERTY);
-        RabbitMqSettings rmSettings = new RabbitMqSettings(modeMap);
-        
-        Assert.assertNotNull(rmSettings);
-        Assert.assertNotNull(rmSettings.getBrokerUri());
-        Assert.assertNotNull(rmSettings.getPreservationDestination());
-        /*
-        System.out.println("brokerURI:" + rmSettings.getBrokerUri());
-        System.out.println("PreservationDestination:" + rmSettings.getPreservationDestination());
-        */
+        new RabbitMqSettings(f);
     }
 }
 
