@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Det-Kongelige-Bibliotek/Yggdrasil.png?branch=master)](https://travis-ci.org/Det-Kongelige-Bibliotek/Yggdrasil)
+
 Yggdrasil
 =========
 
