@@ -3,3 +3,5 @@ notifications:
   email: true
 jdk:
   - oraclejdk7
+services:
+  - rabbitmq	
