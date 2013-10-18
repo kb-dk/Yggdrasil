@@ -21,7 +21,7 @@ import dk.kb.yggdrasil.utils.YamlTools;
  *
  */
 @RunWith(JUnit4.class)
-public class YamlToolsTester {
+public class YamlToolsTest {
 
     public static String YAML_TEST_FILE = "src/test/resources/config/rabbitmq.yml";
     public static String NOT_YAML_TEST_FILE = "src/test/resources/config/rabbitmq.yaml";
