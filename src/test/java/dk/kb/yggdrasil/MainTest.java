@@ -13,9 +13,12 @@ import static org.junit.Assert.*;
  */
 @RunWith(JUnit4.class)
 public class MainTest {
-
+    
+    File goodConfigDir = new File("src/test/resources/config");
+    
     @Test
-    public void testMainMethodWithDefaults() throws Exception {
+    public void testMainMethodWithGoodConfigDir() throws Exception {
+        System.setProperty(Main.CONFIGURATION_DIRECTORY_PROPERTY, goodConfigDir.getAbsolutePath());    
         Main.main(new String[]{});
     }
 
