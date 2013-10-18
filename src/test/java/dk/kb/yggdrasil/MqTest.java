@@ -9,6 +9,8 @@ import java.security.NoSuchAlgorithmException;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Connection;
@@ -34,6 +36,7 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  * and another port than 5672 by setting the RABBITMQ_PORT (
  * (e.g. export RABBITMQ_PORT=5673 or DRABBITMQ_PORT=5673);
  */
+@RunWith(JUnit4.class)
 public class MqTester {
     
     public static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
