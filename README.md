@@ -45,14 +45,17 @@ Then perform the following steps:
 You can now edit or add files in eclipse  
 It is probably still preferable to make the commits, pushes, and pull using the commandline git command 
 
-Requirements for making the tests pass
---------------------------------------
+Running the unittests successfully with maven
+---------------------------------------------
 
-The broker tests require a running rabbitMQ server running locally on port 5672.  
-You can define another host than localhost by setting the environment variable RABBITMQ_HOSTNAME (e.g. export RABBITMQ_HOSTNAME=dia-prod-udv-01.kb.dk) and another port by setting the RABBITMQ_PORT. (e.g. export RABBITMQ_PORT=5673).
+Some of the unittests assume that you have a rabbitmq server running locally on on port 5672.   
+You can change this by including new values for RABBITMQ_HOSTNAME and RABBITMQ_PORT=5673 in the maven command:
 
-Also requires to know the location of the config-files (if the location is different from <user.home>/Yggdrasil/config),
-use the YGGDRASIL_CONFIG_DIR to locate config-files.
+maven -DRABBITMQ_HOSTNAME=somehost RABBITMQ_PORT=5673 clean package
 
 
+Making the Yggdrasil package without running the unittests
+----------------------------------------------------------
+
+mvn clean -Dmaven.test.skip=true package
 
