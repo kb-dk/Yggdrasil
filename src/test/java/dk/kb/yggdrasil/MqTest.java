@@ -37,7 +37,7 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  * (e.g. export RABBITMQ_PORT=5673 or DRABBITMQ_PORT=5673);
  */
 @RunWith(JUnit4.class)
-public class MqTester {
+public class MqTest {
     
     public static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
     
