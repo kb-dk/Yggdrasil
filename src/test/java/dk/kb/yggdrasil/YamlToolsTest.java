@@ -59,7 +59,6 @@ public class YamlToolsTest {
         String mode = RunningMode.getMode().toString().toLowerCase();
         Assert.assertEquals(mode, "test");
         Assert.assertTrue(m.containsKey(mode));
-        new RabbitMqSettings(f);
     }
 }
 

@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -20,8 +25,72 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  * using an RabbitMQ broker.
  * Tested with RabbitMQ broker 3.1.5, and amqp-client 3.1.4 (3.1.5 is 
  * not available on maven repositories).
+ * rabbitmq-javadoc: http://www.rabbitmq.com/releases/rabbitmq-java-client/v3.1.4/rabbitmq-java-client-javadoc-3.1.4/ 
  */
 public class MQ {
+    
+    /** List of existing consumers in use by this class. 
+     * The key is the queueName. 
+     */
+    private Map<String, QueueingConsumer> existingConsumers;
+    
+    /** List of existing consumers in use by this class identified by consumertags. */
+    private Set<String> existingConsumerTags;
+    
+    /** channel to the broker. Is one channel enough? */
+    private Channel theChannel;
+    /** The settings used to create the broker configurations. */
+    private RabbitMqSettings settings;
+    /** the singleton instance. */
+    private static MQ instance;
+    
+    /** Default exchangename to be used by all queues. */
+    private String exchangeName = "exchange"; //TODO should this be a parameter in the settings?
+    /** exchange type direct means a message sent to only one recipient. */
+    private String exchangeType = "direct"; 
+    
+    /** 
+     * private constructor for the MQ singleton.
+     * @param settings 
+     * @throws YggdrasilException
+     */
+    private MQ(RabbitMqSettings settings) throws YggdrasilException { 
+        this.existingConsumerTags = new HashSet<String>();
+        this.existingConsumers = new HashMap<String, QueueingConsumer>();
+        this.settings = settings;
+        ConnectionFactory factory = new ConnectionFactory();
+        Connection conn = null;
+        try {
+            factory.setUri(settings.getBrokerUri());
+            conn = factory.newConnection();
+            theChannel = conn.createChannel(); 
+            configureDefaultChannel();
+        } catch (KeyManagementException e1) {
+            throw new YggdrasilException("Error connecting to Broker:", e1);
+        } catch (NoSuchAlgorithmException e2) {
+            throw new YggdrasilException("Error connecting to Broker:", e2);
+        } catch (URISyntaxException e3) {
+            throw new YggdrasilException("Error connecting to Broker:", e3);
+        } catch (IOException e4) {
+            throw new YggdrasilException("Error connecting to Broker:", e4);
+        }
+    }
+    
+    /**
+     * Close channel to broker, and cancel the associated consumers.
+     * @throws IOException
+     */
+    public void close() throws IOException {
+        if (theChannel != null && theChannel.isOpen()) {
+            // close existing consumers before closing the channel its connection.
+            for (String tag: existingConsumerTags) {
+                theChannel.basicCancel(tag);
+            }
+            Connection conn = theChannel.getConnection();
+            theChannel.close();
+            conn.close();
+        }
+    }
     
     /** 
      * @return a set of AMQP properties for 
@@ -33,47 +102,28 @@ public class MQ {
     }
     
     /**
-     * Create a Channel to a RabbitMQ broker based on the given setting.
-     * @param setting A RabbitMQSettings instance.
-     * @return a working channel to a specific RabbitMQ broker.
-     * @throws YggdrasilException When problem with creating channel.
+     * Configure default channel configuration.
+     * @throws YggdrasilException When problem with configuring the channel.
      */
-    public static Channel createChannel(RabbitMqSettings setting) throws YggdrasilException {
-        Channel ch = null;
-        ConnectionFactory factory = new ConnectionFactory();
+    public void configureDefaultChannel() throws YggdrasilException {
+        Channel ch = this.theChannel;
         try {
-            factory.setUri(setting.getBrokerUri());
-            Connection conn = factory.newConnection();
-            ch = conn.createChannel();
-            String exchangeName = "exchange"; //TODO should this be a parameter in the settings?
-            String queueName = setting.getPreservationDestination();
-            String routingKey = setting.getPreservationDestination();
-            ch.exchangeDeclare(exchangeName, "direct", true);
-            ch.queueDeclare(queueName, true, false, false, null);
+            String queueName = settings.getPreservationDestination();
+            String routingKey = settings.getPreservationDestination();
+            // These next 3 lines are not necessarily all needed
+            boolean durableExchange = true; // Exchanges will survive a rabbitmq server crash.
+            ch.exchangeDeclare(exchangeName, exchangeType, durableExchange);
+            boolean durable = true;
+            boolean exclusive = false; // meaning restricted to this connection
+            boolean autodelete = false; //meaning delete when no longer used
+            Map<String, Object> arguments = null;
+            ch.queueDeclare(queueName, durable, exclusive, autodelete, arguments);
+            // Bind a queue to a given exchange
             ch.queueBind(queueName, exchangeName, routingKey);
-           
-        } catch (KeyManagementException e) {
-            throw new YggdrasilException("Error connecting to Broker:", e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new YggdrasilException("Error connecting to Broker:", e);
-        } catch (URISyntaxException e) {
-            throw new YggdrasilException("Error connecting to Broker:", e);
         } catch (IOException e) {
-            throw new YggdrasilException("Error connecting to Broker:", e);
+            throw new YggdrasilException("Problems configuring the broker", e);
         }
-        return ch;
     }
-   
-   /**
-    * Close the given channel. This also closes the connection that created the channel.
-    * @param ch A given channel to the broker.
-    * @throws IOException If problems closing down the channel and associated connection.
-    */
-   public static void closeChannel(Channel ch) throws IOException {
-       Connection conn = ch.getConnection();
-       ch.close();
-       conn.close();
-   }
    
    /**
     * Publish a message on the given queue.
@@ -82,12 +132,11 @@ public class MQ {
     * @param message The message to be published on the queue.
     * @throws YggdrasilException If Unable to publish message to the queue.
     */
-   public static void publishOnQueue(String queueName, Channel ch, byte[] message) 
+   public void publishOnQueue(String queueName, byte[] message) 
            throws YggdrasilException {
        try {
-           String exchangeName = "exchange";
            String routingKey = queueName;
-           ch.basicPublish(exchangeName, routingKey, MQ.getMQProperties(), message);
+           theChannel.basicPublish(exchangeName, routingKey, MQ.getMQProperties(), message);
        } catch (IOException e) {
            throw new YggdrasilException("Unable to publish message to queue '" 
                    + queueName + "'", e);
@@ -98,35 +147,59 @@ public class MQ {
     * Receive message from a given queue. If no message is waiting on the queue, this message will
     * wait until a message arrives on the queue. 
     * @param queueName The name of the queue.
-    * @param ch An already created channel to the MQ broker.
     * @return the bytes delivered in the message when a message is received.
     * @throws YggdrasilException
     */
-   public static byte[] receiveMessageFromQueue(String queueName, Channel ch) throws YggdrasilException {
-       QueueingConsumer consumer = new QueueingConsumer(ch);
-       byte[] payload = null;
+   public byte[] receiveMessageFromQueue(String queueName) throws YggdrasilException {
+       QueueingConsumer consumer = null;
        String consumerTag = null;
+       if (existingConsumers.containsKey(queueName)) {
+           consumer = existingConsumers.get(queueName);
+       } else {
+           consumer = new QueueingConsumer(theChannel);
+           try {
+               consumerTag = theChannel.basicConsume(queueName, consumer);
+               existingConsumers.put(queueName, consumer);
+               existingConsumerTags.add(consumerTag);
+           } catch (IOException e) {
+               throw new YggdrasilException("Unable to attach to queue '" 
+                       + queueName + "'", e);
+           }
+       }
+       byte[] payload = null;
        try {
-        consumerTag = ch.basicConsume(queueName, consumer);
-        QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-        payload = delivery.getBody();
-        ch.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-        ch.basicCancel(consumerTag); // cancel the consumer
-    } catch (IOException e) {
-        throw new YggdrasilException("Unable to receive message from queue '" 
-                + queueName + "'", e);
-    } catch (ShutdownSignalException e) {
-        throw new YggdrasilException("Unable to receive message from queue '" 
-                + queueName + "'", e);
-    } catch (ConsumerCancelledException e) {
-        throw new YggdrasilException("Unable to receive message from queue '" 
-                + queueName + "'", e);
-    } catch (InterruptedException e) {
-        throw new YggdrasilException("Unable to receive message from queue '" 
-                + queueName + "'", e);
-    }
-       
-    return payload;
+           QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+           payload = delivery.getBody();
+           boolean acknowledgeMultipleMessages = false;
+           theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), acknowledgeMultipleMessages);
+       } catch (IOException e) {
+           throw new YggdrasilException("Unable to receive message from queue '" 
+                   + queueName + "'", e);
+       } catch (ShutdownSignalException e) {
+           throw new YggdrasilException("Unable to receive message from queue '" 
+                   + queueName + "'", e);
+       } catch (ConsumerCancelledException e) {
+           throw new YggdrasilException("Unable to receive message from queue '" 
+                   + queueName + "'", e);
+       } catch (InterruptedException e) {
+           throw new YggdrasilException("Unable to receive message from queue '" 
+                   + queueName + "'", e);
+       }
+
+       return payload;
    }
+   
+   /**
+    * Create a singleton instance if not already created.
+    * @param settings The settings used to create the broker connection.
+    * @return the singleton object of this class.
+    * @throws YggdrasilException If Unable to create an instance of this class.
+    */
+   public synchronized static MQ getInstance(RabbitMqSettings settings) throws YggdrasilException {
+       if (instance == null){
+           instance = new MQ(settings);
+       }
+       return instance;
+   } 
 }
     

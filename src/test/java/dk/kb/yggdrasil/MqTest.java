@@ -45,20 +45,21 @@ public class MqTest {
     public void finalTest() throws YggdrasilException, IOException {
         RabbitMqSettings settings = fetchMqSettings();
         System.out.println("using brokerUri: " + settings.getBrokerUri());
-        Channel ch = MQ.createChannel(settings);
+        MQ mq = MQ.getInstance(settings);
+        //Channel ch = MQ.createChannel(settings);
 
         String message = "Hello world";
         String queueName = settings.getPreservationDestination();
-        MQ.publishOnQueue(queueName, ch, message.getBytes());
-        byte[] messageReceived = MQ.receiveMessageFromQueue(queueName, ch);
+        mq.publishOnQueue(queueName, message.getBytes());
+        byte[] messageReceived = mq.receiveMessageFromQueue(queueName);
         //System.out.println(new String(messageReceived));
         Assert.assertArrayEquals(message.getBytes(), messageReceived);
         message = "Hello X";
-        MQ.publishOnQueue(queueName, ch, message.getBytes());
-        messageReceived = MQ.receiveMessageFromQueue(queueName, ch);
+        mq.publishOnQueue(queueName, message.getBytes());
+        messageReceived = mq.receiveMessageFromQueue(queueName);
         //System.out.println(new String(messageReceived));
         Assert.assertArrayEquals(message.getBytes(), messageReceived);
-        MQ.closeChannel(ch);
+        mq.close();
     }
   
     
@@ -118,9 +119,10 @@ public class MqTest {
             Thread.sleep(5*1000);
         } catch (InterruptedException e) {
         }
-
+        
+        channel.close();
+        conn.close();
         //System.out.println(channel.getCloseReason());
-        MQ.closeChannel(channel);
     }
     
     private RabbitMqSettings fetchMqSettings() throws FileNotFoundException, YggdrasilException {
