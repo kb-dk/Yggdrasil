@@ -8,36 +8,12 @@
   <packaging>jar</packaging>
   <name>Yggdrasil</name>
 
-<<<<<<< HEAD
 <repositories>
     <repository>
       <id>bitrepository</id>
       <url>https://sbforge.org/nexus/content/repositories/releases/</url>
     </repository>
  </repositories>
-
-  <build>
-   <plugins>
-     <plugin>
-       <groupId>org.apache.maven.plugins</groupId>
-       <artifactId>maven-compiler-plugin</artifactId>
-       <version>2.3.2</version>
-       <configuration>
-         <source>1.6</source>
-         <target>1.6</target>
-       </configuration>
-     </plugin>
-     <plugin>
-       <artifactId>maven-assembly-plugin</artifactId>
-       <configuration>
-         <descriptorRefs>
-           <descriptorRef>jar-with-dependencies</descriptorRef>
-         </descriptorRefs>
-       </configuration>
-     </plugin>
-   </plugins>
-  </build>
-
  <dependencies>
   <dependency> 
    <groupId>junit</groupId>
@@ -45,11 +21,6 @@
    <version>4.11</version>
    <scope>test</scope>
    </dependency>
-   <dependency>
-    <groupId>org.yaml</groupId>
-    <artifactId>snakeyaml</artifactId>
-    <version>1.13</version>
-  </dependency>
   <dependency> 
     <groupId>org.bitrepository.reference</groupId> 
     <artifactId>bitrepository-core</artifactId>
@@ -75,67 +46,26 @@
     <artifactId>bitrepository-command-line</artifactId>
     <version>1.0</version>
   </dependency>
-
    <dependency>
    	<groupId>com.rabbitmq</groupId>
    	<artifactId>amqp-client</artifactId>
    	<version>3.1.4</version>
    </dependency>
- </dependencies>
-=======
-  <dependencies>
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>1.13</version>
     </dependency>
     <dependency>
-      <groupId>com.rabbitmq</groupId>
-      <artifactId>amqp-client</artifactId>
-      <version>3.1.4</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.2.5</version>
     </dependency>
-    <dependency> 
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
->>>>>>> 565af35e9dc650cc096458c3fabbfeca680fd07a
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
-  <!--reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
-        <configuration>
-          <threshold>Low</threshold>
-          <effort>Max</effort>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-         <version>3.0.1</version>
-        <configuration>
-          <linkXref>true</linkXref>
-          <sourceEncoding>utf-8</sourceEncoding>
-          <minimumTokens>100</minimumTokens>
-          <targetJdk>1.6</targetJdk>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting-->
 
   <build>
     <plugins>
