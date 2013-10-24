@@ -8,6 +8,13 @@
   <packaging>jar</packaging>
   <name>Yggdrasil</name>
 
+<repositories>
+    <repository>
+      <id>bitrepository</id>
+      <url>https://sbforge.org/nexus/content/repositories/releases/</url>
+    </repository>
+ </repositories>
+
   <build>
    <plugins>
      <plugin>
@@ -41,6 +48,31 @@
     <groupId>org.yaml</groupId>
     <artifactId>snakeyaml</artifactId>
     <version>1.13</version>
+  </dependency>
+  <dependency> 
+    <groupId>org.bitrepository.reference</groupId> 
+    <artifactId>bitrepository-core</artifactId>
+    <version>1.0</version>
+  </dependency>
+  <dependency> 
+    <groupId>org.bitrepository.reference</groupId> 
+    <artifactId>bitrepository-client</artifactId>
+    <version>1.0</version>
+  </dependency>
+<dependency> 
+    <groupId>org.bitrepository.reference</groupId> 
+    <artifactId>bitrepository-access-client</artifactId>
+    <version>1.0</version>
+  </dependency>
+<dependency> 
+    <groupId>org.bitrepository.reference</groupId> 
+    <artifactId>bitrepository-modifying-client</artifactId>
+    <version>1.0</version>
+  </dependency>
+<dependency> 
+    <groupId>org.bitrepository.reference</groupId> 
+    <artifactId>bitrepository-command-line</artifactId>
+    <version>1.0</version>
   </dependency>
 
    <dependency>
