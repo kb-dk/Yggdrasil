@@ -6,7 +6,6 @@ Yggdrasil
 Yggdrasil - SIFD Preservation Service
 
 
-
 GIT checkout of repository
 --------------------------
 
@@ -30,10 +29,15 @@ RabbitMQ installed on your development machine. Note that rabbitmq depends on Er
 
 Eclipse setup for developers
 ----------------------------
+Go to directory of git working tree for Yggdrasil project  
+mvn eclipse:eclipse
 
-You need a classpath variable in Eclipse named M2_REPO to point
+You now have a eclipse project for the code
+
+You may need to add a classpath variable in Eclipse named M2_REPO to point
 at the repository folder inside your .m2 repository. 
 Some Eclipse distributions have this by default, some don't.
+
 Then perform the following steps:  
   - Add your local git repository to the list known by the Git Repository Exploring tab (use the Git icon with the green +). You should have now an Yggdrasil repository in the list. 
   - Go to File->Import and select Git->Projects from Git and click Next. 
@@ -51,7 +55,7 @@ Running the unittests successfully with maven
 Some of the unittests assume that you have a rabbitmq server running locally on on port 5672.   
 You can change this by including new values for RABBITMQ_HOSTNAME and RABBITMQ_PORT=5673 in the maven command:
 
-maven -DRABBITMQ_HOSTNAME=somehost RABBITMQ_PORT=5673 clean package
+mvn -DRABBITMQ_HOSTNAME=somehost RABBITMQ_PORT=5673 clean package
 
 
 Making the Yggdrasil package without running the unittests
