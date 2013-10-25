@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfile.GetFileClient;
@@ -42,6 +43,7 @@ import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.utils.YamlTools;
 
 /**
  * An class that uploads to and get files from a Bitrepository 1.0 type archive.
@@ -73,12 +75,19 @@ public class Bitrepository {
     /** The message bus used by the putfileClient. */
     private MessageBus bitMagMessageBus;
 
+    /** Name of YAML property used to find settings dir. */
+    public static final String YAML_BITMAG_SETTINGS_DIR_PROPERTY = "settings_dir";
+    /** Name of YAML property used to find keyfile. */
+    public static final String YAML_BITMAG_KEYFILE_PROPERTY = "keyfile";
+ 
     /**
-     * @param bitrepSettingsDir 
+     * Constructor for the BitRepository class.
+     * @param configFile A YAML config file with links to the bitrepository settingsdir and keyfile
+     * @throws YggdrasilException If configFile is null, missing, 
+     *  or points to missing keyfile or settings directory 
      */
-    public Bitrepository(File settingsDir, File bitmagKeyFile) {
-        this.settingsDir = settingsDir;
-        this.privateKeyFile = bitmagKeyFile;
+    public Bitrepository(File configFile) throws YggdrasilException {
+        readConfigFile(configFile);
         initBitmagSettings();
         initBitmagSecurityManager();
         bitMagMessageBus = ProtocolComponentFactory.getInstance().getMessageBus(
@@ -86,9 +95,41 @@ public class Bitrepository {
         bitMagPutClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
         bitMagGetClient = AccessComponentFactory.getInstance().createGetFileClient(
-                this.bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+                bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
     }
     
+    /**
+     * Read the configfile, and initialize the settingsDir and privateKeyFile variables.  
+     * @param configFile The YAML configuration file.
+     * @throws YggdrasilException If unable to find the relevant information in the given configFile 
+     *  or the configFile is null or does not exist.
+     */
+    private void readConfigFile(File configFile) throws YggdrasilException {
+        if (configFile == null || !configFile.isFile()) {
+            throw new YggdrasilException("ConfigFile '" 
+                    + (configFile == null? "null" : configFile.getAbsolutePath()) 
+                            + "' is undefined or missing. ");
+        }  
+        Map yamlMap = YamlTools.loadYamlSettings(configFile);
+        RunningMode mode = RunningMode.getMode();
+        System.out.println("RunningMode: " + mode);
+        if (!yamlMap.containsKey(mode.toString())) {
+            throw new YggdrasilException("Unable to find bitmag settings for the mode '"
+                    + mode + "' in the given YAML file ' " + configFile.getAbsolutePath() + "'");
+        }
+        Map modeMap = (Map) yamlMap.get(mode.toString());
+        if (!modeMap.containsKey(YAML_BITMAG_KEYFILE_PROPERTY) 
+                || !modeMap.containsKey(YAML_BITMAG_SETTINGS_DIR_PROPERTY)) {
+            throw new YggdrasilException("Unable to find one or both properties (" 
+                    + YAML_BITMAG_KEYFILE_PROPERTY + "," 
+                    + YAML_BITMAG_SETTINGS_DIR_PROPERTY + ") using the current running mode '"
+                    + mode + "' in the given YAML file ' " + configFile.getAbsolutePath() + "'");
+        }
+        
+        this.settingsDir = new File((String) modeMap.get(YAML_BITMAG_SETTINGS_DIR_PROPERTY));
+        this.privateKeyFile = new File((String) modeMap.get(YAML_BITMAG_KEYFILE_PROPERTY));
+    }
+
     /**
      * Attempts to upload a given file.
      *
@@ -231,13 +272,10 @@ public class Bitrepository {
        return res;
    }
 
-
    /**
     *  The REQUEST_CHECKSUM functionality is not yet implemented.
-    *  Currently always return null.
-     * @return The requested checksum spec, or null if the arguments does not exist.
+     * @return The requested checksum spec (currently always null)
      */
-
    private ChecksumSpecTYPE getRequestChecksumSpec() {
        return null;
        
@@ -286,17 +324,6 @@ public class Bitrepository {
             bitmagSettings = settingsLoader.getSettings();
         }
     }
-    
-    /**
-     * @return the absolute path to the private keyfile.
-     */
-    public File getPrivateKeyfile() {
-        /* Assert.NOT_VALID.assertNotNull(
-                "The private Keyfile should not be null and should exist", 
-                this.privateKeyFile); */
-        return this.privateKeyFile;
-    }
-
     
     public void shutdown() {
         if (bitMagMessageBus != null) {

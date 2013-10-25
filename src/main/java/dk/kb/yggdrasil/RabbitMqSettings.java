@@ -14,8 +14,8 @@ import dk.kb.yggdrasil.utils.YamlTools;
  *   mq_uri: "amqp://localhost:5672"
  *   preservation:
  *       destination: "dev-queue"
- *    dissemination: 
- *       destination: "dev-queue" // Tbd
+ *   dissemination: 
+ *       destination: "dev-queue" 
  */
 public final class RabbitMqSettings {
 
@@ -49,7 +49,7 @@ public final class RabbitMqSettings {
      */
     public RabbitMqSettings(File ymlFile)throws YggdrasilException, FileNotFoundException {
         // Select CorrectLinkedHashMap based on the runningmode.
-        String mode = RunningMode.getMode().toString().toLowerCase();        
+        String mode = RunningMode.getMode().toString();     
         Map settings = YamlTools.loadYamlSettings(ymlFile);
         if (!settings.containsKey(mode)) {
             throw new YggdrasilException("Unable to find rabbitMQ settings for the mode '"

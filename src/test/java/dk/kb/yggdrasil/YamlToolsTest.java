@@ -3,7 +3,6 @@ package dk.kb.yggdrasil;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.util.LinkedHashMap;
 
@@ -14,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.YamlTools;
 
 /** 
@@ -32,15 +32,14 @@ public class YamlToolsTest {
         File f = new File(NOT_YAML_TEST_FILE);
         try {
             YamlTools.loadYamlSettings(f);
-            fail("Should throw IOException on non existing file");
-        } catch (IOException e) {
+            fail("Should throw YggdrasilException on non existing file");
+        } catch (YggdrasilException e) {
             // expected
         }
     }
     
     @Test
     public void testReadNonYamlFile() throws Exception {
-        System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, "test");
         File f = new File(NOT_YAML_TEST_FILE2);
         try {
             YamlTools.loadYamlSettings(f);
@@ -48,16 +47,16 @@ public class YamlToolsTest {
         } catch (ScannerException e) {
             // expected
         }
+        
     }
     
     @Test
     public void testReadYamlFile() throws Exception {
-        System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, "test");
         File f = new File(YAML_TEST_FILE);
+        
         LinkedHashMap m = YamlTools.loadYamlSettings(f);
         Assert.assertNotNull(m);
-        String mode = RunningMode.getMode().toString().toLowerCase();
-        Assert.assertEquals(mode, "test");
+        String mode = RunningMode.getMode().toString();
         Assert.assertTrue(m.containsKey(mode));
     }
 }

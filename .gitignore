@@ -3,7 +3,9 @@
 .classpath
 .project
 .settings/
-
+config/bitmag-development-settings
+config/bitmag-staging-settings
+config/bitmag-production-settings
 *~
 # Package Files #
 *.jar
