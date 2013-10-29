@@ -52,10 +52,12 @@ It is probably still preferable to make the commits, pushes, and pull using the 
 Running the unittests successfully with maven
 ---------------------------------------------
 
-Some of the unittests assume that you have a rabbitmq server running locally on on port 5672.   
-You can change this by including new values for RABBITMQ_HOSTNAME and RABBITMQ_PORT=5673 in the maven command:
+Some of the unittests assume that you have a rabbitmq server running locally (localhost) on port 5672.   
+If this is not true (as is the case on RHEL 6 servers, where QPID daemon occupies this port), the command "mvn clean package" will not work.
 
-mvn -DRABBITMQ_HOSTNAME=somehost RABBITMQ_PORT=5673 clean package
+Instead you must declare other values for RABBITMQ_HOSTNAME and RABBITMQ_PORT in the maven command:
+
+mvn -DRABBITMQ_HOSTNAME=somehost -DRABBITMQ_PORT=5673 clean package
 
 
 Making the Yggdrasil package without running the unittests

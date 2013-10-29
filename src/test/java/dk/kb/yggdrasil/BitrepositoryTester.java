@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.utils.ArgumentCheck;
 
 /**
  * Tests for {@link dk.kb.yggdrasil.Bitrepository }
@@ -32,9 +33,11 @@ public class BitrepositoryTester {
         assertFalse(missingConfigFile.exists());
         try {
             new Bitrepository(missingConfigFile);
-            fail("Should throw YggdrasilException on missing config file");
-        } catch (YggdrasilException e) {
+            fail("Should throw ArgumentCheck on missing config file");
+        } catch (ArgumentCheck e) {
             // Expected
+        } catch (YggdrasilException e) {
+            fail("Should not throw YggdrasilException on missing config file");
         }
     }
     
