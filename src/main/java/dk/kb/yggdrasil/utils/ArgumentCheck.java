@@ -61,11 +61,11 @@ public class ArgumentCheck extends RuntimeException {
     /**
      * Check if an int argument is less than 0.
      *
-     * @param num  argument to check
+     * @param num argument to check
      * @param name the name and type of the value being checked.
      * @throws ArgumentCheck if test fails
      */
-    public static void checkNotNegative(int num, String name) {
+    public static void checkNotNegativeInt(int num, String name) {
         if (num < 0) {
             throw new ArgumentCheck("The value of the variable '" + name
                     + "' must be non-negative, but is " + num + ".");
@@ -79,7 +79,7 @@ public class ArgumentCheck extends RuntimeException {
      * @param name the name and type of the value being checked.
      * @throws ArgumentCheck if test fails
      */
-    public static void checkNotNegative(long num, String name) {
+    public static void checkNotNegativeLong(long num, String name) {
         if (num < 0) {
             throw new ArgumentCheck("The value of the variable '" + name
                     + "' must be non-negative, but is " + num + ".");
@@ -93,7 +93,7 @@ public class ArgumentCheck extends RuntimeException {
      * @param name the name and type of the value being checked.
      * @throws ArgumentCheck if test fails
      */
-    public static void checkPositive(int num, String name) {
+    public static void checkPositiveInt(int num, String name) {
         if (num <= 0) {
             throw new ArgumentCheck("The value of the variable '" + name
                     + "' must be positive, but is " + num + ".");
@@ -107,7 +107,7 @@ public class ArgumentCheck extends RuntimeException {
      * @param name the name and type of the value being checked.
      * @throws ArgumentCheck if test fails
      */
-    public static void checkPositive(long num, String name) {
+    public static void checkPositiveLong(long num, String name) {
         if (num <= 0) {
             throw new ArgumentCheck("The value of the variable '" + name
                     + "' must be positive, but is " + num + ".");
@@ -121,7 +121,7 @@ public class ArgumentCheck extends RuntimeException {
      * @param name the name and type of the value being checked.
      * @throws ArgumentCheck if test fails
      */
-    public static void checkNotNullOrEmpty(Collection<?> c, String name) {
+    public static void checkNotNullOrEmptyCollection(Collection<?> c, String name) {
         checkNotNull(c, name);
         if (c.isEmpty()) {
             throw new ArgumentCheck("The contents of the variable '" + name

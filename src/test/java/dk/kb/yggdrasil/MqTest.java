@@ -46,18 +46,17 @@ public class MqTest {
         RabbitMqSettings settings = fetchMqSettings();
         System.out.println("using brokerUri: " + settings.getBrokerUri());
         MQ mq = MQ.getInstance(settings);
-        //Channel ch = MQ.createChannel(settings);
 
         String message = "Hello world";
         String queueName = settings.getPreservationDestination();
         mq.publishOnQueue(queueName, message.getBytes());
         byte[] messageReceived = mq.receiveMessageFromQueue(queueName);
-        //System.out.println(new String(messageReceived));
+       
         Assert.assertArrayEquals(message.getBytes(), messageReceived);
         message = "Hello X";
         mq.publishOnQueue(queueName, message.getBytes());
         messageReceived = mq.receiveMessageFromQueue(queueName);
-        //System.out.println(new String(messageReceived));
+       
         Assert.assertArrayEquals(message.getBytes(), messageReceived);
         mq.close();
     }
@@ -119,6 +118,8 @@ public class MqTest {
             Thread.sleep(5*1000);
         } catch (InterruptedException e) {
         }
+        
+        channel.basicCancel("myConsumerTag");
         
         channel.close();
         conn.close();

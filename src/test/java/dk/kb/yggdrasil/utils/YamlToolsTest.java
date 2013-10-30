@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.utils;
 
 import static org.junit.Assert.*;
 
@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import dk.kb.yggdrasil.RunningMode;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.YamlTools;
 
