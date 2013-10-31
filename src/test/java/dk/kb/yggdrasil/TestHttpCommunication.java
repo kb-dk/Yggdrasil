@@ -79,7 +79,7 @@ public class TestHttpCommunication {
 
             Assert.assertNull(httpPayload.contentEncoding);
             Assert.assertEquals("application/x-monkey", httpPayload.contentType);
-            Assert.assertEquals("I am Jettyman.".getBytes().length, httpPayload.contentLength);
+            Assert.assertEquals(new Long("I am Jettyman.".getBytes().length), httpPayload.contentLength);
             Assert.assertArrayEquals("I am Jettyman.".getBytes(), bout.toByteArray());
 
             contentBody = "the body".getBytes();

@@ -11,23 +11,23 @@ public class HttpPayload {
     /** Response content body steam. (Remember to close) */
     public InputStream contentBody;
 
-    /** Optional response content body content encoding. */
+    /** Response content body content encoding, null if not returned. */
     public String contentEncoding;
 
-    /** Optional response content type. */
+    /** Response content type, null if not returned. */
     public String contentType;
 
-    /** Optional response content length. */
-    public long contentLength;
+    /** Response content length, null if not returned. */
+    public Long contentLength;
 
     /**
      * Construct a payload object with the supplied parameters. 
      * @param contentBody <code>InputStream</code> with the content body
-     * @param contentEncoding optional content encoding
-     * @param contentType optional content type
-     * @param contentLength optional content length
+     * @param contentEncoding content encoding, null if not returned
+     * @param contentType content type, null if not returned
+     * @param contentLength content length, null if not returned
      */
-    public HttpPayload(InputStream contentBody, String contentEncoding, String contentType, long contentLength) {
+    public HttpPayload(InputStream contentBody, String contentEncoding, String contentType, Long contentLength) {
         this.contentBody = contentBody;
         this.contentEncoding = contentEncoding;
         this.contentType = contentType;

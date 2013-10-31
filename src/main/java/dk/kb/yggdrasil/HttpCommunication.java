@@ -27,6 +27,9 @@ public class HttpCommunication {
      * @return HTTP response content body or null
      */
     public static HttpPayload get(String url) {
+    	if (url == null || url.length() == 0) {
+    		throw new IllegalArgumentException("'url' is null or empty.");
+    	}
         HttpPayload httpResponse = null;
         InputStream in = null;
         try {
@@ -65,7 +68,7 @@ public class HttpCommunication {
                             + responseCode + "'. (" + url + ")");
                 }
             } else {
-                logger.log(Level.SEVERE, "Could not connect to " + url + ". No response received. ");
+                logger.log(Level.SEVERE, "Could not connect to '" + url + "'. No response received. ");
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.toString(), e);
@@ -82,6 +85,15 @@ public class HttpCommunication {
      * @return boolean indicating success or failure
      */
     public static boolean put(String url, byte[] contentBody, String contentType) {
+    	if (url == null || url.length() == 0) {
+    		throw new IllegalArgumentException("'url' is null or empty.");
+    	}
+    	if (contentBody == null) {
+    		throw new IllegalArgumentException("'contentBody' is null.");
+    	}
+    	if (contentType == null || contentType.length() == 0) {
+    		throw new IllegalArgumentException("'contentType' is null or empty.");
+    	}
         boolean bSuccess = false;
         try {
             /*
@@ -111,7 +123,7 @@ public class HttpCommunication {
                     in = null;
                 }
             } else {
-                logger.log(Level.WARNING, "Could not connect to " + url + ". No response received. ");
+                logger.log(Level.WARNING, "Could not connect to '" + url + "'. No response received. ");
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.toString(), e);
