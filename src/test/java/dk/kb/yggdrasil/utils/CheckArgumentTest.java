@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+
 
 /** 
  * Tests for the static methods in the CheckArgument class.

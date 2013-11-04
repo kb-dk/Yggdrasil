@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil.utils;
+package dk.kb.yggdrasil.exceptions;
 
 import java.io.File;
 import java.util.Collection;

@@ -195,7 +195,7 @@ public class MQ {
     * @return the singleton object of this class.
     * @throws YggdrasilException If Unable to create an instance of this class.
     */
-   public synchronized static MQ getInstance(RabbitMqSettings settings) throws YggdrasilException {
+   public static synchronized MQ getInstance(RabbitMqSettings settings) throws YggdrasilException {
        if (instance == null){
            instance = new MQ(settings);
        }

@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.utils.ArgumentCheck;
 
 /**
  * Tests for {@link dk.kb.yggdrasil.Bitrepository }
@@ -60,7 +60,7 @@ public class BitrepositoryTester {
         // containing bitrepository 1.0 settings and with a keyfile named "client-16.pem"
         assertTrue(okConfigFile.exists());
         try {
-            Bitrepository br = new Bitrepository(okConfigFile);
+            new Bitrepository(okConfigFile);
         } catch (YggdrasilException e) {
             fail("Should now throw YggdrasilException on bad config file. Reason: " + e);
         }

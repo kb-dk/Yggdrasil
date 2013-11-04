@@ -7,26 +7,29 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
-import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
+import org.bitrepository.commandline.outputformatter.GetChecksumDistributionFormatter;
+import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
+import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.commandline.outputformatter.GetFileIDsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 import org.bitrepository.common.exceptions.OperationFailedException;
@@ -55,8 +58,8 @@ import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.ClientSettings;
 
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.utils.ArgumentCheck;
 import dk.kb.yggdrasil.utils.YamlTools;
 
 /**
@@ -89,15 +92,25 @@ public class Bitrepository {
     /** The client for performing the GetFileID operation.*/
     private GetFileIDsClient bitMagGetFileIDsClient;
     
-    /** The client for performing the GetFileID operation.*/
+    /** The client for performing the GetStatus operation.
     private GetStatusClient bitMagGetStatusClient;
+    */
     
-    /** The client for performing the GetFileID operation.*/
+    /** The client for performing the GetChecksums operation.*/
     private GetChecksumsClient bitMagGetChecksumsClient;
     
-    /** The client for performing the GetFileID operation.*/
+    /** The client for performing the GetFileID operation.
     private AuditTrailClient bitMagAuditTrailClient;
+    */
     
+    /** The client for performing the ReplaceFile operation.
+    private ReplaceFileClient bitMagReplaceFileClient;
+    */
+    
+    /** The client for performing the DeleteFile operation.
+    private DeleteFileClient bitMagDeleteFileClient;
+    */
+        
     /** The authentication key used by the putfileClient. */
     private File privateKeyFile;
     
@@ -124,18 +137,46 @@ public class Bitrepository {
                 bitmagSettings, bitMagSecurityManager);
         bitMagPutClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+        // Maybe needed later
+        // bitMagDeleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
+        //        bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+        // API:
+        // bitMagDeleteFileClient.String collectionID, String fileId, String pillarId, 
+        // ChecksumDataForFileTYPE checksumForPillar, ChecksumSpecTYPE checksumRequested, 
+        // EventHandler eventHandler, String auditTrailInformation);
+        
+        // Maybe needed later
+        // bitMagReplaceFileClient = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(
+        //        bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+        // API: 
+        // bitMagReplaceFileClient.replaceFile(String collectionID, String fileId, String pillarId, 
+        // ChecksumDataForFileTYPE checksumForDeleteAtPillar, ChecksumSpecTYPE checksumRequestedForDeletedFile, 
+        // URL url, long sizeOfNewFile, ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, 
+        // ChecksumSpecTYPE checksumRequestsForNewFile, EventHandler eventHandler, String auditTrailInformation);
+        //
         AccessComponentFactory acf = AccessComponentFactory.getInstance();
         bitMagGetClient = acf.createGetFileClient(
                 bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
         bitMagGetFileIDsClient = acf.createGetFileIDsClient(
                 bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
         
-        bitMagGetStatusClient = acf.createGetStatusClient(
-                bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
         bitMagGetChecksumsClient = acf.createGetChecksumsClient
                 (bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+        // Maybe needed later
+        /*
         bitMagAuditTrailClient = acf.createAuditTrailClient(
                 bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+        API:
+           bitMagAuditTrailClient.getAuditTrails(String collectionID, AuditTrailQuery[] componentQueries,
+            String fileID, String urlForResult, EventHandler eventHandler, String auditTrailInformation);
+         */
+       // Maybe needed later
+        /*
+        bitMagGetStatusClient = acf.createGetStatusClient(
+                bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+        API:
+        bitMagGetStatusClient.getStatus(EventHandler eventHandler)      
+        */
     }
     
     /**
@@ -217,8 +258,8 @@ public class Bitrepository {
         ChecksumSpecTYPE requestChecksum = null;
         String putFileMessage = "Putting the file '" + packageFile + "' with the file id '" 
                 + fileId + "' from Yggdrasil - the SIFD preservation service.";
-        // TODO For the moment the eventhandler only logs the progress
-        // Later, some or all of the events will result in updates being sent back to Valhal
+        // TODO For the moment the eventhandler only logs the progress.
+        // Later, some or all of the events could result in updates being sent back to Valhal
         EventHandler putFileEventHandler = new EventHandler() {
             @Override
             public void handleEvent(OperationEvent event) {
@@ -256,7 +297,7 @@ public class Bitrepository {
         
         CompleteEventAwaiter eventHandler = new GetFileEventHandler(this.bitmagSettings, output);
         output.debug("Initiating the GetFile conversation.");
-        
+        //Should this be used instead?
         //bitMagGetClient.getFileFromSpecificPillar(collectionId, 
         //            fileId, null, fileUrl, "pillarId", eventHandler, null);
         
@@ -349,9 +390,8 @@ public class Bitrepository {
        output.debug("Instantiation GetFileID outputFormatter.");
 
        GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
-       ClientSettings clientSettings = bitmagSettings.getRepositorySettings().getClientSettings();
-       long timeout = clientSettings.getIdentificationTimeout().longValue()
-               + clientSettings.getOperationTimeout().longValue();
+       
+       long timeout = getClientTimeout(bitmagSettings);
 
        output.debug("Instantiation GetFileID paging client.");
        PagingGetFileIDsClient pagingClient = new PagingGetFileIDsClient(
@@ -361,7 +401,30 @@ public class Bitrepository {
                getCollectionPillars(collectionID));
        return success; 
    }
-   
+    
+   /**
+    * FIXME Complete this method. Still unclear how the result should be treated.
+    * Check the checksums for a whole collection, or only a single fileId in a collection.
+    * @param collectionID
+    * @param fileID
+    */
+   public void getChecksums(String collectionID, String fileID) {
+       //If fileID = null, checksum is requested for all files in the collection.
+       OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
+       GetChecksumsOutputFormatter outputFormatter = null;
+       if (fileID != null) {
+           outputFormatter = new GetChecksumDistributionFormatter(output);
+       } else {
+           outputFormatter = new GetChecksumsInfoFormatter(output);
+       }
+       List<String> pillarIDs =  getCollectionPillars(collectionID);
+       ChecksumSpecTYPE checksumSpec = ChecksumUtils.getDefault(bitmagSettings);
+       PagingGetChecksumsClient pagingClient = new PagingGetChecksumsClient(bitMagGetChecksumsClient, 
+               getClientTimeout(bitmagSettings), outputFormatter, output); 
+       Boolean result = pagingClient.getChecksums(collectionID, fileID, pillarIDs, 
+               checksumSpec);
+   }
+ 
    /**
      * Initialize the BITMAG security manager.
      */
@@ -399,13 +462,25 @@ public class Bitrepository {
         if (bitMagMessageBus != null) {
             try {
                 bitMagMessageBus.close();
-            } catch (javax.jms.JMSException e) {
-                e.printStackTrace();
+            } catch (JMSException e) {
+                logger.warning("JMSException caught during shutdown of messagebus " + e);
             }
         }
     }
     
+    /**
+     * Helper method for reading the list of pillars preserving the given collection. 
+     * @param collectionID The ID of a specific collection.
+     * @return the list of pillars preserving the collection with the given ID.
+     */
     private List<String> getCollectionPillars(String collectionID) {
         return SettingsUtils.getPillarIDsForCollection(collectionID);
     }
+    
+    private long getClientTimeout(Settings bitmagSettings) {
+        ClientSettings clSettings = bitmagSettings.getRepositorySettings().getClientSettings();
+        return clSettings.getIdentificationTimeout().longValue()
+                + clSettings.getOperationTimeout().longValue();
+    }
+    
 }
