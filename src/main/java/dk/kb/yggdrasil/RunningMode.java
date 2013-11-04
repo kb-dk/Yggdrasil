@@ -62,7 +62,6 @@ public enum RunningMode {
         if (propertyValue != null) {
             RunningMode mode = fromString(propertyValue);
             if (mode != null) {
-                System.out.println("mode: " + mode);
                 return mode;
             } else {
                 logger.warning("System property '" + RUNNINGMODE_PROPERTY 
@@ -72,7 +71,6 @@ public enum RunningMode {
                 return DEVELOPMENT;
             }
         } else {
-            // return default value
             logger.info("System property '" + RUNNINGMODE_PROPERTY 
                     + "' not set. Choosing default mode (DEVELOPMENT)");
             return DEVELOPMENT;
