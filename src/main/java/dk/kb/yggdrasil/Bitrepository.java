@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.jms.JMSException;
@@ -15,6 +15,7 @@ import javax.jms.JMSException;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.BlockingGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
+import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -26,15 +27,11 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.exceptions.NegativeResponseException;
-import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
-import org.bitrepository.commandline.outputformatter.GetChecksumDistributionFormatter;
-import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
-import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.commandline.outputformatter.GetFileIDsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 import org.bitrepository.common.exceptions.OperationFailedException;
@@ -42,7 +39,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
@@ -365,55 +361,54 @@ public class Bitrepository {
    }
     
    /**
-    * FIXME Complete this method. Still unclear how the result should be treated.
     * Check the checksums for a whole collection, or only a single packageId in a collection.
     * @param packageId A given package ID (if null, checksums for the whole collection is requested)
     * @param collectionID A given collection ID
     * @throws IOException 
-    * @throws YggdrasilException 
+    * @throws YggdrasilException
+    * @return a map with the results from the pillars 
     */
-   public void getChecksums(String packageID, String collectionID) throws IOException, YggdrasilException {
+   public Map<String, ChecksumsCompletePillarEvent> getChecksums(String packageID, String collectionID) throws IOException, YggdrasilException {
        ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
        //If packageID = null, checksum is requested for all files in the collection.
-       OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
-       GetChecksumsOutputFormatter outputFormatter = null;
        if (packageID != null) {
-           outputFormatter = new GetChecksumDistributionFormatter(output);
+           logger.info("Collecting checksums for package '" + packageID 
+               + "' in collection '" + collectionID + "'");
        } else {
-           outputFormatter = new GetChecksumsInfoFormatter(output);
+           logger.info("Collecting checksums for all packages in collection '" 
+                   + collectionID + "'");
        }
-       List<String> pillarIDs =  getCollectionPillars(collectionID);
-       BlockingGetChecksumsClient client = new BlockingGetChecksumsClient(bitMagGetChecksumsClient);
-       
+       BlockingGetChecksumsClient client = new BlockingGetChecksumsClient(
+               bitMagGetChecksumsClient);
        ChecksumSpecTYPE checksumSpec = ChecksumUtils.getDefault(bitmagSettings);
-       //PagingGetChecksumsClient pagingClient = new PagingGetChecksumsClient(bitMagGetChecksumsClient, 
-       //        getClientTimeout(bitmagSettings), outputFormatter, output);
-       UUID f = UUID.randomUUID();
-       URL deliveryUrl = getDeliveryUrl(f.toString());
        BlockingEventHandler eventhandler = new BlockingEventHandler();
-       List<ContributorEvent> result = null;
+       
        try {
-           result = client.getChecksums(collectionID, null, packageID, checksumSpec, deliveryUrl, 
+           client.getChecksums(collectionID, null, packageID, checksumSpec, null, 
                    eventhandler, null);
        } catch (NegativeResponseException e) {
            throw new YggdrasilException("Got bad feedback from the bitrepository " + e);
        }
        
-       if (result != null) {
-           for (ContributorEvent e : result) {
-               System.out.println(e.getFileID());
-               System.out.println(e.getInfo());
-               System.out.println(e.additionalInfo());
-               
-           }
-          //File outputFile = downloadFile(deliveryUrl);
-          //System.out.println(org.apache.commons.io.FileUtils.readFileToString(outputFile));
+       int failures = eventhandler.getFailures().size();
+       int results = eventhandler.getResults().size();
+       
+       if (failures > 0) {
+           logger.warning("Got back " + eventhandler.getFailures().size() + " failures");
        }
+       if (results > 0) {
+           logger.info("Got back " + eventhandler.getResults().size() 
+                   + " successful responses");
+       } 
        
+       Map<String, ChecksumsCompletePillarEvent> resultsMap 
+           = new HashMap<String, ChecksumsCompletePillarEvent>();
        
-       
-       //Boolean result = pagingClient.getChecksums(collectionID, packageID, pillarIDs, 
-       //        checksumSpec);
+           for (ContributorEvent e : eventhandler.getResults()) {
+               ChecksumsCompletePillarEvent event = (ChecksumsCompletePillarEvent) e;
+               resultsMap.put(event.getContributorID(), event);
+           }
+       return resultsMap;
    }
  
    /**

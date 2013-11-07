@@ -12,7 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
+import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -117,7 +119,9 @@ public class BitrepositoryTester {
         String collection = "books";
         assertTrue("package '" +  packageId + "' should already exist but didn't", 
                 br.existsInCollection(packageId, collection));
-        br.getChecksums(null, "books");
+        Map<String, ChecksumsCompletePillarEvent> resultMap 
+            = br.getChecksums(null, "books");
+        assertTrue(resultMap.entrySet().size() == 3);
     }
     
     @Ignore
