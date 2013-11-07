@@ -1,7 +1,10 @@
 package dk.kb.yggdrasil;
 
 import java.io.File;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
@@ -26,25 +29,33 @@ public class Main {
     private static final String USER_HOME_PROPERTY = "user.home";
 
     /** Logging mechanism. */
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
-    
+    private static Logger logger = LoggerFactory.getLogger(Main.class.getName());
+
     /**
      * Main program of the Yggdrasil preservation service.
      * @param args No args is read here. Properties are used to locate confdir and the running mode.
      * @throws YggdrasilException When unable to find a configuration directory or locate required settings files.
      */
     public static void main(String[] args) throws YggdrasilException {
-        logger.info("Starting the Yggdrasil Main program");
+    	SLF4JBridgeHandler.removeHandlersForRootLogger();
+    	SLF4JBridgeHandler.install();
+
+    	logger.info("Starting the Yggdrasil Main program");
 
         logger.info("Initialising settings using runningmode '" + RunningMode.getMode() + "'");
         File configdir = null;
-        String configDirFromProperties = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY); 
 
-        if (configDirFromProperties != null) {
-            configdir = new File(configDirFromProperties);
+        String configDirStr = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
+        if (configDirStr != null) {
+            configdir = new File(configDirStr);
         } else {
-            File userHomeDir = new File(System.getProperty(USER_HOME_PROPERTY));
-            configdir = new File(userHomeDir, "Yggdrasil/config");
+            configDirStr = System.getenv(CONFIGURATION_DIRECTORY_PROPERTY);
+            if (configDirStr != null) {
+                configdir = new File(configDirStr);
+            } else {
+                File userHomeDir = new File(System.getProperty(USER_HOME_PROPERTY));
+                configdir = new File(userHomeDir, "Yggdrasil/config");
+            }
         }
         if (!configdir.exists()) {
             throw new YggdrasilException("Fatal error: The chosen configuration directory '" 

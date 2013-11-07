@@ -2,8 +2,6 @@ package dk.kb.yggdrasil;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -12,6 +10,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A small class to send a HTTP GET or PUT request to a given URL.
@@ -19,7 +19,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 public class HttpCommunication {
 
     /** Logging mechanism. */
-    private static final Logger logger = Logger.getLogger(HttpCommunication.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(HttpCommunication.class.getName());
 
     /**
      * Send a HTTP GET request and return the result, if any, to the caller.
@@ -64,14 +64,14 @@ public class HttpCommunication {
                         in.close();
                         in = null;
                     }
-                    logger.log(Level.SEVERE, "Http request resulted in status code '" 
+                    logger.error("Http request resulted in status code '" 
                             + responseCode + "'. (" + url + ")");
                 }
             } else {
-                logger.log(Level.SEVERE, "Could not connect to '" + url + "'. No response received. ");
+                logger.error("Could not connect to '" + url + "'. No response received. ");
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, e.toString(), e);
+            logger.error(e.toString(), e);
         }
         return httpResponse;
     }
@@ -115,7 +115,7 @@ public class HttpCommunication {
                 if (responseCode == 200) {
                     bSuccess = true;
                 } else {
-                    logger.log(Level.WARNING, "Http request resulted in status code '" 
+                    logger.warn("Http request resulted in status code '" 
                             + responseCode + "'. (" + url + ")");
                 }
                 if (in != null) {
@@ -123,10 +123,10 @@ public class HttpCommunication {
                     in = null;
                 }
             } else {
-                logger.log(Level.WARNING, "Could not connect to '" + url + "'. No response received. ");
+                logger.warn("Could not connect to '" + url + "'. No response received. ");
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, e.toString(), e);
+            logger.error(e.toString(), e);
         }
         return bSuccess;
     }
