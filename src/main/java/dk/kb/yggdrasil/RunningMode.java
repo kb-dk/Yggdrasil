@@ -42,15 +42,15 @@ public enum RunningMode {
      * @return a known RunningMode or null if not recognized as a known RunningMode
      */
     private static RunningMode fromString(String text) {
-        if (text != null && !text.isEmpty()) {
-          for (RunningMode b : RunningMode.values()) {
-            if (text.equalsIgnoreCase(b.toString())) {
-              return b;
+        if (text != null && !text.trim().isEmpty()) {
+            for (RunningMode b : RunningMode.values()) {
+                if (text.equalsIgnoreCase(b.toString())) {
+                    return b;
+                }
             }
-          }
         }
         return null;
-      }
+    }
     
     /** 
      * Return the RunningMode to use by Yggdrasil.

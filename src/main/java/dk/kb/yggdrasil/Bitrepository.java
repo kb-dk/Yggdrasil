@@ -7,20 +7,25 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.jms.JMSException;
 
 import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.getchecksums.BlockingGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.FilePart;
+import org.bitrepository.client.eventhandler.BlockingEventHandler;
+import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
 import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
@@ -36,16 +41,14 @@ import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HttpFileExchange;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
@@ -63,7 +66,8 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.YamlTools;
 
 /**
- * An class that uploads to and get files from a Bitrepository 1.0 type archive.
+ * The class for interacting with the BitRepository, e.g. put files, get files, etc.
+ * Currently works with bitrepository 1.0 archives.
  */
 public class Bitrepository {
 
@@ -92,16 +96,8 @@ public class Bitrepository {
     /** The client for performing the GetFileID operation.*/
     private GetFileIDsClient bitMagGetFileIDsClient;
     
-    /** The client for performing the GetStatus operation.
-    private GetStatusClient bitMagGetStatusClient;
-    */
-    
     /** The client for performing the GetChecksums operation.*/
     private GetChecksumsClient bitMagGetChecksumsClient;
-    
-    /** The client for performing the GetFileID operation.
-    private AuditTrailClient bitMagAuditTrailClient;
-    */
     
     /** The client for performing the ReplaceFile operation.
     private ReplaceFileClient bitMagReplaceFileClient;
@@ -125,7 +121,7 @@ public class Bitrepository {
     /**
      * Constructor for the BitRepository class.
      * @param configFile A YAML config file with links to the bitrepository settingsdir and keyfile
-     * @throws YggdrasilException If configfuke points to missing keyfile or settings directory
+     * @throws YggdrasilException If the config file points to missing keyfile or settings directory
      * @throws ArgumentCheck if configFile is null or  
      */
     public Bitrepository(File configFile) throws YggdrasilException {
@@ -135,6 +131,13 @@ public class Bitrepository {
         initBitmagSecurityManager();
         bitMagMessageBus = ProtocolComponentFactory.getInstance().getMessageBus(
                 bitmagSettings, bitMagSecurityManager);
+        initBitMagClients();
+    }
+        
+    /**
+     * Initialization of the various bitmag client.
+     */
+    private void initBitMagClients() {
         bitMagPutClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
         // Maybe needed later
@@ -162,23 +165,8 @@ public class Bitrepository {
         
         bitMagGetChecksumsClient = acf.createGetChecksumsClient
                 (bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
-        // Maybe needed later
-        /*
-        bitMagAuditTrailClient = acf.createAuditTrailClient(
-                bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
-        API:
-           bitMagAuditTrailClient.getAuditTrails(String collectionID, AuditTrailQuery[] componentQueries,
-            String fileID, String urlForResult, EventHandler eventHandler, String auditTrailInformation);
-         */
-       // Maybe needed later
-        /*
-        bitMagGetStatusClient = acf.createGetStatusClient(
-                bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
-        API:
-        bitMagGetStatusClient.getStatus(EventHandler eventHandler)      
-        */
     }
-    
+
     /**
      * Read the configfile, and initialize the settingsDir and privateKeyFile variables.  
      * @param configFile The YAML configuration file.
@@ -213,7 +201,7 @@ public class Bitrepository {
     /**
      * Attempts to upload a given file.
      *
-     * @param file The file to upload. Should exist
+     * @param file The file to upload. Should exist. The packageId is the name of the file
      * @param collectionId The Id of the collection to upload to 
      * @return true if the upload succeeded, false otherwise.
      */
@@ -254,12 +242,19 @@ public class Bitrepository {
         BlockingPutFileClient bpfc = new BlockingPutFileClient(client);
         URL url = fileexchange.uploadToServer(packageFile);
         String fileId = packageFile.getName();
-        ChecksumDataForFileTYPE validationChecksum = getValidationChecksum(packageFile);
+        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(this.bitmagSettings);
+        ChecksumDataForFileTYPE validationChecksum = BitrepositoryUtils.getValidationChecksum(
+                packageFile,csSpec); 
+       
         ChecksumSpecTYPE requestChecksum = null;
         String putFileMessage = "Putting the file '" + packageFile + "' with the file id '" 
                 + fileId + "' from Yggdrasil - the SIFD preservation service.";
+        
+        EventHandler putFileEventHandler = new BlockingEventHandler();
+       /*
         // TODO For the moment the eventhandler only logs the progress.
         // Later, some or all of the events could result in updates being sent back to Valhal
+        // TODO Make also the eventHandler a separate class.
         EventHandler putFileEventHandler = new EventHandler() {
             @Override
             public void handleEvent(OperationEvent event) {
@@ -267,6 +262,7 @@ public class Bitrepository {
                         + " received related to putFile of package");     
             }
         };
+        */
         try {
             bpfc.putFile(collectionID, url, fileId, packageFile.length(), validationChecksum, requestChecksum, 
                     putFileEventHandler, putFileMessage);
@@ -278,7 +274,7 @@ public class Bitrepository {
             // delete the uploaded file from server
             fileexchange.deleteFromServer(url);
         }
-        logger.warning("The putFile Operation succeeded (" + putFileMessage + ")");
+        logger.info("The putFile Operation succeeded (" + putFileMessage + ")");
         return OperationEventType.COMPLETE;
     }
  
@@ -293,15 +289,14 @@ public class Bitrepository {
         ArgumentCheck.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentCheck.checkNotNullOrEmpty(collectionId, "String collectionId");
         OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
-        URL fileUrl = extractUrl(fileId);
-        
+        URL fileUrl = getDeliveryUrl(fileId);
+        // Note that this eventHandler is blocking
         CompleteEventAwaiter eventHandler = new GetFileEventHandler(this.bitmagSettings, output);
         output.debug("Initiating the GetFile conversation.");
-        //Should this be used instead?
-        //bitMagGetClient.getFileFromSpecificPillar(collectionId, 
-        //            fileId, null, fileUrl, "pillarId", eventHandler, null);
-        
-        bitMagGetClient.getFileFromFastestPillar(collectionId, fileId, null, fileUrl, eventHandler, null);
+        FilePart filePart = null; // Means whole file (otherwise the filepart is specified by offset and length
+        String auditTrailInformation = "Retrieving package '" + fileId + "' from collection '" + collectionId + "'";       
+        bitMagGetClient.getFileFromFastestPillar(collectionId, fileId, filePart, fileUrl, eventHandler, 
+                auditTrailInformation);
     
         OperationEvent finalEvent = eventHandler.getFinish();
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
@@ -325,57 +320,24 @@ public class Bitrepository {
      */
     private File downloadFile(URL fileUrl) throws IOException {
         File outputFile = File.createTempFile("Extracted", null);
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(
-                this.bitmagSettings);
+        FileExchange fileexchange = getFileExchange(bitmagSettings);
         fileexchange.downloadFromServer(outputFile, fileUrl.toExternalForm());
         return outputFile;
     }
 
     /**
-     * Extracts the URL for where the file should be delivered from the GetFile operation.
+     * Generates the URL for where the file should be delivered from the GetFile operation.
      * @param fileId The id of the file.
      * @return The URL where the file should be located.
      */
-    private URL extractUrl(String fileId) {
+    private URL getDeliveryUrl(String fileId) {
         try {
-            FileExchange fileexchange = new HttpFileExchange(this.bitmagSettings);
-            return fileexchange.getURL(fileId);
+            return getFileExchange(bitmagSettings).getURL(fileId);
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Could not make an URL for the file '" 
                     + fileId + "'.", e);
         }
     }
-    
-    /**
-     * Creates the data structure for encapsulating the validation checksums for validation of the PutFile operation.
-     * @param file The file to have the checksum calculated.
-     * @return The ChecksumDataForFileTYPE for the pillars to validate the PutFile operation.
-     */
-
-   private ChecksumDataForFileTYPE getValidationChecksum(File file) {
-       ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(this.bitmagSettings);
-       String checksum = ChecksumUtils.generateChecksum(file, csSpec);
-       ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-       res.setCalculationTimestamp(CalendarUtils.getNow());
-       res.setChecksumSpec(csSpec);
-       res.setChecksumValue(Base16Utils.encodeBase16(checksum));
-       return res;
-   }
-
-   /**
-    *  Specify a checksum.
-    *  @param checksumtype a given type of checksum
-    *  @param salt A string to salt the checksum with (if null, no salting)
-     * @return The requested checksum spec
-     */
-   private ChecksumSpecTYPE getRequestChecksumSpec(ChecksumType checksumtype, String salt) {
-       ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-       res.setChecksumType(checksumtype); 
-       if (salt != null) {
-           res.setChecksumSalt(Base16Utils.encodeBase16(salt));
-       }
-       return res;
-   }
    
    /**
     * Check if a package with the following id exists within a specific collection.
@@ -388,7 +350,7 @@ public class Bitrepository {
        ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
        OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
        output.debug("Instantiation GetFileID outputFormatter.");
-
+       // TODO: change to non pagingClient
        GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
        
        long timeout = getClientTimeout(bitmagSettings);
@@ -404,25 +366,54 @@ public class Bitrepository {
     
    /**
     * FIXME Complete this method. Still unclear how the result should be treated.
-    * Check the checksums for a whole collection, or only a single fileId in a collection.
-    * @param collectionID
-    * @param fileID
+    * Check the checksums for a whole collection, or only a single packageId in a collection.
+    * @param packageId A given package ID (if null, checksums for the whole collection is requested)
+    * @param collectionID A given collection ID
+    * @throws IOException 
+    * @throws YggdrasilException 
     */
-   public void getChecksums(String collectionID, String fileID) {
-       //If fileID = null, checksum is requested for all files in the collection.
+   public void getChecksums(String packageID, String collectionID) throws IOException, YggdrasilException {
+       ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
+       //If packageID = null, checksum is requested for all files in the collection.
        OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
        GetChecksumsOutputFormatter outputFormatter = null;
-       if (fileID != null) {
+       if (packageID != null) {
            outputFormatter = new GetChecksumDistributionFormatter(output);
        } else {
            outputFormatter = new GetChecksumsInfoFormatter(output);
        }
        List<String> pillarIDs =  getCollectionPillars(collectionID);
+       BlockingGetChecksumsClient client = new BlockingGetChecksumsClient(bitMagGetChecksumsClient);
+       
        ChecksumSpecTYPE checksumSpec = ChecksumUtils.getDefault(bitmagSettings);
-       PagingGetChecksumsClient pagingClient = new PagingGetChecksumsClient(bitMagGetChecksumsClient, 
-               getClientTimeout(bitmagSettings), outputFormatter, output); 
-       Boolean result = pagingClient.getChecksums(collectionID, fileID, pillarIDs, 
-               checksumSpec);
+       //PagingGetChecksumsClient pagingClient = new PagingGetChecksumsClient(bitMagGetChecksumsClient, 
+       //        getClientTimeout(bitmagSettings), outputFormatter, output);
+       UUID f = UUID.randomUUID();
+       URL deliveryUrl = getDeliveryUrl(f.toString());
+       BlockingEventHandler eventhandler = new BlockingEventHandler();
+       List<ContributorEvent> result = null;
+       try {
+           result = client.getChecksums(collectionID, null, packageID, checksumSpec, deliveryUrl, 
+                   eventhandler, null);
+       } catch (NegativeResponseException e) {
+           throw new YggdrasilException("Got bad feedback from the bitrepository " + e);
+       }
+       
+       if (result != null) {
+           for (ContributorEvent e : result) {
+               System.out.println(e.getFileID());
+               System.out.println(e.getInfo());
+               System.out.println(e.additionalInfo());
+               
+           }
+          //File outputFile = downloadFile(deliveryUrl);
+          //System.out.println(org.apache.commons.io.FileUtils.readFileToString(outputFile));
+       }
+       
+       
+       
+       //Boolean result = pagingClient.getChecksums(collectionID, packageID, pillarIDs, 
+       //        checksumSpec);
    }
  
    /**
@@ -458,6 +449,9 @@ public class Bitrepository {
         }
     }
     
+    /**
+     * Shutdown the messagebus.
+     */
     public void shutdown() {
         if (bitMagMessageBus != null) {
             try {
@@ -477,10 +471,21 @@ public class Bitrepository {
         return SettingsUtils.getPillarIDsForCollection(collectionID);
     }
     
+    /**
+     * Helper method for computing the clientTimeout. The clientTimeout is the identificationTimeout 
+     * plus the OperationTimeout. 
+     * @param bitmagSettings The bitmagsettingg
+     * @return the clientTimeout
+     */
     private long getClientTimeout(Settings bitmagSettings) {
         ClientSettings clSettings = bitmagSettings.getRepositorySettings().getClientSettings();
         return clSettings.getIdentificationTimeout().longValue()
                 + clSettings.getOperationTimeout().longValue();
+    }
+    
+    private FileExchange getFileExchange(Settings bitmagSettings) {
+        return ProtocolComponentFactory.getInstance().getFileExchange(
+                this.bitmagSettings);
     }
     
 }

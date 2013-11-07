@@ -80,12 +80,6 @@ public enum State {
      * @return true, if the given state is a failstate; otherwise it returns false.
      */
     public static boolean isOkState(State aState){
-      if (FAIL_STATES.contains(aState)) {
-          return false;
-      } else {
-          return true;
-      }
+        return !FAIL_STATES.contains(aState);
     }
-    
-    
 }
