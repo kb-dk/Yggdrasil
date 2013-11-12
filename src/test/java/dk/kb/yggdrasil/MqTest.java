@@ -1,5 +1,7 @@
 package dk.kb.yggdrasil;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -126,6 +128,21 @@ public class MqTest {
         //System.out.println(channel.getCloseReason());
     }
     
+    @Test
+    public void testRabbitMqSettingsAlternateConstructor() throws FileNotFoundException, YggdrasilException {
+        File f = new File(RABBITMQ_CONF_FILE);
+        RabbitMqSettings settings = new RabbitMqSettings(f);
+        String brokerUri = settings.getBrokerUri();
+        String dissDest = settings.getDisseminationDestination();
+        String presDest = settings.getPreservationDestination();
+        RabbitMqSettings settingsCopy = new RabbitMqSettings(brokerUri, presDest, dissDest);
+        assertEquals(brokerUri, settingsCopy.getBrokerUri());
+        assertEquals(presDest, settingsCopy.getPreservationDestination());
+        assertEquals(dissDest, settingsCopy.getDisseminationDestination());
+    }
+    
+    
+    
     private RabbitMqSettings fetchMqSettings() throws FileNotFoundException, YggdrasilException {
         File f = new File(RABBITMQ_CONF_FILE);
         RabbitMqSettings settings = new RabbitMqSettings(f);
@@ -139,6 +156,8 @@ public class MqTest {
         }
         return settings;
     }
+    
+    
     
 }
     
