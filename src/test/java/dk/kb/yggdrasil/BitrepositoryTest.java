@@ -106,13 +106,29 @@ public class BitrepositoryTest {
         }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         Bitrepository br = new Bitrepository(okConfigFile);
-        File payloadFile = getFileWithContents("helloworld.txt2", "Hello World".getBytes());
+        String generatedName = "helloworld" + System.currentTimeMillis() + ".txt";
+        File payloadFile = getFileWithContents(generatedName, "Hello World".getBytes());
         boolean success = br.uploadFile(payloadFile, "books");
         assertTrue("Should have returned true for success, but failed", success);
         br.existsInCollection(payloadFile.getName(), "books");
         //File fr = br.getFile("helloworld.txt2", "books");
         //byte[] payloadReturned = getPayload(fr);
         //br.shutdown();
+        payloadFile.delete();
+    }
+    
+    @Test
+    public void testUploadOnUnknownCollection() throws YggdrasilException, IOException {
+        if (runningOnTravis()) {
+            return;
+        }
+        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
+        Bitrepository br = new Bitrepository(okConfigFile);
+        String generatedName = "helloworld" + System.currentTimeMillis() + ".txt";
+        File payloadFile = getFileWithContents(generatedName, "Hello World".getBytes());
+        boolean success = br.uploadFile(payloadFile, "cars");
+        assertFalse("Shouldn't have returned true for success, but succeeded", success);
+        payloadFile.delete();
     }
     
     private byte[] getPayload(File fr) throws IOException {

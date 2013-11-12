@@ -204,6 +204,11 @@ public class Bitrepository {
 
     public boolean uploadFile(final File file, final String collectionId) { 
         ArgumentCheck.checkExistsNormalFile(file, "File file");
+        // Does collection exists? If not return false
+        if (getCollectionPillars(collectionId).isEmpty()) {
+            logger.warning("The given collection Id does not exist");
+            return false;
+        }
         boolean success = false;
         try {
             OperationEventType finalEvent = putTheFile(bitMagPutClient, file, collectionId);         
@@ -284,6 +289,10 @@ public class Bitrepository {
     public File getFile(final String fileId, final String collectionId) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentCheck.checkNotNullOrEmpty(collectionId, "String collectionId");
+        // Does collection exists? If not throw exception
+        if (getCollectionPillars(collectionId).isEmpty()) {
+            throw new YggdrasilException("The given collection Id does not exist");
+        }
         OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
         URL fileUrl = getDeliveryUrl(fileId);
         // Note that this eventHandler is blocking
@@ -344,7 +353,14 @@ public class Bitrepository {
    public boolean existsInCollection(String packageId, String collectionID) {
        ArgumentCheck.checkNotNullOrEmpty(packageId, "String packageId");
        ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
+       // Does collection exists? If not return false
+       if (getCollectionPillars(collectionID).isEmpty()) {
+           logger.warning("The given collection Id does not exist");
+           return false;
+       }
+       
        OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
+       
        output.debug("Instantiation GetFileID outputFormatter.");
        // TODO: change to non pagingClient
        GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
@@ -482,5 +498,7 @@ public class Bitrepository {
         return ProtocolComponentFactory.getInstance().getFileExchange(
                 bitmagSettings);
     }
+    
+    
     
 }
