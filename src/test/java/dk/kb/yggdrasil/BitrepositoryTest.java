@@ -55,7 +55,7 @@ public class BitrepositoryTest {
     }
     
     private boolean runningOnTravis() {
-        final String TRAVIS_ID = "travis";
+        final String TRAVIS_ID = "testing-worker";
         InetAddress localhost = null;
         try {
             localhost = InetAddress.getLocalHost();
