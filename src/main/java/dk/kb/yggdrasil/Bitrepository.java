@@ -480,7 +480,7 @@ public class Bitrepository {
     
     private FileExchange getFileExchange(Settings bitmagSettings) {
         return ProtocolComponentFactory.getInstance().getFileExchange(
-                this.bitmagSettings);
+                bitmagSettings);
     }
     
 }

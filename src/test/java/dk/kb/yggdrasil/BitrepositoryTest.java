@@ -29,7 +29,7 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  * the set of unittests run by Maven.
  */
 @RunWith(JUnit4.class)
-public class BitrepositoryTester {
+public class BitrepositoryTest {
     
     public static String MISSING_YAML_FILE = "src/test/resources/config/rabbitmq.yaml2";
     public static String INCORRECT_YAML_FILE = "src/test/resources/config/rabbitmq.yml";
