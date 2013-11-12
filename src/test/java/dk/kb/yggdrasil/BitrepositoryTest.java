@@ -60,6 +60,7 @@ public class BitrepositoryTest {
         try {
             localhost = InetAddress.getLocalHost();
             String localhostName = localhost.getCanonicalHostName().toLowerCase();
+            System.out.println("localhostname: " + localhostName);
             return (localhostName.contains(TRAVIS_ID)); 
         } catch (UnknownHostException e) {
             System.out.println(e);
