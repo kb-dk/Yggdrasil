@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import com.antiaction.common.json.JSONException;
-
 import dk.kb.yggdrasil.JSONMessaging.Preservation;
 import dk.kb.yggdrasil.JSONMessaging.PreservationRequest;
 import dk.kb.yggdrasil.JSONMessaging.PreservationResponse;
@@ -83,15 +81,22 @@ public class Main {
             }
         }
 
+        MQ mq = null;
+        Bitrepository bitrepository = null;
+
         try {
             File rabbitmqConfigFile = new File(configdir, "rabbitmq.yml");
             RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
-            MQ mq = MQ.getInstance(rabbitMqSettings);
+            mq = MQ.getInstance(rabbitMqSettings);
             mq.configureDefaultChannel();
 
             File bitmagConfigFile = new File(configdir, "bitmag.yml");
-            Bitrepository bitrepository = new Bitrepository(bitmagConfigFile);
+            bitrepository = new Bitrepository(bitmagConfigFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Configuation missing!", e);
+        }
 
+        try {
             byte[] requestBytes = mq.receiveMessageFromQueue("preservation-dev-queue");
 
             PreservationRequest request = JSONMessaging.getPreservationRequest(new PushbackInputStream(new ByteArrayInputStream(requestBytes), 4));
@@ -172,7 +177,7 @@ public class Main {
             logger.error(e.toString(), e);
         } catch (IOException e) {
             logger.error(e.toString(), e);
-        } catch (JSONException e) {
+        } catch (YggdrasilException e) {
             logger.error(e.toString(), e);
         }
 

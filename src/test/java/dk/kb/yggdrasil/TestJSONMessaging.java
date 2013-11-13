@@ -22,6 +22,7 @@ import dk.kb.yggdrasil.JSONMessaging.Metadata;
 import dk.kb.yggdrasil.JSONMessaging.Preservation;
 import dk.kb.yggdrasil.JSONMessaging.PreservationRequest;
 import dk.kb.yggdrasil.JSONMessaging.PreservationResponse;
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 @RunWith(JUnit4.class)
 public class TestJSONMessaging {
@@ -101,6 +102,9 @@ public class TestJSONMessaging {
             Assert.assertEquals("state", response.preservation.preservation_state);
             Assert.assertEquals("hello", response.preservation.preservation_details);
             Assert.assertEquals("WAHRC!", response.preservation.warc_id);
+        } catch (YggdrasilException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected exception!");
         } catch (JSONException e) {
             e.printStackTrace();
             Assert.fail("Unexpected exception!");
