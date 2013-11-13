@@ -19,11 +19,11 @@ Run "mvn clean -Dmaven.test.skip=true package" to download dependencies to local
 Software requisites
 -------------------
 
-Eclipse (with git support) : Eclipse 4.2+ (Juno release and above)
-Java Oracle JDK 1.7.0_17+ (currently also compiles with Java Oracle JDK 1.6.0_32+)
+Eclipse (with git support) : Eclipse 4.2+ (Juno release and above)  
+Java Oracle JDK 1.7.0_17+ (currently also compiles with Java Oracle JDK 1.6.0_32+)  
 
-Source code level 1.6 (changed to 1.7 if needed)
-Apache Maven 3.0.4+
+Source code level 1.6 (changed to 1.7 if needed)  
+Apache Maven 3.0.4+  
 
 RabbitMQ installed on your development machine. Note that rabbitmq depends on Erlang.
 
