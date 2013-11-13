@@ -9,13 +9,13 @@ import dk.kb.yggdrasil.utils.YamlTools;
 
 /**
  * This class contains the known settings for the rabbitmq broker.
- * 
+ *
  * development:
  *   mq_uri: "amqp://localhost:5672"
  *   preservation:
  *       destination: "dev-queue"
- *   dissemination: 
- *       destination: "dev-queue" 
+ *   dissemination:
+ *       destination: "dev-queue"
  */
 public final class RabbitMqSettings {
 
@@ -26,7 +26,7 @@ public final class RabbitMqSettings {
     /** The property for the rabbitmq dissemination setting in our rabbitmq.yml */
     public static final String RABBIT_MQ_DISSEMINATION_PROPERTY  = "dissemination";
     /** The property for the destination subsetting in our rabbitmq.yml */
-    public static final String RABBIT_MQ_DESTINATION_PROPERTY  = "destination"; 
+    public static final String RABBIT_MQ_DESTINATION_PROPERTY  = "destination";
     /** Use these this property to override the rabbitmq hostname in the YAML file. */
     public static final String RABBIT_MQ_HOSTNAME = "RABBITMQ_HOSTNAME";
     /** Use these this property to override the rabbitmq port in the YAML file. */
@@ -36,10 +36,10 @@ public final class RabbitMqSettings {
     private String brokerUri;
     /** The name of the preservation queue. */
     private String preservationDestination;
-    
+
     /** The name of the dissemination queue. */
     private String disseminationDestination;
-    
+
     /**
      * Constructor. Reads RabbitMQ settings from a YAML file.
      * @param ymlFile A YAML file containing RabbitMQ settings.
@@ -48,15 +48,15 @@ public final class RabbitMqSettings {
      */
     public RabbitMqSettings(File ymlFile) throws YggdrasilException, FileNotFoundException {
         // Select CorrectLinkedHashMap based on the runningmode.
-        String mode = RunningMode.getMode().toString();     
+        String mode = RunningMode.getMode().toString();
         Map settings = YamlTools.loadYamlSettings(ymlFile);
         if (!settings.containsKey(mode)) {
             throw new YggdrasilException("Unable to find rabbitMQ settings for the mode '"
                     + mode + "' in the given YAML file ' " + ymlFile.getAbsolutePath() + "'");
         }
         settings = (Map) settings.get(mode);
-        
-        if (settings.containsKey(RABBIT_MQ_URI_PROPERTY) 
+
+        if (settings.containsKey(RABBIT_MQ_URI_PROPERTY)
                 && settings.containsKey(RABBIT_MQ_PRESERVATION_PROPERTY)
                 && settings.containsKey(RABBIT_MQ_DISSEMINATION_PROPERTY)) {
             brokerUri = (String) settings.get(RABBIT_MQ_URI_PROPERTY);
@@ -68,27 +68,27 @@ public final class RabbitMqSettings {
             throw new YggdrasilException("Missing some or all of the required properties in the settings file");
         }
     }
-   
+
     /**
      * Alternate constructor.
      * @param brokerUri The URI to connect to the broker.
      * @param preservationDestination The Queue for receiving messages from Valhal
      * @param disseminationDestination The Queue for receiving messages from Bifrost
      */
-    public RabbitMqSettings(String brokerUri, String preservationDestination, 
+    public RabbitMqSettings(String brokerUri, String preservationDestination,
             String disseminationDestination)  {
         this.brokerUri = brokerUri;
         this.preservationDestination = preservationDestination;
         this.disseminationDestination = disseminationDestination;
     }
-    
+
     /**
      * @return the brokerUri
      */
     public String getBrokerUri() {
         return brokerUri;
     }
-       
+
     /**
      * @return the preservation destination
      */

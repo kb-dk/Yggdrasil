@@ -2,7 +2,7 @@ package dk.kb.yggdrasil;
 
 import java.util.logging.Logger;
 
-/** 
+/**
  * The three running modes available for Yggdrasil: development, test, production.
  * Defined by Java property dk.kb.yggdrasil.runningmode
  * The default is development mode.
@@ -13,16 +13,16 @@ public enum RunningMode {
      * The development mode (for the development environment and continuous integration).
      */
     DEVELOPMENT,
-    /** 
+    /**
      * The test mode (for the releasetest and staging environment).
      */
     TEST,
-    /** 
-     * The production mode (used by the production environment). 
+    /**
+     * The production mode (used by the production environment).
      */
     PRODUCTION;
-    
-    /** 
+
+    /**
      * Override the existing toString method to avoid toLowercase calls
      */
     @Override
@@ -31,11 +31,11 @@ public enum RunningMode {
     }
 
     /** The java property for the runningmode. */
-    public static final String RUNNINGMODE_PROPERTY = "dk.kb.yggdrasil.runningmode"; 
-    
+    public static final String RUNNINGMODE_PROPERTY = "dk.kb.yggdrasil.runningmode";
+
     /** Logging mechanism. */
     private static final Logger logger = Logger.getLogger(RunningMode.class.getName());
-    
+
     /**
      * Method to parse string as a known runningmode.
      * @param text The text to parse
@@ -51,11 +51,11 @@ public enum RunningMode {
         }
         return null;
     }
-    
-    /** 
+
+    /**
      * Return the RunningMode to use by Yggdrasil.
-     * @return the RunningMode defined by the RUNNINGMODE_PROPERTY property or 
-     * the Development if property is undefined or the value unrecognizable as running mode. 
+     * @return the RunningMode defined by the RUNNINGMODE_PROPERTY property or
+     * the Development if property is undefined or the value unrecognizable as running mode.
      */
     public static RunningMode getMode() {
         String propertyValue = System.getProperty(RUNNINGMODE_PROPERTY);
@@ -64,14 +64,14 @@ public enum RunningMode {
             if (mode != null) {
                 return mode;
             } else {
-                logger.warning("System property '" + RUNNINGMODE_PROPERTY 
-                        + "' not set properly. Unable to recognize '" 
-                        + propertyValue + "' as a runningmode. " 
+                logger.warning("System property '" + RUNNINGMODE_PROPERTY
+                        + "' not set properly. Unable to recognize '"
+                        + propertyValue + "' as a runningmode. "
                         + "Choosing default mode (DEVELOPMENT)");
                 return DEVELOPMENT;
             }
         } else {
-            logger.info("System property '" + RUNNINGMODE_PROPERTY 
+            logger.info("System property '" + RUNNINGMODE_PROPERTY
                     + "' not set. Choosing default mode (DEVELOPMENT)");
             return DEVELOPMENT;
         }

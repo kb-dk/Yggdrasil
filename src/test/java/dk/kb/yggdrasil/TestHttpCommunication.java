@@ -41,7 +41,7 @@ public class TestHttpCommunication {
             Assert.assertNull(httpPayload);
 
             contentBody = "the body".getBytes();
-            bSuccess = HttpCommunication.post("http://localhost:65535/put", contentBody, "text/plain");
+            bSuccess = HttpCommunication.post("http://localhost:65535/post", contentBody, "text/plain");
             Assert.assertFalse(bSuccess);
             /*
              * Start webserver.
@@ -182,7 +182,7 @@ public class TestHttpCommunication {
         @Override
         public void run() {
             webServer = new Server();
-            connector = new SocketConnector();  
+            connector = new SocketConnector();
             webServer.setConnectors(new Connector[] {connector});
             ServletHandler h = new ServletHandler();
             h.addServletWithMapping(Servlet.class, "/*");

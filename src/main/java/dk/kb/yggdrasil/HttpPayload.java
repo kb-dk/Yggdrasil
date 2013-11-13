@@ -21,7 +21,7 @@ public class HttpPayload {
     public Long contentLength;
 
     /**
-     * Construct a payload object with the supplied parameters. 
+     * Construct a payload object with the supplied parameters.
      * @param contentBody <code>InputStream</code> with the content body
      * @param contentEncoding content encoding, null if not returned
      * @param contentType content type, null if not returned

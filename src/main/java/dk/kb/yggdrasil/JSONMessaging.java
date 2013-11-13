@@ -18,63 +18,63 @@ import com.antiaction.common.json.annotation.JSONNullable;
 
 public class JSONMessaging {
 
-	public static class PreservationRequest {
+    public static class PreservationRequest {
 
-		public String UUID;
+        public String UUID;
 
-		public String Preservation_profile;
+        public String Preservation_profile;
 
-		public String Update_URI;
+        public String Update_URI;
 
-		@JSONNullable
-		public String File_UUID;
+        @JSONNullable
+        public String File_UUID;
 
-		@JSONNullable
-		public String Content_URI;
+        @JSONNullable
+        public String Content_URI;
 
-		public Metadata metadata;
+        public Metadata metadata;
 
-	}
+    }
 
-	public static class Metadata {
+    public static class Metadata {
 
-		@JSONNullable
-		public String descMetadata;
+        @JSONNullable
+        public String descMetadata;
 
-		@JSONNullable
-		public String provenanceMetadata;
+        @JSONNullable
+        public String provenanceMetadata;
 
-		@JSONNullable
-		public String preservationMetadata;
+        @JSONNullable
+        public String preservationMetadata;
 
-		@JSONNullable
-		public String techMetadata;
+        @JSONNullable
+        public String techMetadata;
 
-	}
+    }
 
-	public static class PreservationResponse {
+    public static class PreservationResponse {
 
-		 public Preservation preservation;
+         public Preservation preservation;
 
-	}
+    }
 
-	public static class Preservation {
+    public static class Preservation {
 
-		public String preservation_state;
+        public String preservation_state;
 
-		public String preservation_details;
+        public String preservation_details;
 
-		@JSONNullable
-		public String warc_id;
+        @JSONNullable
+        public String warc_id;
 
-	}
+    }
 
-	/** Logging mechanism. */
+    /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(JSONMessaging.class.getName());
 
-	/** JSON encoding encoder/decoder dispatcher. */
+    /** JSON encoding encoder/decoder dispatcher. */
     private static JSONEncoding json_encoding = JSONEncoding.getJSONEncoding();
-    
+
     /** JSON object mapping worker. */
     private  static JSONObjectMappings json_om = new JSONObjectMappings();
 
@@ -96,7 +96,7 @@ public class JSONMessaging {
         JSONStructure json_object = json_text.decodeJSONtext(in, json_decoder);
         PreservationRequest request = json_om.getStructureUnmarshaller().toObject(json_object, PreservationRequest.class);
         return request;
-	}
+    }
 
     public static byte[] getPreservationResponse(PreservationResponse response) throws IOException, JSONException {
         JSONEncoder json_encoder = json_encoding.getJSONEncoder(JSONEncoding.E_UTF8);

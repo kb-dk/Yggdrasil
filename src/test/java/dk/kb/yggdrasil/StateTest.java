@@ -18,7 +18,7 @@ public class StateTest {
         Assert.assertTrue(State.isOkState(okState));
         Assert.assertFalse(State.isOkState(failState));
     }
-    
+
     public void testGetFailStates() {
         State okState = State.PRESERVATION_METADATA_DOWNLOAD_SUCCESS;
         State failState = State.PRESERVATION_METADATA_DOWNLOAD_FAILURE;

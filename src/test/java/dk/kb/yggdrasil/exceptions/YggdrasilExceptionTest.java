@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/** 
- * Tests of the YggdrasilException class. 
+/**
+ * Tests of the YggdrasilException class.
  */
 @RunWith(JUnit4.class)
 public class YggdrasilExceptionTest {
@@ -20,7 +20,7 @@ public class YggdrasilExceptionTest {
         YggdrasilException e = new YggdrasilException(message);
         assertEquals(message, e.getMessage());
     }
-    
+
     @Test
     public void testConstructor2() {
         String message = "reason";
@@ -36,10 +36,11 @@ public class YggdrasilExceptionTest {
         String message = null;
         YggdrasilException e = new YggdrasilException(message);
         assertTrue(e.getMessage() == null);
-        
+
         Exception anException = null;
         e = new YggdrasilException(message, anException);
         assertTrue(e.getMessage() == null);
         assertTrue(e.getCause() == null);
-    } 
+    }
+
 }

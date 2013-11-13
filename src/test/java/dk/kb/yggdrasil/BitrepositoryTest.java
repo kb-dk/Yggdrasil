@@ -32,11 +32,11 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  */
 @RunWith(JUnit4.class)
 public class BitrepositoryTest {
-    
+
     public static String MISSING_YAML_FILE = "src/test/resources/config/rabbitmq.yaml2";
     public static String INCORRECT_YAML_FILE = "src/test/resources/config/rabbitmq.yml";
     public static String OK_YAML_BITMAG_FILE = "src/test/resources/config/bitmag.yml";
-    
+
     @Test
     public void testMissingYamlFile() {
         if (runningOnTravis()) {
@@ -53,7 +53,7 @@ public class BitrepositoryTest {
             fail("Should not throw YggdrasilException on missing config file");
         }
     }
-    
+
     private boolean runningOnTravis() {
         final String TRAVIS_ID = "testing-worker";
         InetAddress localhost = null;
@@ -61,7 +61,7 @@ public class BitrepositoryTest {
             localhost = InetAddress.getLocalHost();
             String localhostName = localhost.getCanonicalHostName().toLowerCase();
             System.out.println("localhostname: " + localhostName);
-            return (localhostName.contains(TRAVIS_ID)); 
+            return (localhostName.contains(TRAVIS_ID));
         } catch (UnknownHostException e) {
             System.out.println(e);
         }
@@ -82,7 +82,7 @@ public class BitrepositoryTest {
             // Expected
         }
     }
-    
+
     @Test
     public void testOkYamlFile() {
         if (runningOnTravis()) {
@@ -98,7 +98,7 @@ public class BitrepositoryTest {
             fail("Should now throw YggdrasilException on bad config file. Reason: " + e);
         }
     }
-    
+
     @Test
     public void testUpload() throws YggdrasilException, IOException {
         if (runningOnTravis()) {
@@ -116,7 +116,7 @@ public class BitrepositoryTest {
         //br.shutdown();
         payloadFile.delete();
     }
-    
+
     @Test
     public void testUploadOnUnknownCollection() throws YggdrasilException, IOException {
         if (runningOnTravis()) {
@@ -130,7 +130,7 @@ public class BitrepositoryTest {
         assertFalse("Shouldn't have returned true for success, but succeeded", success);
         payloadFile.delete();
     }
-    
+
     private byte[] getPayload(File fr) throws IOException {
         InputStream is = new FileInputStream(fr);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -142,7 +142,7 @@ public class BitrepositoryTest {
         baos.close();
         return baos.toByteArray();
     }
-    
+
     @Test
     public void testGetFile() throws Exception {
         if (runningOnTravis()) {
@@ -156,7 +156,7 @@ public class BitrepositoryTest {
         assertEquals("Hello World", helloWorldReturned);
         //br.shutdown();
     }
-    
+
     @Test
     public void testGetChecksums() throws YggdrasilException, IOException {
         if (runningOnTravis()) {
@@ -166,13 +166,13 @@ public class BitrepositoryTest {
         Bitrepository br = new Bitrepository(okConfigFile);
         String packageId = "helloworld.txt2";
         String collection = "books";
-        assertTrue("package '" +  packageId + "' should already exist but didn't", 
+        assertTrue("package '" +  packageId + "' should already exist but didn't",
                 br.existsInCollection(packageId, collection));
-        Map<String, ChecksumsCompletePillarEvent> resultMap 
+        Map<String, ChecksumsCompletePillarEvent> resultMap
             = br.getChecksums(null, "books");
         assertTrue(resultMap.entrySet().size() == 3);
     }
-    
+
     @Ignore
     @Test
     public void testGetFileIds() throws YggdrasilException {
@@ -180,7 +180,7 @@ public class BitrepositoryTest {
         Bitrepository br = new Bitrepository(okConfigFile);
         //br.shutdown();
     }
-    
+
     private File getFileWithContents(String packageId, byte[] payload) throws IOException {
         File tempDir = new File("tempDir");
         if (tempDir.isFile()) {
@@ -197,31 +197,28 @@ public class BitrepositoryTest {
         OutputStream ous = new FileOutputStream(fr);
         ous.write(payload);
         ous.close();
-        
+
         return fr;
     }
-    
+
     /*
     public List<String> getFileIdsInCollection(String collectionID) {
         ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
         OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
         output.debug("Instantiation GetFileID outputFormatter.");
        bitMagGetFileIDsClient.
-        
-        
+
         GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
-        
+
         long timeout = getClientTimeout(bitmagSettings);
 
         output.debug("Instantiation GetFileID paging client.");
         PagingGetFileIDsClient pagingClient = new PagingGetFileIDsClient(
                 bitMagGetFileIDsClient, timeout, outputFormatter, output);
-        Boolean success = pagingClient.getFileIDs(collectionID, null, 
+        Boolean success = pagingClient.getFileIDs(collectionID, null,
                 getCollectionPillars(collectionID));
-        return success; 
+        return success;
     }
     */
-    
-    
-    
+
 }

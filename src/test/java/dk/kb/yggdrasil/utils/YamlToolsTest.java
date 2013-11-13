@@ -17,8 +17,8 @@ import dk.kb.yggdrasil.RunningMode;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.YamlTools;
 
-/** 
- * Tests for the methods in the YamlTools class. 
+/**
+ * Tests for the methods in the YamlTools class.
  *
  */
 @RunWith(JUnit4.class)
@@ -27,7 +27,7 @@ public class YamlToolsTest {
     public static String YAML_TEST_FILE = "src/test/resources/config/rabbitmq.yml";
     public static String NOT_YAML_TEST_FILE = "src/test/resources/config/rabbitmq.yaml";
     public static String NOT_YAML_TEST_FILE2 = "src/test/resources/config/file_with_no_yaml_content.xml";
-    
+
     @Test
     public void testReadYamlFailed() throws Exception {
         File f = new File(NOT_YAML_TEST_FILE);
@@ -38,7 +38,7 @@ public class YamlToolsTest {
             // expected
         }
     }
-    
+
     @Test
     public void testReadNonYamlFile() throws Exception {
         File f = new File(NOT_YAML_TEST_FILE2);
@@ -48,19 +48,16 @@ public class YamlToolsTest {
         } catch (ScannerException e) {
             // expected
         }
-        
     }
-    
+
     @Test
     public void testReadYamlFile() throws Exception {
         File f = new File(YAML_TEST_FILE);
-        
+
         LinkedHashMap m = YamlTools.loadYamlSettings(f);
         Assert.assertNotNull(m);
         String mode = RunningMode.getMode().toString();
         Assert.assertTrue(m.containsKey(mode));
     }
+
 }
-
-
-

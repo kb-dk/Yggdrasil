@@ -27,9 +27,9 @@ public class HttpCommunication {
      * @return HTTP response content body or null
      */
     public static HttpPayload get(String url) {
-    	if (url == null || url.length() == 0) {
-    		throw new IllegalArgumentException("'url' is null or empty.");
-    	}
+        if (url == null || url.length() == 0) {
+            throw new IllegalArgumentException("'url' is null or empty.");
+        }
         HttpPayload httpResponse = null;
         InputStream in = null;
         try {
@@ -57,14 +57,14 @@ public class HttpCommunication {
                     if (contentTypeHeader != null) {
                         contentType = contentTypeHeader.getValue();
                     }
-                    httpResponse = new HttpPayload(in, contentEncoding, 
+                    httpResponse = new HttpPayload(in, contentEncoding,
                             contentType, responseEntity.getContentLength());
                 } else {
                     if (in != null) {
                         in.close();
                         in = null;
                     }
-                    logger.error("Http request resulted in status code '" 
+                    logger.error("Http request resulted in status code '"
                             + responseCode + "'. (" + url + ")");
                 }
             } else {
@@ -85,15 +85,15 @@ public class HttpCommunication {
      * @return boolean indicating success or failure
      */
     public static boolean post(String url, byte[] contentBody, String contentType) {
-    	if (url == null || url.length() == 0) {
-    		throw new IllegalArgumentException("'url' is null or empty.");
-    	}
-    	if (contentBody == null) {
-    		throw new IllegalArgumentException("'contentBody' is null.");
-    	}
-    	if (contentType == null || contentType.length() == 0) {
-    		throw new IllegalArgumentException("'contentType' is null or empty.");
-    	}
+        if (url == null || url.length() == 0) {
+            throw new IllegalArgumentException("'url' is null or empty.");
+        }
+        if (contentBody == null) {
+            throw new IllegalArgumentException("'contentBody' is null.");
+        }
+        if (contentType == null || contentType.length() == 0) {
+            throw new IllegalArgumentException("'contentType' is null or empty.");
+        }
         boolean bSuccess = false;
         try {
             /*
@@ -115,7 +115,7 @@ public class HttpCommunication {
                 if (responseCode == 200) {
                     bSuccess = true;
                 } else {
-                    logger.warn("Http request resulted in status code '" 
+                    logger.warn("Http request resulted in status code '"
                             + responseCode + "'. (" + url + ")");
                 }
                 if (in != null) {

@@ -23,26 +23,25 @@ import com.rabbitmq.client.Envelope;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
-
 /**
  * These tests require an rabbitmq to be present on localhost
  * using port 5673.
  * You can have several rabbitmq brokers running on the same server.
  * Each though must have their own port, and nodename which can be set
- * using export RABBITMQ_NODENAME=bunny 
+ * using export RABBITMQ_NODENAME=bunny
  * export RABBITMQ_NODE_PORT=5673
  * See manpage for rabbitmq-server for more details.
- * 
- * These tests assume the rabbitmq on localhost, if not override RABBITMQ_HOSTNAME 
- * (e.g. export RABBITMQ_HOSTNAME=dia-prod-udv-01.kb.dk or DRABBITMQ_HOSTNAME=dia-prod-udv-01.kb.dk,) 
+ *
+ * These tests assume the rabbitmq on localhost, if not override RABBITMQ_HOSTNAME
+ * (e.g. export RABBITMQ_HOSTNAME=dia-prod-udv-01.kb.dk or DRABBITMQ_HOSTNAME=dia-prod-udv-01.kb.dk,)
  * and another port than 5672 by setting the RABBITMQ_PORT (
  * (e.g. export RABBITMQ_PORT=5673 or DRABBITMQ_PORT=5673);
  */
 @RunWith(JUnit4.class)
 public class MqTest {
-    
+
     public static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
-    
+
     @Test
     public void finalTest() throws YggdrasilException, IOException {
         RabbitMqSettings settings = fetchMqSettings();
@@ -53,19 +52,18 @@ public class MqTest {
         String queueName = settings.getPreservationDestination();
         mq.publishOnQueue(queueName, message.getBytes());
         byte[] messageReceived = mq.receiveMessageFromQueue(queueName);
-       
+
         Assert.assertArrayEquals(message.getBytes(), messageReceived);
         message = "Hello X";
         mq.publishOnQueue(queueName, message.getBytes());
         messageReceived = mq.receiveMessageFromQueue(queueName);
-       
+
         Assert.assertArrayEquals(message.getBytes(), messageReceived);
         mq.close();
     }
-  
-    
+
     @Test
-    public void testReceived() throws KeyManagementException, 
+    public void testReceived() throws KeyManagementException,
     NoSuchAlgorithmException, URISyntaxException, IOException, YggdrasilException {
         RabbitMqSettings settings = fetchMqSettings();
         ConnectionFactory factory = new ConnectionFactory();
@@ -93,7 +91,7 @@ public class MqTest {
         }
 
         boolean autoAck = false;
-        channel.basicConsume(queueName, autoAck, "myConsumerTag", 
+        channel.basicConsume(queueName, autoAck, "myConsumerTag",
                 new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag,
@@ -120,14 +118,14 @@ public class MqTest {
             Thread.sleep(5*1000);
         } catch (InterruptedException e) {
         }
-        
+
         channel.basicCancel("myConsumerTag");
-        
+
         channel.close();
         conn.close();
         //System.out.println(channel.getCloseReason());
     }
-    
+
     @Test
     public void testRabbitMqSettingsAlternateConstructor() throws FileNotFoundException, YggdrasilException {
         File f = new File(RABBITMQ_CONF_FILE);
@@ -140,24 +138,19 @@ public class MqTest {
         assertEquals(presDest, settingsCopy.getPreservationDestination());
         assertEquals(dissDest, settingsCopy.getDisseminationDestination());
     }
-    
-    
-    
+
     private RabbitMqSettings fetchMqSettings() throws FileNotFoundException, YggdrasilException {
         File f = new File(RABBITMQ_CONF_FILE);
         RabbitMqSettings settings = new RabbitMqSettings(f);
         // Check if rabbitmq-port or rabbitmq-hostname is overridden by defined properties
         if (null != System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
-                || 
-                null != System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT)) { 
-          settings.setBrokerUri("amqp://" 
+                ||
+                null != System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT)) {
+          settings.setBrokerUri("amqp://"
                 + System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
                 + ":" + System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT, "5672"));
         }
         return settings;
     }
-    
-    
-    
+
 }
-    

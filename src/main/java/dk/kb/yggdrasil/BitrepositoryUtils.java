@@ -39,7 +39,7 @@ public class BitrepositoryUtils {
      */
    public static ChecksumSpecTYPE getRequestChecksumSpec(ChecksumType checksumtype, String salt) {
        ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-       res.setChecksumType(checksumtype); 
+       res.setChecksumType(checksumtype);
        if (salt != null) {
            res.setChecksumSalt(Base16Utils.encodeBase16(salt));
        }

@@ -23,38 +23,38 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 /**
  * Methods for publishing messages on a queue and receiving from a queue
  * using an RabbitMQ broker.
- * Tested with RabbitMQ broker 3.1.5, and amqp-client 3.1.4 (3.1.5 is 
+ * Tested with RabbitMQ broker 3.1.5, and amqp-client 3.1.4 (3.1.5 is
  * not available on maven repositories).
- * rabbitmq-javadoc: http://www.rabbitmq.com/releases/rabbitmq-java-client/v3.1.4/rabbitmq-java-client-javadoc-3.1.4/ 
+ * rabbitmq-javadoc: http://www.rabbitmq.com/releases/rabbitmq-java-client/v3.1.4/rabbitmq-java-client-javadoc-3.1.4/
  */
 public class MQ {
-    
-    /** List of existing consumers in use by this class. 
-     * The key is the queueName. 
+
+    /** List of existing consumers in use by this class.
+     * The key is the queueName.
      */
     private Map<String, QueueingConsumer> existingConsumers;
-    
+
     /** List of existing consumers in use by this class identified by consumertags. */
     private Set<String> existingConsumerTags;
-    
+
     /** channel to the broker. Is one channel enough? */
     private Channel theChannel;
     /** The settings used to create the broker configurations. */
     private RabbitMqSettings settings;
     /** the singleton instance. */
     private static MQ instance;
-    
+
     /** Default exchangename to be used by all queues. */
     private String exchangeName = "exchange"; //TODO should this be a parameter in the settings?
     /** exchange type direct means a message sent to only one recipient. */
-    private String exchangeType = "direct"; 
-    
-    /** 
+    private String exchangeType = "direct";
+
+    /**
      * private constructor for the MQ singleton.
-     * @param settings 
+     * @param settings
      * @throws YggdrasilException
      */
-    private MQ(RabbitMqSettings settings) throws YggdrasilException { 
+    private MQ(RabbitMqSettings settings) throws YggdrasilException {
         this.existingConsumerTags = new HashSet<String>();
         this.existingConsumers = new HashMap<String, QueueingConsumer>();
         this.settings = settings;
@@ -63,7 +63,7 @@ public class MQ {
         try {
             factory.setUri(settings.getBrokerUri());
             conn = factory.newConnection();
-            theChannel = conn.createChannel(); 
+            theChannel = conn.createChannel();
             configureDefaultChannel();
         } catch (KeyManagementException e1) {
             throw new YggdrasilException("Error connecting to Broker:", e1);
@@ -75,7 +75,7 @@ public class MQ {
             throw new YggdrasilException("Error connecting to Broker:", e4);
         }
     }
-    
+
     /**
      * Close channel to broker, and cancel the associated consumers.
      * @throws IOException
@@ -91,16 +91,16 @@ public class MQ {
             conn.close();
         }
     }
-    
-    /** 
-     * @return a set of AMQP properties for 
+
+    /**
+     * @return a set of AMQP properties for
      */
     public static AMQP.BasicProperties getMQProperties() {
         AMQP.BasicProperties.Builder builder = new AMQP.BasicProperties.Builder();
         AMQP.BasicProperties persistentTextXml = builder.deliveryMode(2).contentType("text/xml").build();
         return persistentTextXml;
     }
-    
+
     /**
      * Configure default channel configuration.
      * @throws YggdrasilException When problem with configuring the channel.
@@ -124,28 +124,28 @@ public class MQ {
             throw new YggdrasilException("Problems configuring the broker", e);
         }
     }
-   
+
    /**
     * Publish a message on the given queue.
-    * @param queueName A given MQ queue. 
+    * @param queueName A given MQ queue.
     * @param ch An already created channel to the MQ broker.
     * @param message The message to be published on the queue.
     * @throws YggdrasilException If Unable to publish message to the queue.
     */
-   public void publishOnQueue(String queueName, byte[] message) 
+   public void publishOnQueue(String queueName, byte[] message)
            throws YggdrasilException {
        try {
            String routingKey = queueName;
            theChannel.basicPublish(exchangeName, routingKey, MQ.getMQProperties(), message);
        } catch (IOException e) {
-           throw new YggdrasilException("Unable to publish message to queue '" 
+           throw new YggdrasilException("Unable to publish message to queue '"
                    + queueName + "'", e);
        }
    }
-   
+
    /**
     * Receive message from a given queue. If no message is waiting on the queue, this message will
-    * wait until a message arrives on the queue. 
+    * wait until a message arrives on the queue.
     * @param queueName The name of the queue.
     * @return the bytes delivered in the message when a message is received.
     * @throws YggdrasilException
@@ -162,7 +162,7 @@ public class MQ {
                existingConsumers.put(queueName, consumer);
                existingConsumerTags.add(consumerTag);
            } catch (IOException e) {
-               throw new YggdrasilException("Unable to attach to queue '" 
+               throw new YggdrasilException("Unable to attach to queue '"
                        + queueName + "'", e);
            }
        }
@@ -173,22 +173,22 @@ public class MQ {
            boolean acknowledgeMultipleMessages = false;
            theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), acknowledgeMultipleMessages);
        } catch (IOException e) {
-           throw new YggdrasilException("Unable to receive message from queue '" 
+           throw new YggdrasilException("Unable to receive message from queue '"
                    + queueName + "'", e);
        } catch (ShutdownSignalException e) {
-           throw new YggdrasilException("Unable to receive message from queue '" 
+           throw new YggdrasilException("Unable to receive message from queue '"
                    + queueName + "'", e);
        } catch (ConsumerCancelledException e) {
-           throw new YggdrasilException("Unable to receive message from queue '" 
+           throw new YggdrasilException("Unable to receive message from queue '"
                    + queueName + "'", e);
        } catch (InterruptedException e) {
-           throw new YggdrasilException("Unable to receive message from queue '" 
+           throw new YggdrasilException("Unable to receive message from queue '"
                    + queueName + "'", e);
        }
 
        return payload;
    }
-   
+
    /**
     * Create a singleton instance if not already created.
     * @param settings The settings used to create the broker connection.
@@ -200,6 +200,5 @@ public class MQ {
            instance = new MQ(settings);
        }
        return instance;
-   } 
+   }
 }
-    

@@ -7,7 +7,7 @@ import java.util.Collection;
  * Checks for argument validity.
  */
 public class ArgumentCheck extends RuntimeException {
-    
+
     /**
      * Constructs new ArgumentCheck with the specified detail message.
      *
@@ -141,12 +141,12 @@ public class ArgumentCheck extends RuntimeException {
             throw new ArgumentCheck(s);
         }
     }
-    
+
     /**
      * Check, if the given argument is an existing directory.
      * @param aDir a given File object.
      * @param name Name of object
-     * @throws ArgumentCheck If aDir is not an existing directory 
+     * @throws ArgumentCheck If aDir is not an existing directory
      */
     public static void checkExistsDirectory(File aDir, String name) {
         checkNotNull(aDir, name);
@@ -156,12 +156,12 @@ public class ArgumentCheck extends RuntimeException {
             throw new ArgumentCheck(message);
         }
     }
-    
+
     /**
      * Check, if the given argument is an existing normal file.
      * @param aFile a given File object.
      * @param name Name of object
-     * @throws ArgumentCheck If aDir is not an existing file 
+     * @throws ArgumentCheck If aDir is not an existing file
      */
     public static void checkExistsNormalFile(File aFile, String name) {
         checkNotNull(aFile, name);
@@ -171,4 +171,5 @@ public class ArgumentCheck extends RuntimeException {
             throw new ArgumentCheck(message);
         }
     }
+
 }
