@@ -1,0 +1,12 @@
+development:
+  settings_dir: ./config/bitmag-development-settings
+  keyfile:  ./config/bitmag-development-settings/client-16.pem    
+
+test:
+  settings_dir: ./config/bitmag-staging-settings
+  keyfile:  ./config/bitmag-staging-settings/client-16.pem    
+
+production:
+  settings_dir: ./config/bitmag-prod-settings
+  keyfile:  ./config/bitmag-prod-settings/client-16.pem    
+

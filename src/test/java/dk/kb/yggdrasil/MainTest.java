@@ -1,12 +1,14 @@
 package dk.kb.yggdrasil;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import static org.junit.Assert.*;
 
 /**
  * Tests for {@link dk.kb.yggdrasil.Main }
@@ -16,12 +18,14 @@ public class MainTest {
     
     File goodConfigDir = new File("src/test/resources/config");
     
+    @Ignore
     @Test
     public void testMainMethodWithGoodConfigDir() throws Exception {
         System.setProperty(Main.CONFIGURATION_DIRECTORY_PROPERTY, goodConfigDir.getAbsolutePath());    
         Main.main(new String[]{});
     }
 
+    @Ignore
     @Test
     public void testMainMethodWithBadConfigDir() {
         String userHome = System.getProperty("user.home");

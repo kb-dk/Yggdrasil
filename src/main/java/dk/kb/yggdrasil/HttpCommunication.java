@@ -7,7 +7,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class HttpCommunication {
      * @param contentType content type of content body
      * @return boolean indicating success or failure
      */
-    public static boolean put(String url, byte[] contentBody, String contentType) {
+    public static boolean post(String url, byte[] contentBody, String contentType) {
     	if (url == null || url.length() == 0) {
     		throw new IllegalArgumentException("'url' is null or empty.");
     	}
@@ -100,14 +100,14 @@ public class HttpCommunication {
              * HTTP request.
              */
             DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPut putRequest = new HttpPut(url);
+            HttpPost postRequest = new HttpPost(url);
             StringEntity putEntity = new StringEntity(new String(contentBody));
             putEntity.setContentType(contentType);
-            putRequest.setEntity(putEntity);
+            postRequest.setEntity(putEntity);
             /*
              * HTTP response.
              */
-            HttpResponse response = httpClient.execute(putRequest);
+            HttpResponse response = httpClient.execute(postRequest);
             if (response != null) {
                 int responseCode = response.getStatusLine().getStatusCode();
                 HttpEntity responseEntity = response.getEntity();

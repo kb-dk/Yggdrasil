@@ -41,7 +41,7 @@ public class TestHttpCommunication {
             Assert.assertNull(httpPayload);
 
             contentBody = "the body".getBytes();
-            bSuccess = HttpCommunication.put("http://localhost:65535/put", contentBody, "text/plain");
+            bSuccess = HttpCommunication.post("http://localhost:65535/put", contentBody, "text/plain");
             Assert.assertFalse(bSuccess);
             /*
              * Start webserver.
@@ -60,7 +60,7 @@ public class TestHttpCommunication {
             Assert.assertNull(httpPayload);
 
             contentBody = "the body".getBytes();
-            bSuccess = HttpCommunication.put("http://localhost:" + server.port + "/putt", contentBody, "text/plain");
+            bSuccess = HttpCommunication.post("http://localhost:" + server.port + "/postt", contentBody, "text/plain");
             Assert.assertFalse(bSuccess);
             /*
              * Valid requests.
@@ -83,7 +83,7 @@ public class TestHttpCommunication {
             Assert.assertArrayEquals("I am Jettyman.".getBytes(), bout.toByteArray());
 
             contentBody = "the body".getBytes();
-            bSuccess = HttpCommunication.put("http://localhost:" + server.port + "/put", contentBody, "text/plain");
+            bSuccess = HttpCommunication.post("http://localhost:" + server.port + "/post", contentBody, "text/plain");
             Assert.assertTrue(bSuccess);
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,7 +128,7 @@ public class TestHttpCommunication {
                 out.write(contentBody);
                 out.flush();
                 out.close();
-            } else if ("/put".equals(pathInfo) && "PUT".equals(method)) {
+            } else if ("/post".equals(pathInfo) && "POST".equals(method)) {
                 int read;
                 byte[] tmpArr = new byte[1024];
                 InputStream in = req.getInputStream();

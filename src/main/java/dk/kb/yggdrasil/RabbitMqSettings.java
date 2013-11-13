@@ -31,8 +31,7 @@ public final class RabbitMqSettings {
     public static final String RABBIT_MQ_HOSTNAME = "RABBITMQ_HOSTNAME";
     /** Use these this property to override the rabbitmq port in the YAML file. */
     public static final String RABBIT_MQ_PORT = "RABBITMQ_PORT";
-    
-    
+
     /** The broker address as a URI. */
     private String brokerUri;
     /** The name of the preservation queue. */
@@ -47,7 +46,7 @@ public final class RabbitMqSettings {
      * @throws YggdrasilException If some or all of the required RabbitMQ settings are missing.
      * @throws YggdrasilException If the YAML file is missing
      */
-    public RabbitMqSettings(File ymlFile)throws YggdrasilException, FileNotFoundException {
+    public RabbitMqSettings(File ymlFile) throws YggdrasilException, FileNotFoundException {
         // Select CorrectLinkedHashMap based on the runningmode.
         String mode = RunningMode.getMode().toString();     
         Map settings = YamlTools.loadYamlSettings(ymlFile);

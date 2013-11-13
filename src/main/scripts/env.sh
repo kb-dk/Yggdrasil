@@ -5,7 +5,7 @@ else
   JAVA=java
 fi
 
-# ${assembly.home.env.name} must point to home directory of JWAT-Tools install.
+# ${assembly.home.env.name} must point to home directory.
 PRG="$0"
 
 # need this for relative symlinks
@@ -28,7 +28,7 @@ if [ -z "${assembly.config.env.name.ref}" ] ; then
   ${assembly.config.env.name}="${assembly.home.env.name.ref}/config"
 fi
 
-# CP must contain a colon-separated list of resources used by JWAT-Tools.
+# CP must contain a colon-separated list of resources used.
 CP=${assembly.home.env.name.ref}/:${assembly.home.env.name.ref}/config/
 for i in `ls ${assembly.home.env.name.ref}/lib/*.jar`
 do
