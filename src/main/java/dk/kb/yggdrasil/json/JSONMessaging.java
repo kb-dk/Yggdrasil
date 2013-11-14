@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.json;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,83 +24,9 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  */
 public class JSONMessaging {
 
-    /**
-     * JSON preservation request object representation.
-     */
-    public static class PreservationRequest {
+    
 
-        /** Valhal element UUID. */
-        public String UUID;
-
-        /** Preservation profile. */
-        public String Preservation_profile;
-
-        /** Preservation state update URI. */
-        public String Update_URI;
-
-        /** Optional content UUID. */
-        @JSONNullable
-        public String File_UUID;
-
-        /** Optional content URI. */
-        @JSONNullable
-        public String Content_URI;
-
-        /** Metadata data. */
-        public Metadata metadata;
-
-    }
-
-    /**
-     * JSON metadata object representation.
-     */
-    public static class Metadata {
-
-        /** Descriptive metadata. */
-        @JSONNullable
-        public String descMetadata;
-
-        /** Provenance metadata. */
-        @JSONNullable
-        public String provenanceMetadata;
-
-        /** Preservation metadata. */
-        @JSONNullable
-        public String preservationMetadata;
-
-        /** technical metadata. */
-        @JSONNullable
-        public String techMetadata;
-
-    }
-
-    /**
-     * JSON preservation response object representation.
-     * The single containing object reflects the JSON structure.
-     */
-    public static class PreservationResponse {
-
-        /** Preservation data. */
-        public Preservation preservation;
-
-    }
-
-    /**
-     * JSON preservation object representation.
-     */
-    public static class Preservation {
-
-        /** Preservation state. */
-        public String preservation_state;
-
-        /** Preservation details. */
-        public String preservation_details;
-
-        /** WARC ID, optional. */
-        @JSONNullable
-        public String warc_id;
-
-    }
+    
 
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(JSONMessaging.class.getName());

@@ -1,7 +1,6 @@
 package dk.kb.yggdrasil.db;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
-import dk.kb.yggdrasil.JSONMessaging.PreservationRequest;
+import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
@@ -156,10 +155,9 @@ public class StateDatabase {
     /** 
      * Retrieve list of outstanding requests. 
      * TODO maybe change to retrieve the requests themselves as a list?
-     * @throws IOException If unable to write to file for some reason
      * @throws YggdrasilException 
      */
-    public List<String> getOutstandingUUIDS() throws IOException, YggdrasilException {
+    public List<String> getOutstandingUUIDS() throws YggdrasilException {
         Cursor cursor = null;
         List<String> resultList = new ArrayList<String>();
         try { 
@@ -194,6 +192,27 @@ public class StateDatabase {
             } catch (DatabaseException e) {
                 log.warn("Unable to close database. The error was :" + e);
             }
+            
+        }
+        instance = null;
+        
+        
+    }
+
+    public void delete(String uuid) throws YggdrasilException {
+        ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
+       
+        DatabaseEntry theKey = null;
+        try {
+            theKey = new DatabaseEntry(uuid.getBytes("UTF-8")); 
+        } catch (UnsupportedEncodingException e) {
+            throw new YggdrasilException(e.toString());
+        }
+
+        try {
+            requestDB.delete(null, theKey);
+        } catch (DatabaseException e) {
+            throw new YggdrasilException("Database exception occuring during deletion of record", e);
         }
     }
 }

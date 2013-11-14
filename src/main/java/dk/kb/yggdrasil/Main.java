@@ -13,9 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import dk.kb.yggdrasil.JSONMessaging.Preservation;
-import dk.kb.yggdrasil.JSONMessaging.PreservationRequest;
-import dk.kb.yggdrasil.JSONMessaging.PreservationResponse;
+import dk.kb.yggdrasil.json.JSONMessaging;
+import dk.kb.yggdrasil.json.Preservation;
+import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.PreservationResponse;
+import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 /**
@@ -31,7 +33,7 @@ public class Main {
     /**
      * The list of configuration files that should be present in the configuration directory.
      */
-    public static final String[] REQUIRED_SETTINGS_FILES = new String[] {"rabbitmq.yml"};
+    public static final String[] REQUIRED_SETTINGS_FILES = new String[] {"rabbitmq.yml", "bitmag.yml"};
     /** Java Property to define Yggdrasil configuration directory. */
     public static final String CONFIGURATION_DIRECTORY_PROPERTY = "YGGDRASIL_CONF_DIR";
 
@@ -96,11 +98,15 @@ public class Main {
             throw new RuntimeException("Configuation missing!", e);
         }
 
+        // Initiate call of StateDatabase
+        StateDatabase sd = StateDatabase.getInstance();
+        
         try {
+            // FIXME read queue from rabbitMqSettings
             byte[] requestBytes = mq.receiveMessageFromQueue("preservation-dev-queue");
 
             PreservationRequest request = JSONMessaging.getPreservationRequest(new PushbackInputStream(new ByteArrayInputStream(requestBytes), 4));
-
+            sd.put(request.UUID, request); // add to persistence layer
             logger.info("Preservation request received.");
 
             System.out.println(request.UUID);
@@ -131,7 +137,8 @@ public class Main {
             RandomAccessFile raf;
 
             if (request.Content_URI != null) {
-                logger.info("Attempting to download resource.");
+                logger.info("Attempting to download resource from '" 
+                        + request.Content_URI + "'");
                 HttpPayload payload = HttpCommunication.get(request.Content_URI);
                 if (payload != null) {
                     UUID uuid = UUID.randomUUID();
@@ -154,10 +161,11 @@ public class Main {
                         HttpCommunication.post(request.Update_URI, responseBytes, "application/json");
                         logger.info("Preservation status updated.");
                     }
-
+                    //FIXME change "books" to request.Preservation_profile
                     boolean success = bitrepository.uploadFile(tmpFile, "books");
 
                     logger.info(success + "");
+                    sd.delete(request.UUID); // remove from persistence layer
                 } else {
                     if (request.Update_URI != null) {
                         PreservationResponse response = new PreservationResponse();
