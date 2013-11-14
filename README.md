@@ -47,7 +47,12 @@ Then perform the following steps:
   - Finally, on the Import projects page, select the directory of the local Yggdrasil repository, and optionally add the project to an existing workset. 
 
 You can now edit or add files in eclipse  
-It is probably still preferable to make the commits, pushes, and pull using the commandline git command 
+It is probably still preferable to make the commits, pushes, and pull using the commandline git command
+
+Note that each time new dependencies are added to the pom.xml you need to regenerate the Eclipse settings
+by doing first "mvn eclipse:clean" followed by "mvn eclipse:eclipse"
+
+ 
 
 Running the unittests successfully with maven
 ---------------------------------------------
@@ -58,6 +63,9 @@ If this is not true (as is the case on RHEL 6 servers, where QPID daemon occupie
 Instead you must declare other values for RABBITMQ_HOSTNAME and RABBITMQ_PORT in the maven command:
 
 mvn -DRABBITMQ_HOSTNAME=somehost -DRABBITMQ_PORT=5673 clean package
+
+The unittests now also require a bitrepository to run successfully. The settings for this bitrepository must be generated locally, and copied to config/bitmag-development-settings directory. Information of how to setup such a bitrepository and generate the adequate settings can be found here:  
+https://sbforge.org/display/BITMAG/Quickstart
 
 
 Making the Yggdrasil package without running the unittests
