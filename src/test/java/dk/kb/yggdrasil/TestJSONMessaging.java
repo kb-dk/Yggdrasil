@@ -18,11 +18,12 @@ import com.antiaction.common.json.JSONObjectMappings;
 import com.antiaction.common.json.JSONStructure;
 import com.antiaction.common.json.JSONText;
 
-import dk.kb.yggdrasil.JSONMessaging.Metadata;
-import dk.kb.yggdrasil.JSONMessaging.Preservation;
-import dk.kb.yggdrasil.JSONMessaging.PreservationRequest;
-import dk.kb.yggdrasil.JSONMessaging.PreservationResponse;
+import dk.kb.yggdrasil.json.Metadata;
+import dk.kb.yggdrasil.json.Preservation;
+import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.json.JSONMessaging;
 
 @RunWith(JUnit4.class)
 public class TestJSONMessaging {
