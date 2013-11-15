@@ -1,5 +1,7 @@
 package dk.kb.yggdrasil.json;
 
+import java.io.Serializable;
+
 import com.antiaction.common.json.annotation.JSONNullable;
 
 import dk.kb.yggdrasil.json.Metadata;
@@ -7,7 +9,7 @@ import dk.kb.yggdrasil.json.Metadata;
 /**
  * JSON preservation request object representation.
  */
-public class PreservationRequest {
+public class PreservationRequest implements Serializable {
 
     /** Valhal element UUID. */
     public String UUID;

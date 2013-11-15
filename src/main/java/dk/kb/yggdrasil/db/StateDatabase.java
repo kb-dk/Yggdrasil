@@ -7,6 +7,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sleepycat.bind.EntryBinding;
+import com.sleepycat.bind.serial.SerialBinding;
+import com.sleepycat.bind.serial.StoredClassCatalog;
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
@@ -23,7 +26,7 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 
 /**
- * The StateDatabase persists incoming requests with a Berkeley DB JE Database
+ * The StateDatabase persists incoming requests (PreservationRequest) with a Berkeley DB JE Database
  */ 
 public class StateDatabase {
 
@@ -41,10 +44,15 @@ public class StateDatabase {
     private static final String DATABASE_NAME = "YGGDRASIL";
     /** The Database environment. */
     private Environment env;
-
-    /** The Database itself */
+    /** The request Database. */
     private Database requestDB;
-
+    /** The class Database. */
+    private Database classDB;
+    
+    
+    /** The Berkeley DB binder for the data object in our database, i.e. PreservationRequest. */
+    private EntryBinding objectBinding; 
+    
     /**
      * Method for obtaining the current singleton instance of this class.
      * If the instance of this class has not yet been constructed, then
@@ -61,16 +69,17 @@ public class StateDatabase {
 
     /**
      * Constructor.
-     * Retrieves the minimum space left variable, and ensures the existence of
-     * the archive file. If the file does not exist, then it is created.
-     * @throws Exception 
+     * Initializes the Berkeley DB databases.
+     * @throws DatabaseException If unable to open the database
      */
     public StateDatabase() throws DatabaseException{
-
-        // Initialize the checksum database.
         initializeDatabase();
     }
 
+    /**
+     * Initialize the Berkeley DB databases.
+     * @throws DatabaseException If unable to open the databases
+     */
     private void initializeDatabase() throws DatabaseException {
         //TODO read databasedir from general yml
         databaseBaseDir = new File(".");  
@@ -90,9 +99,24 @@ public class StateDatabase {
 
         env = new Environment(homeDirectory, envConfig);
         requestDB = env.openDatabase(null, DATABASE_NAME, dbConfig);
+        
+        // Open the database that stores your class information.
+        classDB = env.openDatabase(null, "classDb", dbConfig);
+        StoredClassCatalog classCatalog = new StoredClassCatalog(classDB);
+        
+        // Create the binding
+        objectBinding = new SerialBinding(classCatalog, PreservationRequest.class);
+        
     }
 
-    public String getRecord(String uuid) throws YggdrasilException {
+    
+    /**
+     * Retrieve a PreservationRequest with the given uuid.
+     * @param uuid A given UUID representing an element in Valhal
+     * @return a PreservationRequest with the given uuid
+     * @throws YggdrasilException
+     */
+    public PreservationRequest getRecord(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         byte[] keyBytes = null;
         try {
@@ -113,24 +137,29 @@ public class StateDatabase {
                     + DatabaseException.class.getName() 
                     + "' exception: " + e);
         }
-        String resultChecksum = null;
+        PreservationRequest retrievedRequest = null;
         if (status == OperationStatus.SUCCESS) {
-            try {
-                resultChecksum = new String(data.getData(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new YggdrasilException("Unexpected '" 
-                        + UnsupportedEncodingException.class.getName()
-                        + "' exception: " + e);
-            }
+                retrievedRequest = (PreservationRequest) objectBinding.entryToObject(data);
         }
-        return resultChecksum;
+        return retrievedRequest;
     }
 
+    /**
+     * Determine, if the database contains a PreservationRequest for a specific uuid.
+     * @param uuid A given UUID representing an element in Valhal
+     * @return true, if database contains a PreservationRequest for the given uuid; otherwise false
+     * @throws YggdrasilException
+     */
     public boolean hasEntry(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         return (getRecord(uuid) != null);
     }
-
+    
+    /**
+     * 
+     * @param uuid A given UUID representing an element in Valhal
+     * @param request 
+     */
     public void put(String uuid, PreservationRequest request) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         ArgumentCheck.checkNotNull(request, "PreservationRequest request");
@@ -139,8 +168,10 @@ public class StateDatabase {
         DatabaseEntry theData = null;
         try {
             theKey = new DatabaseEntry(uuid.getBytes("UTF-8"));
-            // FIXME change to write the whole request
-            theData = new DatabaseEntry(request.File_UUID.getBytes()); 
+            // Create the DatabaseEntry for the data. Use the EntryBinding object
+            // that was just created to populate the DatabaseEntry
+            theData = new DatabaseEntry();
+            objectBinding.objectToEntry(request, theData);
         } catch (UnsupportedEncodingException e) {
             throw new YggdrasilException(e.toString());
         }
@@ -184,21 +215,35 @@ public class StateDatabase {
         }
         return resultList;
     }
-
+    
+    /**
+     * Close the databases and set the instance to null. 
+     */
     public void cleanup() {
         if (requestDB != null) {
             try {
                 requestDB.close();
             } catch (DatabaseException e) {
-                log.warn("Unable to close database. The error was :" + e);
+                log.warn("Unable to close request database. The error was :" + e);
             }
-            
+        }
+        if (classDB != null) {
+            try {
+                classDB.close();
+            } catch (DatabaseException e) {
+                log.warn("Unable to close class database. The error was :" + e);
+            }
         }
         instance = null;
         
         
     }
-
+    
+    /**
+     * Delete the entry in the request database with the given uuid. 
+     * @param uuid A given UUID representing an element in Valhal
+     * @throws YggdrasilException
+     */
     public void delete(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
        
