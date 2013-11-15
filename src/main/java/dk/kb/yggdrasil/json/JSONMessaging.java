@@ -14,7 +14,6 @@ import com.antiaction.common.json.JSONException;
 import com.antiaction.common.json.JSONObjectMappings;
 import com.antiaction.common.json.JSONStructure;
 import com.antiaction.common.json.JSONText;
-import com.antiaction.common.json.annotation.JSONNullable;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
@@ -23,10 +22,6 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  * Also includes java class representations of the data.
  */
 public class JSONMessaging {
-
-    
-
-    
 
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(JSONMessaging.class.getName());

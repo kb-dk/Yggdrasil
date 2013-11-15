@@ -13,3 +13,6 @@ config/bitmag-production-settings
 *.ear
 
 target/
+/DB
+/helloworld.txt
+/helloworld.txt2

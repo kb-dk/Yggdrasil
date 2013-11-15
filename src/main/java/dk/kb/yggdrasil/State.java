@@ -1,8 +1,12 @@
 package dk.kb.yggdrasil;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 /**
  * This class describes all the system states of the Yggdrasil preservation service.
@@ -10,31 +14,24 @@ import java.util.Set;
  * each state change.
  *  Step 1: Message is received from valhal results in either state PRESERVATION_REQUEST_RECEIVED
  *      or the failstate PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE
- *  Step 2: If not failed yet, download metadata from Valhal. This can either go wrong (
- *      failstate PRESERVATION_METADATA_DOWNLOAD_FAILURE) or not resulting in
- *      the state PRESERVATION_METADATA_DOWNLOAD_SUCCESS
- *  Step 3: If metadata download succesfully, package the metadata . This can result in either failstate
+ *  Step 2: If metadata download succesfully, package the metadata . This can result in either failstate
  *      PRESERVATION_METADATA_PACKAGED_FAILURE or successtate PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY
- *  Step 4: If still no failstate, we continue with fetching the resources associated with this metadata.
+ *  Step 3: If still no failstate, we continue with fetching the resources associated with this metadata.
  *       This can result in the failstate PRESERVATION_RESOURCES_DOWNLOAD_FAILURE or the OK-state PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS
- *  Step 5: If still good to go, we package the data in the warc-format. No failstate here (need one),
+ *  Step 4: If still good to go, we package the data in the warc-format. No failstate here (need one),
  *      but if more data required before upload to bitrepository we go to wait-state PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA
  *      otherwise we change state to PRESERVATION_PACKAGE_COMPLETE (is this state necessary?). If in PRESERVATION_PACKAGE_COMPLETE remember to check
  *      if status for other requests can be changed from PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA to PRESERVATION_PACKAGE_COMPLETE.
- *  Step 6: Initiate upload to Bitrepository. If initiation fails, go to the failstate PRESERVATION_PACKAGE_UPLOAD_FAILURE.
- *  Step 7: Wait for Bitrepository upload to complete. This can result in the failstate PRESERVATION_PACKAGE_UPLOAD_FAILURE or
+ *  Step 5: Initiate upload to Bitrepository. If initiation fails, go to the failstate PRESERVATION_PACKAGE_UPLOAD_FAILURE.
+ *  Step 6: Wait for Bitrepository upload to complete. This can result in the failstate PRESERVATION_PACKAGE_UPLOAD_FAILURE or
  *      final OK-state PRESERVATION_PACKAGE_UPLOAD_SUCCESS.
  *
  */
-public enum State {
+public enum State implements Serializable {
     /** Preservation request received and understood (i.e. the message is complete). */
     PRESERVATION_REQUEST_RECEIVED,
     /** Preservation request incomplete. Something is missing. Failstate. */
     PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE,
-    /** Download of metadata from Valhal successful. */
-    PRESERVATION_METADATA_DOWNLOAD_SUCCESS,
-    /** Download of metadata from Valhal unsuccessful. Failstate.*/
-    PRESERVATION_METADATA_DOWNLOAD_FAILURE,
     /** Metadata packaged successfully. */
     PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY,
     /** Metadata packaged unsuccessfully (eg. METS error or similar). Failstate. */
@@ -60,8 +57,8 @@ public enum State {
     PRESERVATION_PACKAGE_UPLOAD_SUCCESS;
 
     /** Set with the failstates in this enum class. */
-    private static final Set<State> FAIL_STATES = new HashSet<State>(Arrays.asList(PRESERVATION_PACKAGE_UPLOAD_FAILURE,
-            PRESERVATION_METADATA_DOWNLOAD_FAILURE,
+    private static final Set<State> FAIL_STATES = new HashSet<State>(Arrays.asList(
+            PRESERVATION_PACKAGE_UPLOAD_FAILURE,
             PRESERVATION_METADATA_PACKAGED_FAILURE, PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE,
             PRESERVATION_RESOURCES_DOWNLOAD_FAILURE));
 
@@ -77,7 +74,43 @@ public enum State {
      * @param aState The given state
      * @return true, if the given state is a failstate; otherwise it returns false.
      */
-    public static boolean isOkState(State aState){
-        return !FAIL_STATES.contains(aState);
+    public boolean isOkState() {
+        return !FAIL_STATES.contains(this);
+    }
+
+    /**
+     * Verify if state change is valid. Throws an Exception if not valid change
+     * @param oldState the old state
+     * @param newState the new state
+     * @throws YggdrasilException
+     */
+    public static void verifyIfValidStateChange(State oldState, State newState) throws YggdrasilException {
+        ArgumentCheck.checkNotNull(oldState, "State oldState");
+        ArgumentCheck.checkNotNull(newState, "State newState");
+        
+        if (!oldState.isOkState()) {
+            throw new YggdrasilException("Cannot change from state '" 
+                    + oldState + "' to '" + newState + "'");
+        }
+        
+        if (oldState.ordinal() > newState.ordinal()) {
+            throw new YggdrasilException("Cannot change from state '" 
+                    + oldState + "' to '" + newState + "'");  
+        }
+    }
+    
+    public static boolean isValidStateChange(State oldState, State newState){
+        ArgumentCheck.checkNotNull(oldState, "State oldState");
+        ArgumentCheck.checkNotNull(newState, "State newState");
+        try {
+            verifyIfValidStateChange(oldState, newState);
+            return true;
+        } catch (YggdrasilException e) {
+            return false;
+        }
+    }
+    
+    public boolean hasState(State aState) {
+        return this.equals(aState);
     }
 }

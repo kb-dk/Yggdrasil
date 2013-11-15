@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.Metadata;
 import dk.kb.yggdrasil.json.PreservationRequest;
@@ -16,9 +17,11 @@ public class StateDatabaseTest {
     @Test
     public void test() throws YggdrasilException {
         StateDatabase sd = StateDatabase.getInstance();
-        PreservationRequest pr = new PreservationRequest();
+        PreservationRequest pr = new PreservationRequest(); 
         pr.File_UUID = "dasdasdsdasd";
-        sd.put("sample_uuid", pr);
+        PreservationRequestState prs = new PreservationRequestState(pr, 
+                    State.PRESERVATION_PACKAGE_COMPLETE);
+        sd.put("sample_uuid", prs);
         assertTrue(sd.hasEntry("sample_uuid"));
         sd.cleanup();
     }
@@ -26,6 +29,7 @@ public class StateDatabaseTest {
     @Test
     public void testGet() throws YggdrasilException {
         StateDatabase sd = StateDatabase.getInstance();
+        
         PreservationRequest pr = new PreservationRequest();
         pr.File_UUID = "dasdasdsdasd";
         Metadata m = new Metadata();
@@ -34,10 +38,13 @@ public class StateDatabaseTest {
         m.provenanceMetadata = "Some provenance metadata";
         m.techMetadata = "Some technical metadata";
         pr.metadata = m;
-        sd.put("sample_uuid", pr);
-        PreservationRequest df = sd.getRecord("sample_uuid");
-        assertEquals("dasdasdsdasd", df.File_UUID);
-        assertEquals("Some technical metadata", df.metadata.techMetadata);
+
+        PreservationRequestState prs = new PreservationRequestState(pr, 
+                State.PRESERVATION_REQUEST_RECEIVED);
+        sd.put("sample_uuid", prs);
+        PreservationRequestState df = sd.getRecord("sample_uuid");
+        assertEquals("dasdasdsdasd", df.getRequest().File_UUID);
+        assertEquals("Some technical metadata", df.getRequest().metadata.techMetadata);
         sd.delete("sample_uuid");
         sd.cleanup();
     }
@@ -47,7 +54,12 @@ public class StateDatabaseTest {
         StateDatabase sd = StateDatabase.getInstance();
         PreservationRequest pr = new PreservationRequest();
         pr.File_UUID = "dasdasdsdasd";
-        sd.put("sample_uuid", pr);
+        pr.UUID = "sample_uuid";
+        
+        PreservationRequestState prs = new PreservationRequestState(pr, 
+                State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS);
+       
+        sd.put("sample_uuid", prs);
         List<String> list = sd.getOutstandingUUIDS();
         assertTrue("Should have one entry, but has " + list.size(),
                 list.size() == 1);
@@ -55,6 +67,4 @@ public class StateDatabaseTest {
         assertEquals("sample_uuid", df);
         sd.cleanup();
     }
-    
-    
 }

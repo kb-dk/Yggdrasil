@@ -1,7 +1,10 @@
 package dk.kb.yggdrasil;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.util.UUID;
 
 /**
  * Wrapper for the HTTP response payload.
@@ -43,6 +46,24 @@ public class HttpPayload {
             contentBody.close();
             contentBody = null;
         }
+    }
+
+    public File writeToFile() throws IOException {
+        byte[] tmpBuf = new byte[16384];
+        int read;
+        File tmpFile = null;
+        RandomAccessFile raf;
+        UUID uuid = UUID.randomUUID();
+        tmpFile = new File(uuid.toString());
+        raf = new RandomAccessFile(tmpFile, "rw");
+        InputStream in = contentBody;
+        while ((read = in.read(tmpBuf)) != -1 ) {
+            raf.write(tmpBuf, 0, read);
+        }
+        raf.close();
+        raf = null;
+        in.close();
+        return tmpFile;
     }
 
 }

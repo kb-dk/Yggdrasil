@@ -1,7 +1,6 @@
 package dk.kb.yggdrasil.db;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -26,7 +25,7 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 
 /**
- * The StateDatabase persists incoming requests (PreservationRequest) with a Berkeley DB JE Database
+ * The StateDatabase persists incoming requests (PreservationRequestState) with a Berkeley DB JE Database
  */ 
 public class StateDatabase {
 
@@ -49,9 +48,10 @@ public class StateDatabase {
     /** The class Database. */
     private Database classDB;
     
-    
-    /** The Berkeley DB binder for the data object in our database, i.e. PreservationRequest. */
-    private EntryBinding objectBinding; 
+    /** The Berkeley DB binder for the data object and keyObject in our database, 
+     * i.e. PreservationRequestState. */
+    private EntryBinding objectBinding;
+    private EntryBinding keyBinding;
     
     /**
      * Method for obtaining the current singleton instance of this class.
@@ -105,30 +105,23 @@ public class StateDatabase {
         StoredClassCatalog classCatalog = new StoredClassCatalog(classDB);
         
         // Create the binding
-        objectBinding = new SerialBinding(classCatalog, PreservationRequest.class);
-        
+        objectBinding = new SerialBinding(classCatalog, PreservationRequestState.class);
+        keyBinding = new SerialBinding(classCatalog, String.class);
     }
 
     
     /**
-     * Retrieve a PreservationRequest with the given uuid.
+     * Retrieve a PreservationRequestState with the given uuid.
      * @param uuid A given UUID representing an element in Valhal
-     * @return a PreservationRequest with the given uuid
+     * @return a PreservationRequestState with the given uuid
      * @throws YggdrasilException
      */
-    public PreservationRequest getRecord(String uuid) throws YggdrasilException {
+    public PreservationRequestState getRecord(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
-        byte[] keyBytes = null;
-        try {
-            keyBytes = uuid.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new YggdrasilException("Unexpected '" 
-                    + UnsupportedEncodingException.class.getName()
-                    + "' exception: " + e);
-        }
-        DatabaseEntry key = new DatabaseEntry(keyBytes);
+        
+        DatabaseEntry key = new DatabaseEntry();
+        keyBinding.objectToEntry(uuid, key);
         DatabaseEntry data = new DatabaseEntry();
-
         OperationStatus status = null;
         try {
             status = requestDB.get(null, key, data, null);
@@ -137,9 +130,9 @@ public class StateDatabase {
                     + DatabaseException.class.getName() 
                     + "' exception: " + e);
         }
-        PreservationRequest retrievedRequest = null;
+        PreservationRequestState retrievedRequest = null;
         if (status == OperationStatus.SUCCESS) {
-                retrievedRequest = (PreservationRequest) objectBinding.entryToObject(data);
+                retrievedRequest = (PreservationRequestState) objectBinding.entryToObject(data);
         }
         return retrievedRequest;
     }
@@ -160,21 +153,16 @@ public class StateDatabase {
      * @param uuid A given UUID representing an element in Valhal
      * @param request 
      */
-    public void put(String uuid, PreservationRequest request) throws YggdrasilException {
+    public void put(String uuid, PreservationRequestState request) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
-        ArgumentCheck.checkNotNull(request, "PreservationRequest request");
+        ArgumentCheck.checkNotNull(request, "PreservationRequestState request");
 
         DatabaseEntry theKey = null;
         DatabaseEntry theData = null;
-        try {
-            theKey = new DatabaseEntry(uuid.getBytes("UTF-8"));
-            // Create the DatabaseEntry for the data. Use the EntryBinding object
-            // that was just created to populate the DatabaseEntry
-            theData = new DatabaseEntry();
-            objectBinding.objectToEntry(request, theData);
-        } catch (UnsupportedEncodingException e) {
-            throw new YggdrasilException(e.toString());
-        }
+        theKey = new DatabaseEntry();
+        keyBinding.objectToEntry(uuid, theKey);
+        theData = new DatabaseEntry();
+        objectBinding.objectToEntry(request, theData);
 
         try {
             requestDB.put(null, theKey, theData);
@@ -199,7 +187,8 @@ public class StateDatabase {
 
             while (cursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
                     OperationStatus.SUCCESS) {
-                String keyString = new String(foundKey.getData());
+                String keyString = (String) keyBinding.entryToObject(foundKey);
+                //PreservationRequestState data = (PreservationRequestState) objectBinding.entryToObject(foundData);
                 resultList.add(keyString);
             }
         } catch (DatabaseException de) {
@@ -214,6 +203,24 @@ public class StateDatabase {
             }
         }
         return resultList;
+    }
+    
+    /**
+     * Delete the entry in the request database with the given uuid. 
+     * @param uuid A given UUID representing an element in Valhal
+     * @throws YggdrasilException
+     */
+    public void delete(String uuid) throws YggdrasilException {
+        ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
+       
+        DatabaseEntry key = new DatabaseEntry();
+        keyBinding.objectToEntry(uuid, key);
+ 
+        try {
+            requestDB.delete(null, key);
+        } catch (DatabaseException e) {
+            throw new YggdrasilException("Database exception occuring during deletion of record", e);
+        }
     }
     
     /**
@@ -237,27 +244,5 @@ public class StateDatabase {
         instance = null;
         
         
-    }
-    
-    /**
-     * Delete the entry in the request database with the given uuid. 
-     * @param uuid A given UUID representing an element in Valhal
-     * @throws YggdrasilException
-     */
-    public void delete(String uuid) throws YggdrasilException {
-        ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
-       
-        DatabaseEntry theKey = null;
-        try {
-            theKey = new DatabaseEntry(uuid.getBytes("UTF-8")); 
-        } catch (UnsupportedEncodingException e) {
-            throw new YggdrasilException(e.toString());
-        }
-
-        try {
-            requestDB.delete(null, theKey);
-        } catch (DatabaseException e) {
-            throw new YggdrasilException("Database exception occuring during deletion of record", e);
-        }
     }
 }

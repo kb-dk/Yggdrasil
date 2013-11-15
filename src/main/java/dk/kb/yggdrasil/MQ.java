@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import com.rabbitmq.client.AMQP;
@@ -49,6 +53,9 @@ public class MQ {
     /** exchange type direct means a message sent to only one recipient. */
     private String exchangeType = "direct";
 
+    /** Logging mechanism. */
+    private static Logger logger = LoggerFactory.getLogger(MQ.class.getName());
+    
     /**
      * private constructor for the MQ singleton.
      * @param settings
@@ -169,6 +176,10 @@ public class MQ {
        byte[] payload = null;
        try {
            QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+           String messageType = delivery.getProperties().getType();
+           Date sentDate = delivery.getProperties().getTimestamp();
+           logger.info("received message of type '" + messageType 
+                   + "' with timestamp " + sentDate);
            payload = delivery.getBody();
            boolean acknowledgeMultipleMessages = false;
            theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), acknowledgeMultipleMessages);

@@ -13,18 +13,17 @@ public class StateTest {
 
     @Test
     public void testIsOkState() {
-        State okState = State.PRESERVATION_METADATA_DOWNLOAD_SUCCESS;
-        State failState = State.PRESERVATION_METADATA_DOWNLOAD_FAILURE;
-        Assert.assertTrue(State.isOkState(okState));
-        Assert.assertFalse(State.isOkState(failState));
+        State okState = State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY;
+        State failState = State.PRESERVATION_METADATA_PACKAGED_FAILURE;
+        Assert.assertTrue(okState.isOkState());
+        Assert.assertFalse(failState.isOkState());
     }
 
     public void testGetFailStates() {
-        State okState = State.PRESERVATION_METADATA_DOWNLOAD_SUCCESS;
-        State failState = State.PRESERVATION_METADATA_DOWNLOAD_FAILURE;
+        State okState = State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY;
+        State failState = State.PRESERVATION_METADATA_PACKAGED_FAILURE;
         Set<State> failstates = State.getFailStates();
         Assert.assertFalse(failstates.contains(okState));
         Assert.assertTrue(failstates.contains(failState));
     }
-
 }

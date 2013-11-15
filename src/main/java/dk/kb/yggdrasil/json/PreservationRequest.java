@@ -2,6 +2,9 @@ package dk.kb.yggdrasil.json;
 
 import java.io.Serializable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.antiaction.common.json.annotation.JSONNullable;
 
 import dk.kb.yggdrasil.json.Metadata;
@@ -11,6 +14,9 @@ import dk.kb.yggdrasil.json.Metadata;
  */
 public class PreservationRequest implements Serializable {
 
+    /** Logging mechanism. */
+    private static Logger logger = LoggerFactory.getLogger(PreservationRequest.class.getName());
+    
     /** Valhal element UUID. */
     public String UUID;
 
@@ -31,4 +37,22 @@ public class PreservationRequest implements Serializable {
     /** Metadata data. */
     public Metadata metadata;
 
+    public boolean isMessageValid() {
+        StringBuffer missingContent = new StringBuffer();
+        if (UUID == null || UUID.isEmpty()) {
+            missingContent.append("Mandatory field 'UUID' is undefined");
+        }
+        if (Preservation_profile == null || Preservation_profile.isEmpty()) {
+            missingContent.append("Mandatory field 'Preservation_profile' is undefined");
+        }
+        if (Update_URI == null || Update_URI.isEmpty()) {
+            missingContent.append("Mandatory field 'Update_URI' is undefined");
+        }
+        if (!missingContent.toString().isEmpty()) {
+            logger.warn(missingContent.toString());
+            return false;
+        }
+        return true;
     }
+    
+ }
