@@ -19,10 +19,8 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
-import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-
 
 /**
  * The StateDatabase persists incoming requests (PreservationRequestState) with a Berkeley DB JE Database
@@ -60,19 +58,22 @@ public class StateDatabase {
      *  
      * @return The current instance of this class.
      */
-    public static synchronized StateDatabase getInstance() {
+    /*public static synchronized StateDatabase getInstance() {
         if(instance == null) {
             instance = new StateDatabase();
         }
         return instance;
-    }   
+    } 
+    */  
 
     /**
      * Constructor.
      * Initializes the Berkeley DB databases.
      * @throws DatabaseException If unable to open the database
      */
-    public StateDatabase() throws DatabaseException{
+    public StateDatabase(File databasedir) throws DatabaseException{
+        ArgumentCheck.checkNotNull(databasedir, "File databasedir");
+        this.databaseBaseDir = databasedir;
         initializeDatabase();
     }
 
@@ -81,8 +82,6 @@ public class StateDatabase {
      * @throws DatabaseException If unable to open the databases
      */
     private void initializeDatabase() throws DatabaseException {
-        //TODO read databasedir from general yml
-        databaseBaseDir = new File(".");  
         File homeDirectory = new File(databaseBaseDir, DATABASE_SUBDIR);
         if (!homeDirectory.isDirectory()) {
             homeDirectory.mkdirs();

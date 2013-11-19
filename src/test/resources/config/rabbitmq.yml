@@ -1,21 +1,21 @@
 development:
   mq_uri: "amqp://localhost:5672"
   preservation:
-    destination: "dev-queue"
+    destination: "preservation-dev-queue"
   dissemination:
-    destination: "dev-queue???"
+    destination: "dissemination-dev-queue???"
 
 test:
   mq_uri: "amqp://localhost:5672"
   preservation:
-    destination: "test-queue"
+    destination: "preservation-test-queue"
   dissemination:
-    destination: "test-queue???"
+    destination: "dissemination-test-queue???"
 
 production:
   mq_uri: "amqp://localhost:5672"
   preservation:
-    destination: "prod-queue"
+    destination: "preservation-prod-queue"
   dissemination:
-    destination: "prod-queue???"
+    destination: "dissemination-prod-queue"
 

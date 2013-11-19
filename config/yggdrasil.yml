@@ -1,0 +1,7 @@
+development: 
+  database_dir:	src/test/resources/databasedir	
+test: 
+  database_dir:	databasehome	
+production: 
+  database_dir:	databasehome	
+

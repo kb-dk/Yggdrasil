@@ -27,7 +27,7 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  *
  */
 public class Main {
-
+    public static String YGGDRASIL_CONF_FILENAME = "yggdrasil.yml";
     public static String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
     public static String BITMAG_CONF_FILENAME = "bitmag.yml";
     
@@ -87,7 +87,8 @@ public class Main {
 
         MQ mq = null;
         Bitrepository bitrepository = null;
-
+        StateDatabase sd = null;
+        Config generalConfig = null;
         try {
             File rabbitmqConfigFile = new File(configdir, RABBITMQ_CONF_FILENAME);
             RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
@@ -96,6 +97,10 @@ public class Main {
             
             File bitmagConfigFile = new File(configdir, BITMAG_CONF_FILENAME);
             bitrepository = new Bitrepository(bitmagConfigFile);
+            
+            File yggrasilConfigFile = new File(configdir, YGGDRASIL_CONF_FILENAME);
+            generalConfig = new Config(yggrasilConfigFile);
+            
         } catch (FileNotFoundException e) {
             String errMsg = "Configuration file(s) missing!"; 
             logger.error(errMsg, e);
@@ -103,7 +108,7 @@ public class Main {
         }
         
         // Initiate call of StateDatabase
-        StateDatabase sd = StateDatabase.getInstance();
+        sd = new StateDatabase(generalConfig.getDatabaseDir());
         String currentUUID = null;
         
         try {
@@ -118,11 +123,11 @@ public class Main {
             /* Validate message content. */
             if (!request.isMessageValid()) {
                 logger.error("Skipping invalid message");
-                prs = new PreservationRequestState(request, 
-                        State.PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE);
+                //prs = new PreservationRequestState(request, 
+                //        State.PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE);
             } else {
                 prs = new PreservationRequestState(request, 
-                        State.PRESERVATION_REQUEST_RECEIVED);
+                        State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
                 currentUUID = request.UUID;
                 
                 PreservationResponse response = new PreservationResponse();

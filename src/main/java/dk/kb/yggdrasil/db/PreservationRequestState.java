@@ -14,18 +14,29 @@ public class PreservationRequestState implements Serializable {
     /** The current preservationState */
     private State state;
     
+    /** The uuid for the current  */
+    private String uuid;
+    
+    
     public PreservationRequestState(PreservationRequest request,
-            State preservationState) {
+            State preservationState, String uuid) {
         ArgumentCheck.checkNotNull(request, "PreservationRequest request");
         ArgumentCheck.checkNotNull(preservationState, "State preservationState");
+        ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         this.request = request;
         this.state = preservationState;
+        this.uuid = uuid;
     }
     
     /** @return existing preservation state. */  
     public State getState() {
         return state;
     }
+    
+    /** @return existing preservation state. */  
+    public String getUUID() {
+        return uuid;
+    }    
     
     /**
      * Change state to the newState if this is a valid statechange 
