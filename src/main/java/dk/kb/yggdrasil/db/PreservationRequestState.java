@@ -1,5 +1,6 @@
 package dk.kb.yggdrasil.db;
 
+import java.io.File;
 import java.io.Serializable;
 
 import dk.kb.yggdrasil.State;
@@ -17,6 +18,9 @@ public class PreservationRequestState implements Serializable {
     /** The uuid for the current  */
     private String uuid;
     
+    private File contentPayload;
+    private File metadataPayload;
+    private File uploadPackage;
     
     public PreservationRequestState(PreservationRequest request,
             State preservationState, String uuid) {
@@ -50,6 +54,30 @@ public class PreservationRequestState implements Serializable {
 
     public PreservationRequest getRequest() {
         return request;
+    }
+
+    public File getContentPayload() {
+        return contentPayload;
+    }
+
+    public void setContentPayload(File contentPayload) {
+        this.contentPayload = contentPayload;
+    }
+
+    public File getMetadataPayload() {
+        return metadataPayload;
+    }
+
+    public void setMetadataPayload(File metadataPayload) {
+        this.metadataPayload = metadataPayload;
+    }
+
+    public File getUploadPackage() {
+        return uploadPackage;
+    }
+
+    public void setUploadPackage(File uploadPackage) {
+        this.uploadPackage = uploadPackage;
     }
    
 }

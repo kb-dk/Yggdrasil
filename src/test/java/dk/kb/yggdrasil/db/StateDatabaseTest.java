@@ -4,9 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.State;
@@ -14,13 +18,15 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.Metadata;
 import dk.kb.yggdrasil.json.PreservationRequest;
 
+@RunWith(JUnit4.class)
 public class StateDatabaseTest {
 
     private static File generalConfigFile = new File("config/yggdrasil.yml");
     
     @Test
-    public void test() throws YggdrasilException {
+    public void test() throws YggdrasilException, IOException {
         Config config = new Config(generalConfigFile);
+        FileUtils.deleteDirectory(config.getDatabaseDir());
         StateDatabase sd = new StateDatabase(config.getDatabaseDir());
         PreservationRequest pr = new PreservationRequest();
         String UUID_sample = "sample_uuid";
@@ -34,8 +40,9 @@ public class StateDatabaseTest {
     }
     
     @Test
-    public void testGet() throws YggdrasilException {
+    public void testGet() throws YggdrasilException, IOException {
         Config config = new Config(generalConfigFile);
+        FileUtils.deleteDirectory(config.getDatabaseDir());
         StateDatabase sd = new StateDatabase(config.getDatabaseDir());
         
         PreservationRequest pr = new PreservationRequest();
@@ -60,8 +67,9 @@ public class StateDatabaseTest {
     }
 
     @Test
-    public void testGetOutstanding() throws YggdrasilException {
+    public void testGetOutstanding() throws YggdrasilException, IOException {
         Config config = new Config(generalConfigFile);
+        FileUtils.deleteDirectory(config.getDatabaseDir());
         StateDatabase sd = new StateDatabase(config.getDatabaseDir());
         PreservationRequest pr = new PreservationRequest();
         pr.File_UUID = "dasdasdsdasd";

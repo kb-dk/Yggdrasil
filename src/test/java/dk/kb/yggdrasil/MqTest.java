@@ -46,7 +46,7 @@ public class MqTest {
     public void finalTest() throws YggdrasilException, IOException {
         RabbitMqSettings settings = fetchMqSettings();
         System.out.println("using brokerUri: " + settings.getBrokerUri());
-        MQ mq = MQ.getInstance(settings);
+        MQ mq = new MQ(settings);
 
         String message = "Hello world";
         String queueName = settings.getPreservationDestination();
@@ -59,7 +59,7 @@ public class MqTest {
         messageReceived = mq.receiveMessageFromQueue(queueName);
 
         Assert.assertArrayEquals(message.getBytes(), messageReceived);
-        mq.close();
+        mq.cleanup();
     }
 
     @Test
@@ -124,6 +124,7 @@ public class MqTest {
         channel.close();
         conn.close();
         //System.out.println(channel.getCloseReason());
+        
     }
 
     @Test
@@ -142,14 +143,6 @@ public class MqTest {
     private RabbitMqSettings fetchMqSettings() throws FileNotFoundException, YggdrasilException {
         File f = new File(RABBITMQ_CONF_FILE);
         RabbitMqSettings settings = new RabbitMqSettings(f);
-        // Check if rabbitmq-port or rabbitmq-hostname is overridden by defined properties
-        if (null != System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
-                ||
-                null != System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT)) {
-          settings.setBrokerUri("amqp://"
-                + System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
-                + ":" + System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT, "5672"));
-        }
         return settings;
     }
 

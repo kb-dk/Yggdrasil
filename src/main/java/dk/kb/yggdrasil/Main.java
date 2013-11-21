@@ -1,20 +1,12 @@
 package dk.kb.yggdrasil;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PushbackInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-
-import dk.kb.yggdrasil.json.JSONMessaging;
-import dk.kb.yggdrasil.json.Preservation;
-import dk.kb.yggdrasil.json.PreservationRequest;
-import dk.kb.yggdrasil.json.PreservationResponse;
-import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
@@ -42,8 +34,19 @@ public class Main {
     /** Java Property to define user.home. */
     private static final String USER_HOME_PROPERTY = "user.home";
 
+    private static boolean isUnitestmode = false;
+    
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Main.class.getName());
+    private StateDatabase sd;
+    private MQ mq;
+    private Bitrepository bitrepository;
+
+    public Main(StateDatabase sd, MQ mq, Bitrepository bitrepository) {
+        this.sd = sd;
+        this.mq = mq;
+        this.bitrepository = bitrepository;
+    }
 
     /**
      * Main program of the Yggdrasil preservation service.
@@ -57,7 +60,10 @@ public class Main {
         logger.info("Starting the Yggdrasil Main program");
 
         logger.info("Initialising settings using runningmode '" + RunningMode.getMode() + "'");
-
+        if (args.length == 1 && args[0].equals("test")) {
+            isUnitestmode = true;
+        }
+        
         File configdir = null;
         String configDirStr = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
         if (configDirStr != null) {
@@ -92,7 +98,7 @@ public class Main {
         try {
             File rabbitmqConfigFile = new File(configdir, RABBITMQ_CONF_FILENAME);
             RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
-            mq = MQ.getInstance(rabbitMqSettings);
+            mq = new MQ(rabbitMqSettings);
             mq.configureDefaultChannel();
             
             File bitmagConfigFile = new File(configdir, BITMAG_CONF_FILENAME);
@@ -109,99 +115,23 @@ public class Main {
         
         // Initiate call of StateDatabase
         sd = new StateDatabase(generalConfig.getDatabaseDir());
-        String currentUUID = null;
-        
-        try {
-            // FIXME read queue from rabbitMqSettings
-            byte[] requestBytes = mq.receiveMessageFromQueue("preservation-dev-queue");
-            PreservationRequest request = JSONMessaging.getPreservationRequest(
-                    new PushbackInputStream(new ByteArrayInputStream(requestBytes), 4));
-            logger.info("Preservation request received.");
-            PreservationRequestState prs = null;
-            File tmpFile = null;
-            
-            /* Validate message content. */
-            if (!request.isMessageValid()) {
-                logger.error("Skipping invalid message");
-                //prs = new PreservationRequestState(request, 
-                //        State.PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE);
-            } else {
-                prs = new PreservationRequestState(request, 
-                        State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-                currentUUID = request.UUID;
-                
-                PreservationResponse response = new PreservationResponse();
-                response.preservation = new Preservation();
-                response.preservation.preservation_state = State.PRESERVATION_REQUEST_RECEIVED.name();
-                response.preservation.preservation_details = "Preservation request received.";
-                byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
-                HttpCommunication.post(request.Update_URI, responseBytes, "application/json");
-                logger.info("Preservation status updated to '" +  State.PRESERVATION_REQUEST_RECEIVED.name() 
-                        +  "' using the updateURI.");
-                sd.put(currentUUID, prs);   
-            }
-            
-            if (request.Content_URI == null) {
-                // TODO Need to know what to do in this case
-                logger.warn("No Content_URI contained in message. No further processing is done for the moment");
-            } else {
-                if (prs.getState().hasState(State.PRESERVATION_REQUEST_RECEIVED)) {
-                    
-                    // Try to download ressource from Content_URI
-                    tmpFile = null;
-                    logger.info("Attempting to download resource from '" 
-                            + request.Content_URI + "'");
-                    
-                    HttpPayload payload = HttpCommunication.get(request.Content_URI);
-                    if (payload != null) {
-                        tmpFile = payload.writeToFile();
-                        PreservationResponse response = new PreservationResponse();
-                        response.preservation = new Preservation();
-                        response.preservation.preservation_state = State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS.name();
-                        response.preservation.preservation_details = "Resource has been downloaded successfully.";
-                        byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
-                        HttpCommunication.post(request.Update_URI, responseBytes, "application/json");
-                        logger.info("Preservation status updated.");
-                        prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
-                        sd.put(currentUUID, prs);
-                    } else {
-                        PreservationResponse response = new PreservationResponse();
-                        response.preservation = new Preservation();
-                        response.preservation.preservation_state = State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE.name();
-                        response.preservation.preservation_details = "Resource could not be downloaded.";
-                        byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
-                        HttpCommunication.post(request.Update_URI, responseBytes, "application/json");
-                        logger.info("Preservation status updated.");
-                        prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE);
-                        sd.put(currentUUID, prs);
-                    }
-                }
-            }
-            
-            if (prs.getState().hasState(State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS)) {
-                // Try to upload to bitrepository
-                
-                //FIXME change "books" to request.Preservation_profile
-                boolean success = bitrepository.uploadFile(tmpFile, "books");
-                logger.info(success + "");
-            
-            }
-        } catch (FileNotFoundException e) {
-            logger.error(e.toString(), e);
-        } catch (IOException e) {
-            logger.error(e.toString(), e);
-        } catch (YggdrasilException e) {
-            logger.error(e.toString(), e);
-        } finally {
-            bitrepository.shutdown();
-            try {
-                mq.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        Main main = new Main(sd, mq, bitrepository);
+        if (!isUnitestmode) {
+            Workflow wf = new Workflow(mq, sd, bitrepository);
+            wf.run();
+        }   
         logger.info("Shutting down the Yggdrasil Main program");
+        main.cleanup();
+  }
+
+    private void cleanup() {
+        bitrepository.shutdown();
+        try {
+            mq.close();
+        } catch (IOException e) {
+            logger.debug("Ignoring exception while closing down RabbitMQ", e);
         }
+        sd.cleanup();
     }
 
 }

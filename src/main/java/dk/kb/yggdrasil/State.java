@@ -29,33 +29,99 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  */
 public enum State implements Serializable {
     /** Preservation request received and understood (i.e. the message is complete). */
-    PRESERVATION_REQUEST_RECEIVED,
+    PRESERVATION_REQUEST_RECEIVED {
+        @Override
+        public String getDescription() {
+            return "Preservation request received and validated";
+        }
+    },
     /** Preservation request incomplete. Something is missing. Failstate. */
-    PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE,
+    PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE {
+        @Override
+        public String getDescription() {
+            return "Preservation request incomplete. Something is missing";
+        }
+    },
     /** Metadata packaged successfully. */
-    PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY,
+    PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY {
+        @Override
+        public String getDescription() {
+            return "Metadata packaged successfully.";
+        }
+    },
     /** Metadata packaged unsuccessfully (eg. METS error or similar). Failstate. */
-    PRESERVATION_METADATA_PACKAGED_FAILURE,
+    PRESERVATION_METADATA_PACKAGED_FAILURE {
+        @Override
+        public String getDescription() {
+            return "Metadata packaged unsuccessfully (eg. METS error or similarly)";
+        }
+    },
     /** Resources downloaded successfully. */
-    PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS,
+    PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS {
+        @Override
+        public String getDescription() {
+            return "Resources downloaded successfully";
+        }
+    },
     /** Resources downloaded unsuccessfully. Failstate. */
-    PRESERVATION_RESOURCES_DOWNLOAD_FAILURE,
+    PRESERVATION_RESOURCES_DOWNLOAD_FAILURE {
+        @Override
+        public String getDescription() {
+            return "Resources downloaded unsuccessfully";
+        }
+    },
     /** Package complete (metadata and ressources written to the WARC format).
      * and ready to initiate upload. */
-    PRESERVATION_PACKAGE_COMPLETE,
+    PRESERVATION_PACKAGE_COMPLETE {
+        @Override
+        public String getDescription() {
+            return "metadata and ressources has been written to the WARC format";
+        }
+    },
     /** Waiting for more requests before upload is initiated.
      * If the request does not have the requirement, that it should be packaged in its own package.
      * Then it arrives into this state. However, we can only package data together with
      * the same bitrepository profile. So each profile must have its own waiting queue.
      */
-    PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA,
+    PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA {
+        @Override
+        public String getDescription() {
+            return "Waiting for more requests before upload to bitrepository is initiated";
+        }
+    },
     /** Initiated upload to Bitrepository. */
-    PRESERVATION_PACKAGE_UPLOAD_INITIATED,
+    PRESERVATION_PACKAGE_UPLOAD_INITIATED {
+        @Override
+        public String getDescription() {
+            return "Upload to bitrepository initiated";
+        }
+    },
     /** Upload to Bitrepository failed. Failstate. */
-    PRESERVATION_PACKAGE_UPLOAD_FAILURE,
+    PRESERVATION_PACKAGE_UPLOAD_FAILURE {
+        @Override
+        public String getDescription() {
+            return "Upload to bitrepository failed.";
+        }
+    },
     /** Upload to Bitrepository was successful. */
-    PRESERVATION_PACKAGE_UPLOAD_SUCCESS;
+    PRESERVATION_PACKAGE_UPLOAD_SUCCESS {
+        @Override
+        public String getDescription() {
+            return "Upload to bitrepository was successful";
+        }
+    },
+    
+    /** Preservation request failed */
+    PRESERVATION_REQUEST_FAILED {
+        @Override
+        public String getDescription() {
+            return "The preservation request failed";
+        }
+    };
 
+    public abstract String getDescription();
+    
+    
     /** Set with the failstates in this enum class. */
     private static final Set<State> FAIL_STATES = new HashSet<State>(Arrays.asList(
             PRESERVATION_PACKAGE_UPLOAD_FAILURE,

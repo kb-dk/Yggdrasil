@@ -45,9 +45,7 @@ public class MQ {
     private Channel theChannel;
     /** The settings used to create the broker configurations. */
     private RabbitMqSettings settings;
-    /** the singleton instance. */
-    private static MQ instance;
-
+    
     /** Default exchangename to be used by all queues. */
     private String exchangeName = "exchange"; //TODO should this be a parameter in the settings?
     /** exchange type direct means a message sent to only one recipient. */
@@ -57,11 +55,11 @@ public class MQ {
     private static Logger logger = LoggerFactory.getLogger(MQ.class.getName());
     
     /**
-     * private constructor for the MQ singleton.
-     * @param settings
+     * Constructor for the MQ object.
+     * @param settings The settings used to create the broker connection.
      * @throws YggdrasilException
      */
-    private MQ(RabbitMqSettings settings) throws YggdrasilException {
+    public MQ(RabbitMqSettings settings) throws YggdrasilException {
         this.existingConsumerTags = new HashSet<String>();
         this.existingConsumers = new HashMap<String, QueueingConsumer>();
         this.settings = settings;
@@ -73,13 +71,17 @@ public class MQ {
             theChannel = conn.createChannel();
             configureDefaultChannel();
         } catch (KeyManagementException e1) {
-            throw new YggdrasilException("Error connecting to Broker:", e1);
+            throw new YggdrasilException("Error connecting to Broker at '"
+                    + settings.getBrokerUri() + "' : ", e1);
         } catch (NoSuchAlgorithmException e2) {
-            throw new YggdrasilException("Error connecting to Broker:", e2);
+            throw new YggdrasilException("Error connecting to Broker at '"
+                    + settings.getBrokerUri() + "' : ", e2);
         } catch (URISyntaxException e3) {
-            throw new YggdrasilException("Error connecting to Broker:", e3);
+            throw new YggdrasilException("Error connecting to Broker at '"
+                    + settings.getBrokerUri() + "' : ", e3);
         } catch (IOException e4) {
-            throw new YggdrasilException("Error connecting to Broker:", e4);
+            throw new YggdrasilException("Error connecting to Broker at '"
+                    + settings.getBrokerUri() + "' : ", e4);
         }
     }
 
@@ -98,6 +100,11 @@ public class MQ {
             conn.close();
         }
     }
+    
+    public void cleanup() throws IOException {
+        close();
+    }
+    
 
     /**
      * @return a set of AMQP properties for
@@ -199,17 +206,9 @@ public class MQ {
 
        return payload;
    }
-
-   /**
-    * Create a singleton instance if not already created.
-    * @param settings The settings used to create the broker connection.
-    * @return the singleton object of this class.
-    * @throws YggdrasilException If Unable to create an instance of this class.
-    */
-   public static synchronized MQ getInstance(RabbitMqSettings settings) throws YggdrasilException {
-       if (instance == null){
-           instance = new MQ(settings);
-       }
-       return instance;
+   
+   public RabbitMqSettings getSettings() {
+       return this.settings;
    }
+   
 }

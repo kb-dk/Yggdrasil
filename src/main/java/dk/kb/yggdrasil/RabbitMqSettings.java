@@ -67,6 +67,15 @@ public final class RabbitMqSettings {
         } else {
             throw new YggdrasilException("Missing some or all of the required properties in the settings file");
         }
+        
+        // Check if rabbitmq-port or rabbitmq-hostname is overridden by defined properties
+        if (null != System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
+                ||
+                null != System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT)) {
+          setBrokerUri("amqp://"
+                + System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
+                + ":" + System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT, "5672"));
+        }
     }
 
     /**
