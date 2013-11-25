@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.ClientSettings;
+import org.bitrepository.settings.repositorysettings.Collection;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
@@ -496,5 +498,19 @@ public class Bitrepository {
         return ProtocolComponentFactory.getInstance().getFileExchange(
                 bitmagSettings);
     }
+    
+    /**
+     * @return a set of known CollectionIDs
+     */
+    public List<String> getKnownCollections() {
+        List<Collection> knownCollections = bitmagSettings.getRepositorySettings()
+                .getCollections().getCollection();
+        List<String> collectionIDs = new ArrayList<String>();
+        for (Collection c: knownCollections) {
+            collectionIDs.add(c.getID());
+        }
+        return collectionIDs;
+    }
+    
 
 }

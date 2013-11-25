@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PushbackInputStream;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import dk.kb.yggdrasil.json.PreservationResponse;
 /**
  * The class handling the workflow, and the updates being sent back to Valhal.
  * We have currently two kind of workflows envisioned.
- *  - A content and Metadata workflow, where we package metadata and content into one warcfile.
+ *  - A content and metadata workflow, where we package metadata and content into one warcfile.
  *  - A metadata workflow, where the metadata is the only content. 
  */
 public class Workflow {
@@ -101,15 +102,16 @@ public class Workflow {
 
     private void doMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
         logger.info("Starting a metadata workflow for UUID '" + currentUUID + "'");
-        transformMetadata();
-        writeToWarc(currentUUID, prs);
-        uploadToBitrepository(currentUUID, prs);
-        //TODO update the remote preservation metadata with a packageId
+        logger.warn("Implementation of metadata workflow still incomplete");
+        //transformMetadata();
+        //writeToWarc(currentUUID, prs);
+        //uploadToBitrepository(currentUUID, prs);
+        //TODO update the remote preservation metadata with a packageID
         logger.info("Finished the metadata workflow for UUID '" + currentUUID + "' successfully");
     }
 
     /**
-     * Attempt to upload the packageFile to the bitrepository
+     * Attempt to upload the packageFile to the bitrepository. 
      * @param currentUUID the currentUUID
      * @param prs The preservationRequest being processed.
      * @throws YggdrasilException
@@ -117,7 +119,15 @@ public class Workflow {
     private void uploadToBitrepository(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
         PreservationRequest pr = prs.getRequest();
         File packageFile = prs.getUploadPackage();
-        boolean success = bitrepository.uploadFile(packageFile, pr.Preservation_profile);
+        String collectionID = pr.Preservation_profile;
+        List<String> possibleCollections = bitrepository.getKnownCollections();
+        if (!possibleCollections.contains(collectionID)) {
+            collectionID = possibleCollections.get(0);
+            logger.warn("The given preservation profile '" + pr.Preservation_profile 
+                    + "' does not match a known collection ID. Using '" 
+                    +  collectionID + "' as collectionID. Note this feature is deprecated");
+        }
+        boolean success = bitrepository.uploadFile(packageFile, collectionID);
         logger.info(success + "");
         if (success) {
             prs.setState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS);
@@ -137,17 +147,16 @@ public class Workflow {
      * @param prs
      */
     private void writeToWarc(String currentUUID, PreservationRequestState prs) {
-        // TODO Auto-generated method stub
-        
+        // FIXME replace with proper-warcwriting code
+        prs.setUploadPackage(prs.getContentPayload());
     }
 
     private void transformMetadata() {
-        // TODO Auto-generated method stub
-        
+     // FIXME replace with proper metadata transformation code
     }
 
     private void doContentAndMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
-        logger.info("Starting a Content metadata workflow for UUID '" + currentUUID + "'");  
+        logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");  
         fetchContent(currentUUID, prs);
         transformMetadata();
         writeToWarc(currentUUID, prs);
@@ -155,7 +164,7 @@ public class Workflow {
         //TODO update the remote preservation metadata with a packageId 
         logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");
     }
-
+    
     
     /**
      * Try and download the content using the Content_URI.
