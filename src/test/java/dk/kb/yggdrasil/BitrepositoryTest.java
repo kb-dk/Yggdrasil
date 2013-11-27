@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
@@ -180,7 +181,18 @@ public class BitrepositoryTest {
         Bitrepository br = new Bitrepository(okConfigFile);
         //br.shutdown();
     }
-
+    
+    @Test
+    public void testGetCollections() throws YggdrasilException {
+        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
+        Bitrepository br = new Bitrepository(okConfigFile);
+        List<String> knownCols = br.getKnownCollections();
+        System.out.println("Known cols = " + knownCols.size());
+        assertTrue(knownCols.size() == 5);
+    }
+    
+    
+    
     private File getFileWithContents(String packageId, byte[] payload) throws IOException {
         File tempDir = new File("tempDir");
         if (tempDir.isFile()) {
