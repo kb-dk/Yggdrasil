@@ -25,10 +25,17 @@ import dk.kb.yggdrasil.json.PreservationResponse;
  *  - A metadata workflow, where the metadata is the only content. 
  */
 public class Workflow {
-    
+    /** The RabbitMQ connection used by this workflow. */
     private MQ mq;
+    
+    /** The StateDatase instance used by this workflow. */
     private StateDatabase sd;
+    
+    /** The Bitrepository connection used by this workflow. */
     private Bitrepository bitrepository;
+    
+    /** Size of pushback buffer for determining the encoding of the json message. */ 
+    private static int PUSHBACKBUFFERSIZE = 4;
     
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Workflow.class.getName());
@@ -87,7 +94,14 @@ public class Workflow {
             logger.info("Finished processing the preservation request");
         } // end while loop
     }
-        
+
+    /**
+     * Update the remote preservationState corresponding with this current request
+     * using the Update_URI field.
+     * @param prs The current request
+     * @param newPreservationstate The new Preservation State
+     * @throws YggdrasilException
+     */
     private void updateRemotePreservationState(PreservationRequestState prs,
             State newPreservationstate) throws YggdrasilException {
         PreservationResponse response = new PreservationResponse();
@@ -98,16 +112,6 @@ public class Workflow {
         HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
         logger.info("Preservation status updated to '" + newPreservationstate.name() 
                 +  "' using the updateURI.");
-    }
-
-    private void doMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
-        logger.info("Starting a metadata workflow for UUID '" + currentUUID + "'");
-        logger.warn("Implementation of metadata workflow still incomplete");
-        //transformMetadata();
-        //writeToWarc(currentUUID, prs);
-        //uploadToBitrepository(currentUUID, prs);
-        //TODO update the remote preservation metadata with a packageID
-        logger.info("Finished the metadata workflow for UUID '" + currentUUID + "' successfully");
     }
 
     /**
@@ -128,33 +132,45 @@ public class Workflow {
                     +  collectionID + "' as collectionID. Note this feature is deprecated");
         }
         boolean success = bitrepository.uploadFile(packageFile, collectionID);
-        logger.info(success + "");
         if (success) {
             prs.setState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS);
             updateRemotePreservationState(prs, State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS);
             sd.put(currentUUID, prs);
+            logger.info("Upload to bitrepository for UUID '" + currentUUID 
+                    + "' of package '" + packageFile.getName() + "' was successful.");
         } else {
             prs.setState(State.PRESERVATION_PACKAGE_UPLOAD_FAILURE);
             updateRemotePreservationState(prs, State.PRESERVATION_PACKAGE_UPLOAD_FAILURE);
             sd.put(currentUUID, prs);
+            logger.warn("Upload to bitrepository for UUID '" + currentUUID 
+                    + "' of package '" + packageFile.getName() + "' failed.");
         }
     }
 
     /**
      * Write the contentPaylod and transformed metadata to a warc-file.
-     * The produced warc-file is 
-     * @param currentUUID
-     * @param prs
+     * The produced warc-file is attached to the current request. 
+     * @param currentUUID The UUID of the current request 
+     * @param prs The current request
      */
     private void writeToWarc(String currentUUID, PreservationRequestState prs) {
         // FIXME replace with proper-warcwriting code
         prs.setUploadPackage(prs.getContentPayload());
     }
-
+    
+    /**
+     * Transform the metadata included with the request to the proper METS preservation format.
+     */
     private void transformMetadata() {
      // FIXME replace with proper metadata transformation code
     }
 
+    /**
+     * Performs the Content and Metadata workflow.
+     * @param currentUUID The UUID of the current request  
+     * @param prs The current request
+     * @throws YggdrasilException
+     */
     private void doContentAndMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
         logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");  
         fetchContent(currentUUID, prs);
@@ -165,11 +181,27 @@ public class Workflow {
         logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");
     }
     
+    /**
+     * Performs the Metadata workflow. This is currently a method stub.
+     * @param currentUUID The UUID of the element  
+     * @param prs The current request
+     * @throws YggdrasilException
+     */
+    private void doMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
+        logger.info("Starting a metadata workflow for UUID '" + currentUUID + "'");
+        logger.warn("Implementation of metadata workflow still incomplete");
+        //transformMetadata();
+        //writeToWarc(currentUUID, prs);
+        //uploadToBitrepository(currentUUID, prs);
+        //TODO update the remote preservation metadata with a packageID
+        logger.info("Finished the metadata workflow for UUID '" + currentUUID + "' successfully");
+    }
+    
     
     /**
      * Try and download the content using the Content_URI.
-     * @param currentUUID
-     * @param prs
+     * @param currentUUID The UUID of the current request
+     * @param prs The current request
      * @throws YggdrasilException
      */
     private void fetchContent(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
@@ -209,13 +241,18 @@ public class Workflow {
                 +  "' using the updateURI.");
         throw new YggdrasilException(reason);
     }
-
-    public PreservationRequest getNextRequest() throws YggdrasilException {
+    
+    /**
+     * Wait until the next request arrives on the queue, and then return the request.
+     * @return the next request from the queue
+     * @throws YggdrasilException
+     */
+    private PreservationRequest getNextRequest() throws YggdrasilException {
         // TODO Should there be a timeout here?
         byte[] requestBytes = mq.receiveMessageFromQueue(
                 mq.getSettings().getPreservationDestination());
         PreservationRequest request = JSONMessaging.getPreservationRequest(
-                new PushbackInputStream(new ByteArrayInputStream(requestBytes), 4));
+                new PushbackInputStream(new ByteArrayInputStream(requestBytes), PUSHBACKBUFFERSIZE));
         return request;
     }
     
