@@ -101,6 +101,7 @@ public class BitrepositoryTest {
     }
 
     @Test
+    @Ignore
     public void testUpload() throws YggdrasilException, IOException {
         if (runningOnTravis()) {
             return;
