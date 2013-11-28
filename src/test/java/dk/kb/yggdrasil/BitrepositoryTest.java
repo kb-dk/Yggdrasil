@@ -145,6 +145,7 @@ public class BitrepositoryTest {
     }
 
     @Test
+    @Ignore
     public void testGetFile() throws Exception {
         if (runningOnTravis()) {
             return;
@@ -159,6 +160,7 @@ public class BitrepositoryTest {
     }
 
     @Test
+    @Ignore
     public void testGetChecksums() throws YggdrasilException, IOException {
         if (runningOnTravis()) {
             return;
@@ -183,6 +185,7 @@ public class BitrepositoryTest {
     }
     
     @Test
+    @Ignore
     public void testGetCollections() throws YggdrasilException {
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         Bitrepository br = new Bitrepository(okConfigFile);
