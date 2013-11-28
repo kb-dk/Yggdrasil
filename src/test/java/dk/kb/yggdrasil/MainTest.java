@@ -6,6 +6,7 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -19,6 +20,7 @@ public class MainTest {
     File goodConfigDir = new File("src/test/resources/config");
     
     @Test
+    @Ignore
     public void testMainMethodWithGoodConfigDir() throws Exception {
         System.setProperty(Main.CONFIGURATION_DIRECTORY_PROPERTY, goodConfigDir.getAbsolutePath());
         //RabbitMqSettings mqSettings = new RabbitMqSettings(new File(goodConfigDir, Main.RABBITMQ_CONF_FILENAME));
@@ -31,6 +33,7 @@ public class MainTest {
 
     
     @Test
+    @Ignore
     public void testMainMethodWithBadConfigDir() {
         String userHome = System.getProperty("user.home");
         File badConfigDir = new File(userHome + "/configconfig");
