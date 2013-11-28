@@ -48,7 +48,7 @@ public class PreservationRequest implements Serializable {
         if (Update_URI == null || Update_URI.isEmpty()) {
             missingContent.append("Mandatory field 'Update_URI' is undefined");
         }
-        if (!missingContent.toString().isEmpty()) {
+        if (missingContent.length() > 0) {
             logger.warn(missingContent.toString());
             return false;
         }

@@ -18,6 +18,3 @@ public class Preservation {
     public String warc_id;
 
 }
-
-
-

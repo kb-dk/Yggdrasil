@@ -9,7 +9,8 @@ import dk.kb.yggdrasil.utils.YamlTools;
 
 /**
  * This class contains the known settings for the rabbitmq broker.
- *
+ * Reads a rabbitmq.yml with the following syntax for each runningmode:
+ * 
  * development:
  *   mq_uri: "amqp://localhost:5672"
  *   preservation:
@@ -31,6 +32,10 @@ public final class RabbitMqSettings {
     public static final String RABBIT_MQ_HOSTNAME = "RABBITMQ_HOSTNAME";
     /** Use these this property to override the rabbitmq port in the YAML file. */
     public static final String RABBIT_MQ_PORT = "RABBITMQ_PORT";
+    /** Default value for the rabbitmq port number. */
+    public static final String RABBIT_MQ_DEFAULT_PORT = "5672";
+    /** Default value for the rabbitmq hostname. */
+    public static final String RABBIT_MQ_DEFAULT_HOSTNAME = "localhost";
 
     /** The broker address as a URI. */
     private String brokerUri;
@@ -47,7 +52,7 @@ public final class RabbitMqSettings {
      * @throws YggdrasilException If the YAML file is missing
      */
     public RabbitMqSettings(File ymlFile) throws YggdrasilException, FileNotFoundException {
-        // Select CorrectLinkedHashMap based on the runningmode.
+        // Select correct LinkedHashMap based on the runningmode.
         String mode = RunningMode.getMode().toString();
         Map settings = YamlTools.loadYamlSettings(ymlFile);
         if (!settings.containsKey(mode)) {
@@ -69,12 +74,14 @@ public final class RabbitMqSettings {
         }
         
         // Check if rabbitmq-port or rabbitmq-hostname is overridden by defined properties
+        // If either is overriden, set the BrokerURI to the overridden values and use the default value if only
+        // partially overriden.
         if (null != System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
                 ||
                 null != System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT)) {
           setBrokerUri("amqp://"
-                + System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
-                + ":" + System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT, "5672"));
+                + System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME, RABBIT_MQ_DEFAULT_HOSTNAME)
+                + ":" + System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT, RABBIT_MQ_DEFAULT_PORT));
         }
     }
 

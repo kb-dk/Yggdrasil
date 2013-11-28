@@ -22,7 +22,9 @@ public class HttpPayload {
 
     /** Response content length, null if not returned. */
     public Long contentLength;
-
+    /** The amount of data read into the buffer. */
+    private static int READBUFFERSIZE = 16384; // 16 Kbytes
+    
     /**
      * Construct a payload object with the supplied parameters.
      * @param contentBody <code>InputStream</code> with the content body
@@ -48,8 +50,13 @@ public class HttpPayload {
         }
     }
 
+    /**
+     * Write the payload to a file. A temporary file is created for this purpose. 
+     * @return the File containing the payload.
+     * @throws IOException If unable to read or write the data.
+     */
     public File writeToFile() throws IOException {
-        byte[] tmpBuf = new byte[16384];
+        byte[] tmpBuf = new byte[READBUFFERSIZE];
         int read;
         File tmpFile = null;
         RandomAccessFile raf;

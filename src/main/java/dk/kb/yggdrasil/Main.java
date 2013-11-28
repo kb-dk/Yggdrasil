@@ -33,8 +33,9 @@ public class Main {
 
     /** Java Property to define user.home. */
     private static final String USER_HOME_PROPERTY = "user.home";
-
-    private static boolean isUnitestmode = false;
+    /** Boolean for deciding whether to start main workflow (Normal mode) 
+     * or just shutdown program after initialization (Unittest mode). */
+    private static boolean isUnittestmode = false;
     
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Main.class.getName());
@@ -61,7 +62,7 @@ public class Main {
 
         logger.info("Initialising settings using runningmode '" + RunningMode.getMode() + "'");
         if (args.length == 1 && args[0].equals("test")) {
-            isUnitestmode = true;
+            isUnittestmode = true;
         }
         
         File configdir = null;
@@ -116,7 +117,8 @@ public class Main {
         // Initiate call of StateDatabase
         sd = new StateDatabase(generalConfig.getDatabaseDir());
         Main main = new Main(sd, mq, bitrepository);
-        if (!isUnitestmode) {
+        if (!isUnittestmode) {
+            logger.info("Starting main workflow of Yggdrasil program");
             Workflow wf = new Workflow(mq, sd, bitrepository);
             wf.run();
         }   

@@ -18,7 +18,7 @@ public class StateTest {
         Assert.assertTrue(okState.isOkState());
         Assert.assertFalse(failState.isOkState());
     }
-
+    @Test
     public void testGetFailStates() {
         State okState = State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY;
         State failState = State.PRESERVATION_METADATA_PACKAGED_FAILURE;
