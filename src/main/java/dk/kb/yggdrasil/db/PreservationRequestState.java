@@ -8,6 +8,10 @@ import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.PreservationRequest;
 
+/**
+ * This class is a container for the request from valhal, and its
+ * temporary files built during the workflow.
+ */
 public class PreservationRequestState implements Serializable {
     
     /** The preservationRequest received from Valhal. */ 
@@ -17,11 +21,20 @@ public class PreservationRequestState implements Serializable {
     
     /** The uuid for the current  */
     private String uuid;
-    
+    /** The content payload. This is downloaded using REST from Valhal. */
     private File contentPayload;
+    /** The metadata payload. This is the result of the transformation of the metadata
+     * included in the request. */
     private File metadataPayload;
+    /** The uploadpackage. This is the warcfile to be uploaded to the bitrepository. */
     private File uploadPackage;
     
+    /**
+     * The constructor of the PreservationRequestState.
+     * @param request The request itself
+     * @param preservationState Its current state in Yggdrasil
+     * @param uuid The uuid of this request.
+     */
     public PreservationRequestState(PreservationRequest request,
             State preservationState, String uuid) {
         ArgumentCheck.checkNotNull(request, "PreservationRequest request");
@@ -32,12 +45,12 @@ public class PreservationRequestState implements Serializable {
         this.uuid = uuid;
     }
     
-    /** @return existing preservation state. */  
+    /** @return the preservation state of this request. */  
     public State getState() {
         return state;
     }
     
-    /** @return existing preservation state. */  
+    /** @return uuid for this request */  
     public String getUUID() {
         return uuid;
     }    
@@ -48,35 +61,64 @@ public class PreservationRequestState implements Serializable {
      * @throws YggdrasilException
      */
     public void setState(State newState) throws YggdrasilException {
+        ArgumentCheck.checkNotNull(newState, "State newState");
         State.verifyIfValidStateChange(this.state, newState);
         this.state = newState;
     }
-
+    
+    /** 
+     * @return the request itself
+     */
     public PreservationRequest getRequest() {
         return request;
     }
 
+    /** 
+     * @return the content payload.
+     */
     public File getContentPayload() {
         return contentPayload;
     }
 
+    /** 
+     * Set the content payload.
+     * @param contentPayload the content payload as a File
+     */
     public void setContentPayload(File contentPayload) {
+        ArgumentCheck.checkExistsNormalFile(contentPayload, "File contentPayload");
         this.contentPayload = contentPayload;
     }
-
+    
+    /**
+     * 
+     * @return the metadata payload
+     */
     public File getMetadataPayload() {
         return metadataPayload;
     }
 
+    /**
+     * Set the metadata payload file.
+     * @param metadataPayload The metadata payload (This file must exist)
+     */
     public void setMetadataPayload(File metadataPayload) {
+        ArgumentCheck.checkExistsNormalFile(metadataPayload, "File metadataPayload");
         this.metadataPayload = metadataPayload;
     }
 
+    /**
+     * @return the Uploadpackage file.
+     */
     public File getUploadPackage() {
         return uploadPackage;
     }
-
+    
+    /**
+     * Set the uploadpackage file.
+     * @param uploadPackage The UploadPackage (This file must exist)
+     */
     public void setUploadPackage(File uploadPackage) {
+        ArgumentCheck.checkExistsNormalFile(uploadPackage, "File uploadPackage");
         this.uploadPackage = uploadPackage;
     }
    

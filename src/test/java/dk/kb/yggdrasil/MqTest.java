@@ -1,6 +1,7 @@
 package dk.kb.yggdrasil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,7 +48,7 @@ public class MqTest {
         RabbitMqSettings settings = fetchMqSettings();
         System.out.println("using brokerUri: " + settings.getBrokerUri());
         MQ mq = new MQ(settings);
-
+        assertTrue(settings.equals(mq.getSettings()));
         String message = "Hello world";
         String queueName = settings.getPreservationDestination();
         mq.publishOnQueue(queueName, message.getBytes());
@@ -140,6 +141,9 @@ public class MqTest {
         assertEquals(dissDest, settingsCopy.getDisseminationDestination());
     }
 
+ 
+    
+    
     private RabbitMqSettings fetchMqSettings() throws FileNotFoundException, YggdrasilException {
         File f = new File(RABBITMQ_CONF_FILE);
         RabbitMqSettings settings = new RabbitMqSettings(f);

@@ -19,9 +19,9 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  *
  */
 public class Main {
-    public static String YGGDRASIL_CONF_FILENAME = "yggdrasil.yml";
-    public static String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
-    public static String BITMAG_CONF_FILENAME = "bitmag.yml";
+    public static final String YGGDRASIL_CONF_FILENAME = "yggdrasil.yml";
+    public static final String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
+    public static final String BITMAG_CONF_FILENAME = "bitmag.yml";
     
     /**
      * The list of configuration files that should be present in the configuration directory.
