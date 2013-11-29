@@ -2,10 +2,16 @@ package dk.kb.yggdrasil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.List;
+import java.util.UUID;
 
+import org.jwat.common.ContentType;
+import org.jwat.common.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +23,7 @@ import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.Preservation;
 import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.json.PreservationResponse;
+import dk.kb.yggdrasil.warc.WarcWriterWrapper;
 
 /**
  * The class handling the workflow, and the updates being sent back to Valhal.
@@ -146,9 +153,36 @@ public class Workflow {
      * @param currentUUID
      * @param prs
      */
-    private void writeToWarc(String currentUUID, PreservationRequestState prs) {
+    private void writeToWarc(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
         // FIXME replace with proper-warcwriting code
-        prs.setUploadPackage(prs.getContentPayload());
+        //prs.setUploadPackage(prs.getContentPayload());
+		try {
+	        UUID packageId = UUID.randomUUID();
+			Uri resourceId = null;
+			Uri metadataId = null;
+	        WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(new File("/home/nicl/"), packageId.toString());
+			// Write some WARC fields.
+			w3.writeWarcinfoRecord(new byte[0], null);
+			File resource = prs.getContentPayload();
+			File metadata = prs.getMetadataPayload();
+			InputStream in;
+			if (resource != null) {
+				in = new FileInputStream(resource);
+				resourceId = w3.writeResourceRecord(in, resource.length(), ContentType.parseContentType("application/binary"), null);
+				in.close();
+			}
+			if (metadata != null) {
+				in = new FileInputStream(metadata);
+				metadataId = w3.writeMetadataRecord(in, metadata.length(), ContentType.parseContentType("application/json"), resourceId, null);
+				in.close();
+			}
+			w3.close();
+	        prs.setUploadPackage(new File(new File("/home/nicl/"), packageId.toString()));
+		} catch (FileNotFoundException e) {
+			throw new YggdrasilException("Horrible exception while writing WARC record!", e);
+		} catch (IOException e) {
+			throw new YggdrasilException("Horrible exception while writing WARC record!", e);
+		}
     }
 
     private void transformMetadata() {

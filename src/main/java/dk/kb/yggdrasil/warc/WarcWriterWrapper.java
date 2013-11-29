@@ -46,7 +46,7 @@ public class WarcWriterWrapper {
     /** <code>RandomAccessFile</code> as an <code>OutputStream</code> */
     protected RandomAccessFileOutputStream writer_rafout;
 
-	/** WARC writer implementation. */
+    /** WARC writer implementation. */
     protected WarcWriter writer;
 
     /** Is the WARC file new or not. */
@@ -60,31 +60,31 @@ public class WarcWriterWrapper {
      * @throws YggdrasilException is an exception occurs
      */
     public static WarcWriterWrapper getWriter(File path, String uuid) throws YggdrasilException {
-    	ArgumentCheck.checkExistsDirectory(path, "path");
-    	ArgumentCheck.checkNotNullOrEmpty(uuid, "uuid");
-    	WarcWriterWrapper w3 = null;
-    	File writerFile = new File(path, uuid);
-    	try {
-        	if (writerFile.exists() && !writerFile.isFile()) {
-        		logger.error("'" + uuid +"' appears to be an existing folder, this is disappointing.");
-        		throw new YggdrasilException("'" + uuid +"' appears to be an existing folder, this is disappointing.");
-        	}
-        	w3 = new WarcWriterWrapper();
-        	w3.uuid = uuid;
-        	w3.writerFile = writerFile;
+        ArgumentCheck.checkExistsDirectory(path, "path");
+        ArgumentCheck.checkNotNullOrEmpty(uuid, "uuid");
+        WarcWriterWrapper w3 = null;
+        File writerFile = new File(path, uuid);
+        try {
+            if (writerFile.exists() && !writerFile.isFile()) {
+                logger.error("'" + uuid +"' appears to be an existing folder, this is disappointing.");
+                throw new YggdrasilException("'" + uuid +"' appears to be an existing folder, this is disappointing.");
+            }
+            w3 = new WarcWriterWrapper();
+            w3.uuid = uuid;
+            w3.writerFile = writerFile;
             w3.writer_raf = new RandomAccessFile(w3.writerFile, "rw");
             w3.writer_raf.seek(w3.writer_raf.length());
             w3.writer_rafout = new RandomAccessFileOutputStream(w3.writer_raf);
             w3.writer = WarcWriterFactory.getWriter(w3.writer_rafout, 8192, false);
             w3.writer.setExceptionOnContentLengthMismatch(true);
             w3.bIsNew = (w3.writer_raf.length() == 0L);
-    	} catch (FileNotFoundException e) {
-    		//logger.error("WARC file not found: " + writerFile.getPath(), e);
-    		throw new YggdrasilException("Exception while opening WARC file", e);
-    	} catch (IOException e) {
-    		//logger.error("WARC file not found: " + writerFile.getPath(), e);
-    		throw new YggdrasilException("Exception while opening WARC file", e);
-    	}
+        } catch (FileNotFoundException e) {
+            //logger.error("WARC file not found: " + writerFile.getPath(), e);
+            throw new YggdrasilException("Exception while opening WARC file", e);
+        } catch (IOException e) {
+            //logger.error("WARC file not found: " + writerFile.getPath(), e);
+            throw new YggdrasilException("Exception while opening WARC file", e);
+        }
         return w3;
     }
 
@@ -96,7 +96,7 @@ public class WarcWriterWrapper {
      * @return the WARC file Warcinfo id
      */
     public Uri getWarcinfoRecordId() {
-    	return warcinfoRecordId;
+        return warcinfoRecordId;
     }
 
     /**
@@ -107,8 +107,8 @@ public class WarcWriterWrapper {
      * @throws YggdrasilException if an exception occurs while writing record
      */
     public Uri writeWarcinfoRecord(byte[] warcFieldsBytes, WarcDigest blockDigest) throws YggdrasilException {
-    	ArgumentCheck.checkNotNull(warcFieldsBytes, "warcFieldsBytes");
-    	try {
+        ArgumentCheck.checkNotNull(warcFieldsBytes, "warcFieldsBytes");
+        try {
             ByteArrayInputStream bin = new ByteArrayInputStream(warcFieldsBytes);
             //warcinfoRecordId = new Uri("urn:uuid:" + UUID.randomUUID());
             warcinfoRecordId = new Uri("urn:uuid:" + uuid);
@@ -124,14 +124,14 @@ public class WarcWriterWrapper {
             writer.writeHeader(record);
             writer.streamPayload(bin);
             writer.closeRecord();
-    	} catch (UnsupportedEncodingException e) {
-    		throw new YggdrasilException("Exception while writing WARChive warcinfo record!", e);
-    	} catch (URISyntaxException e) {
-    		throw new YggdrasilException("Exception while writing WARChive warcinfo record!", e);
-		} catch (IOException e) {
-    		throw new YggdrasilException("Exception while writing WARChive warcinfo record!", e);
-		}
-    	return warcinfoRecordId;
+        } catch (UnsupportedEncodingException e) {
+            throw new YggdrasilException("Exception while writing WARChive warcinfo record!", e);
+        } catch (URISyntaxException e) {
+            throw new YggdrasilException("Exception while writing WARChive warcinfo record!", e);
+        } catch (IOException e) {
+            throw new YggdrasilException("Exception while writing WARChive warcinfo record!", e);
+        }
+        return warcinfoRecordId;
     }
 
     /**
@@ -144,14 +144,14 @@ public class WarcWriterWrapper {
      * @throws YggdrasilException if an exception occurs while writing record
      */
     public Uri writeResourceRecord(InputStream in, long len, ContentType contentType, WarcDigest blockDigest) throws YggdrasilException {
-    	ArgumentCheck.checkNotNull(in, "in");
-    	ArgumentCheck.checkNotNull(len, "len");
-    	ArgumentCheck.checkNotNull(contentType, "contentType");
-    	Uri warcRecordIdUri = null;
-    	try {
-        	warcRecordIdUri = new Uri("urn:uuid:" + UUID.randomUUID());
-        	WarcRecord record = WarcRecord.createRecord(writer);
-        	WarcHeader header = record.header;
+        ArgumentCheck.checkNotNull(in, "in");
+        ArgumentCheck.checkNotNull(len, "len");
+        ArgumentCheck.checkNotNull(contentType, "contentType");
+        Uri warcRecordIdUri = null;
+        try {
+            warcRecordIdUri = new Uri("urn:uuid:" + UUID.randomUUID());
+            WarcRecord record = WarcRecord.createRecord(writer);
+            WarcHeader header = record.header;
             header.warcTypeIdx = WarcConstants.RT_IDX_RESOURCE;
             header.warcDate = new Date();
             //header.warcIpAddress = "1.2.3.4";
@@ -165,12 +165,12 @@ public class WarcWriterWrapper {
             writer.writeHeader(record);
             writer.streamPayload(in);
             writer.closeRecord();
-    	} catch (URISyntaxException e) {
-    		throw new YggdrasilException("Exception while writing WARChive resource record!", e);
-    	} catch (IOException e) {
-    		throw new YggdrasilException("Exception while writing WARChive resource record!", e);
-		}
-    	return warcRecordIdUri;
+        } catch (URISyntaxException e) {
+            throw new YggdrasilException("Exception while writing WARChive resource record!", e);
+        } catch (IOException e) {
+            throw new YggdrasilException("Exception while writing WARChive resource record!", e);
+        }
+        return warcRecordIdUri;
     }
 
     /**
@@ -183,14 +183,14 @@ public class WarcWriterWrapper {
      * @throws YggdrasilException if an exception occurs while writing record
      */
     public Uri writeMetadataRecord(InputStream in, long len, ContentType contentType, Uri refersTo, WarcDigest blockDigest) throws YggdrasilException {
-    	ArgumentCheck.checkNotNull(in, "in");
-    	ArgumentCheck.checkNotNull(len, "len");
-    	ArgumentCheck.checkNotNull(contentType, "contentType");
-    	Uri warcRecordIdUri = null;
-    	try {
-        	warcRecordIdUri = new Uri("urn:uuid:" + UUID.randomUUID());
-        	WarcRecord record = WarcRecord.createRecord(writer);
-        	WarcHeader header = record.header;
+        ArgumentCheck.checkNotNull(in, "in");
+        ArgumentCheck.checkNotNull(len, "len");
+        ArgumentCheck.checkNotNull(contentType, "contentType");
+        Uri warcRecordIdUri = null;
+        try {
+            warcRecordIdUri = new Uri("urn:uuid:" + UUID.randomUUID());
+            WarcRecord record = WarcRecord.createRecord(writer);
+            WarcHeader header = record.header;
             header.warcTypeIdx = WarcConstants.RT_IDX_METADATA;
             header.warcDate = new Date();
             //header.warcIpAddress = "1.2.3.4";
@@ -205,12 +205,12 @@ public class WarcWriterWrapper {
             writer.writeHeader(record);
             writer.streamPayload(in);
             writer.closeRecord();
-    	} catch (URISyntaxException e) {
-    		throw new YggdrasilException("Exception while writing WARChive metadata record!", e);
-    	} catch (IOException e) {
-    		throw new YggdrasilException("Exception while writing WARChive metadata record!", e);
-		}
-    	return warcRecordIdUri;
+        } catch (URISyntaxException e) {
+            throw new YggdrasilException("Exception while writing WARChive metadata record!", e);
+        } catch (IOException e) {
+            throw new YggdrasilException("Exception while writing WARChive metadata record!", e);
+        }
+        return warcRecordIdUri;
     }
 
     /**
@@ -218,22 +218,22 @@ public class WarcWriterWrapper {
      * @throws YggdrasilException if an exception occurs while closing associated resources
      */
     public void close() throws YggdrasilException {
-    	try {
-        	if (writer != null) {
-            	writer.close();
-            	writer = null;
-        	}
-        	if (writer_rafout != null) {
-        		writer_rafout.close();
-            	writer_rafout = null;
-        	}
-        	if (writer_raf != null) {
-            	writer_raf.close();
-            	writer_raf = null;
-        	}
-    	} catch (IOException e) {
-    		throw new YggdrasilException("Exception closing WARChive!", e);
-    	}
+        try {
+            if (writer != null) {
+                writer.close();
+                writer = null;
+            }
+            if (writer_rafout != null) {
+                writer_rafout.close();
+                writer_rafout = null;
+            }
+            if (writer_raf != null) {
+                writer_raf.close();
+                writer_raf = null;
+            }
+        } catch (IOException e) {
+            throw new YggdrasilException("Exception closing WARChive!", e);
+        }
     }
 
 }
