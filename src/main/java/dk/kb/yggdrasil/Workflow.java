@@ -161,14 +161,14 @@ public class Workflow {
      * @param prs The current request
      */
     private void writeToWarc(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
-        // FIXME replace with proper-warcwriting code
-        //prs.setUploadPackage(prs.getContentPayload());
+        
 		try {
 	        UUID packageId = UUID.randomUUID();
 			Uri resourceId = null;
 			Uri metadataId = null;
-	        WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(new File("/home/nicl/"), packageId.toString());
-			// Write some WARC fields.
+			File writeDirectory = new File("/tmp"); //TODO read this information from yggdrasil.yml 
+	        WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(writeDirectory, packageId.toString());
+			// FIXME Write some WARC fields. 
 			w3.writeWarcinfoRecord(new byte[0], null);
 			File resource = prs.getContentPayload();
 			File metadata = prs.getMetadataPayload();
@@ -184,13 +184,15 @@ public class Workflow {
 				in.close();
 			}
 			w3.close();
-	        prs.setUploadPackage(new File(new File("/home/nicl/"), packageId.toString()));
+	        prs.setUploadPackage(new File(writeDirectory, packageId.toString()));
 		} catch (FileNotFoundException e) {
 			throw new YggdrasilException("Horrible exception while writing WARC record!", e);
 		} catch (IOException e) {
 			throw new YggdrasilException("Horrible exception while writing WARC record!", e);
 		}
     }
+    
+   
     
     /**
      * Transform the metadata included with the request to the proper METS preservation format.
