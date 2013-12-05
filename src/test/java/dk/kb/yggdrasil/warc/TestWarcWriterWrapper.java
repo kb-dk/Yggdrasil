@@ -55,7 +55,7 @@ public class TestWarcWriterWrapper {
             WarcDigest blockDigest;
 
             // Get eclipse/maven target test folder.
-            url = this.getClass().getClassLoader().getResource( "" );
+            url = this.getClass().getClassLoader().getResource("");
             file = new File(getUrlPath(url));
 
             File warcFile = new File(file, "42");

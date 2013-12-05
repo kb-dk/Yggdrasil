@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:premis="info:lc/xmlns/premis-v2" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version191/mets.xsd" TYPE="File" OBJID="METADATA_GUID_PLACE_HOLDER" PROFILE="http://id.kb.dk/standards/mets/profiles/version_1/kbMetsProfile.xml">
+  <mets:metsHdr CREATEDATE="2012-11-28T16:04:44.441+01:00">
+    <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
+      <mets:name>Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek</mets:name>
+    </mets:agent>
+    <mets:agent ID="kbDkMdGen0.8" ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="API">
+      <mets:name>KB METADATA MATRJOSJKA v. 0.8</mets:name>
+      <mets:note>dk.kb.metadata.MetsGenerator</mets:note>
+    </mets:agent>
+    <mets:agent ID="kbDkKob" ROLE="EDITOR" TYPE="OTHER" OTHERTYPE="DEPARTMENT">
+      <mets:name>KOB: Kort- og Billedafdelingen</mets:name>
+    </mets:agent>
+  </mets:metsHdr>
+  <mets:dmdSec CREATED="2012-11-28T16:04:44.484+01:00" ID="Mods1">
+    <mets:mdWrap MDTYPE="MODS">
+      <mets:xmlData>
+        <mods:mods xmlns:xlink="http://www.w3.org.1999/xlink" version="3.4" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+          <mods:genre type="KB Samling">Substitutions-digitaliseret samlings-materiale</mods:genre>
+          <mods:identifier type="uri">urn:uuid:14067980-0758-11e0-bc9e-0016357f605f</mods:identifier>
+          <mods:identifier type="local">Car_S-9088.tif</mods:identifier>
+          <mods:name type="personal">
+            <mods:namePart>Carrebye</mods:namePart>
+            <mods:role>
+              <mods:roleTerm type="text" lang="da">Ophav</mods:roleTerm>
+              <mods:roleTerm type="text" lang="en">Creator</mods:roleTerm>
+            </mods:role>
+          </mods:name>
+          <mods:name type="personal">
+            <mods:namePart>Mogens Carreby</mods:namePart>
+            <mods:role>
+              <mods:roleTerm type="text" lang="en">Author</mods:roleTerm>
+              <mods:roleTerm type="text" lang="da">Forfatter</mods:roleTerm>
+            </mods:role>
+          </mods:name>
+          <mods:note type="content">Jacob Holm &amp; Sønner</mods:note>
+          <mods:recordInfo>
+            <mods:recordCreationDate encoding="w3cdtf">2010-03-18T12:03:50.000+01:00</mods:recordCreationDate>
+            <mods:recordChangeDate encoding="w3cdtf">2012-06-07T15:33:35.000+02:00</mods:recordChangeDate>
+            <mods:recordIdentifier>32</mods:recordIdentifier>
+            <mods:languageOfCataloging>
+              <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
+            </mods:languageOfCataloging>
+          </mods:recordInfo>
+          <mods:relatedItem type="otherFormat">
+            <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageService/online_master_arkiv_7/non-archival/samlingsbilleder/Carrebye/Car_S-9088.jpg</mods:identifier>
+            <mods:identifier displayLabel="thumbnail" type="uri">http://www.kb.dk/imageService/w150/h150/online_master_arkiv_7/non-archival/samlingsbilleder/Carrebye/Car_S-9088.jpg</mods:identifier>
+          </mods:relatedItem>
+          <mods:subject>
+            <mods:topic>rebslageri</mods:topic>
+            <mods:genre>Keywords</mods:genre>
+          </mods:subject>
+          <mods:subject>
+            <mods:geographic>Danmark, Amager</mods:geographic>
+            <mods:genre lang="da">Location</mods:genre>
+            <mods:genre lang="en">Lokalitet</mods:genre>
+          </mods:subject>
+          <mods:titleInfo>
+            <mods:title>Jacob Holm &amp; Sønner rebslageri</mods:title>
+          </mods:titleInfo>
+          <mods:typeOfResource>still image</mods:typeOfResource>
+        </mods:mods>
+      </mets:xmlData>
+    </mets:mdWrap>
+  </mets:dmdSec>
+  <mets:amdSec>
+    <mets:techMD CREATED="2012-11-28T16:04:44.941+01:00" ID="PremisObject1">
+      <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+        <mets:xmlData>
+          <premis:object xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd" xsi:type="premis:file">
+            <premis:objectIdentifier>
+              <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+              <premis:objectIdentifierValue>14067980-0758-11e0-bc9e-0016357f605f</premis:objectIdentifierValue>
+            </premis:objectIdentifier>
+            <premis:significantProperties>
+              <premis:significantPropertiesExtension>
+                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix20/mix20.xsd">
+                  <mix:BasicDigitalObjectInformation>
+                    <mix:ObjectIdentifier>
+                      <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
+                      <mix:objectIdentifierValue>14067980-0758-11e0-bc9e-0016357f605f</mix:objectIdentifierValue>
+                    </mix:ObjectIdentifier>
+                    <mix:fileSize>165856122</mix:fileSize>
+                    <mix:FormatDesignation>
+                      <mix:formatName>TIFF Image</mix:formatName>
+                      <mix:formatVersion>6.0</mix:formatVersion>
+                    </mix:FormatDesignation>
+                    <mix:byteOrder>big endian</mix:byteOrder>
+                    <mix:Compression>
+                      <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                    </mix:Compression>
+                    <mix:Fixity>
+                      <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
+                      <mix:messageDigest>93ed81c16f2f822c871b9c505db53a59</mix:messageDigest>
+                    </mix:Fixity>
+                  </mix:BasicDigitalObjectInformation>
+                  <mix:BasicImageInformation>
+                    <mix:BasicImageCharacteristics>
+                      <mix:imageWidth>8555</mix:imageWidth>
+                      <mix:imageHeight>6462</mix:imageHeight>
+                      <mix:PhotometricInterpretation>
+                        <mix:colorSpace>RGB Color</mix:colorSpace>
+                        <mix:ColorProfile>
+                          <mix:IccProfile>
+                            <mix:iccProfileName>eciRGB v2</mix:iccProfileName>
+                          </mix:IccProfile>
+                        </mix:ColorProfile>
+                      </mix:PhotometricInterpretation>
+                    </mix:BasicImageCharacteristics>
+                  </mix:BasicImageInformation>
+                  <mix:ImageCaptureMetadata>
+                    <mix:GeneralCaptureInformation>
+                      <mix:dateTimeCreated>2009-09-25T15:52:14.000+02:00</mix:dateTimeCreated>
+                    </mix:GeneralCaptureInformation>
+                    <mix:ScannerCapture>
+                      <mix:MaximumOpticalResolution>
+                        <mix:xOpticalResolution>1800</mix:xOpticalResolution>
+                        <mix:yOpticalResolution>1800</mix:yOpticalResolution>
+                      </mix:MaximumOpticalResolution>
+                      <mix:ScanningSystemSoftware>
+                        <mix:scanningSoftwareName>Adobe Photoshop CS3 Macintosh</mix:scanningSoftwareName>
+                      </mix:ScanningSystemSoftware>
+                    </mix:ScannerCapture>
+                    <mix:orientation>normal*</mix:orientation>
+                  </mix:ImageCaptureMetadata>
+                  <mix:ImageAssessmentMetadata>
+                    <mix:ImageColorEncoding>
+                      <mix:BitsPerSample>
+                        <mix:bitsPerSampleValue>16</mix:bitsPerSampleValue>
+                        <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
+                      </mix:BitsPerSample>
+                      <mix:samplesPerPixel>3</mix:samplesPerPixel>
+                    </mix:ImageColorEncoding>
+                  </mix:ImageAssessmentMetadata>
+                  <mix:ChangeHistory>
+                    <mix:ImageProcessing>
+                      <mix:dateTimeProcessed>1970-01-01T01:59:59.000+01:00</mix:dateTimeProcessed>
+                      <mix:sourceData>initial capture</mix:sourceData>
+                      <mix:ProcessingSoftware>
+                        <mix:processingSoftwareName>Adobe Photoshop CS3 Macintosh</mix:processingSoftwareName>
+                      </mix:ProcessingSoftware>
+                    </mix:ImageProcessing>
+                  </mix:ChangeHistory>
+                </mix:mix>
+              </premis:significantPropertiesExtension>
+            </premis:significantProperties>
+            <premis:objectCharacteristics>
+              <premis:compositionLevel>0</premis:compositionLevel>
+              <premis:fixity>
+                <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
+                <premis:messageDigest>93ed81c16f2f822c871b9c505db53a59</premis:messageDigest>
+              </premis:fixity>
+              <premis:size>165856122</premis:size>
+              <premis:format>
+                <premis:formatDesignation>
+                  <premis:formatName>TIFF Image</premis:formatName>
+                  <premis:formatVersion>6.0</premis:formatVersion>
+                </premis:formatDesignation>
+              </premis:format>
+            </premis:objectCharacteristics>
+            <premis:linkingIntellectualEntityIdentifier>
+              <premis:linkingIntellectualEntityIdentifierType>UUID</premis:linkingIntellectualEntityIdentifierType>
+              <premis:linkingIntellectualEntityIdentifierValue>linkingIntellectualEntityIdentifierValue_PLACE_HOLDER</premis:linkingIntellectualEntityIdentifierValue>
+            </premis:linkingIntellectualEntityIdentifier>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:rightsMD CREATED="2012-11-28T16:04:44.967+01:00" ID="ModsRights1">
+      <mets:mdWrap MDTYPE="MODS">
+        <mets:xmlData>
+          <mods:mods xmlns:xlink="http://www.w3.org.1999/xlink" version="3.4" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+            <mods:accessCondition>Det Kongelige Bibliotek</mods:accessCondition>
+          </mods:mods>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:rightsMD>
+    <mets:digiprovMD CREATED="2012-11-28T16:04:44.968+01:00" ID="Premis1">
+      <mets:mdWrap MDTYPE="PREMIS">
+        <mets:xmlData>
+          <premis:preservationLevel xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
+            <premis:preservationLevelValue>BitSafetyVeryHigh</premis:preservationLevelValue>
+            <premis:preservationLevelRationale>Bitbevaring kun muligt for dette format</premis:preservationLevelRationale>
+            <premis:preservationLevelDateAssigned>2010-08-01T00:00:00.000+02:00</premis:preservationLevelDateAssigned>
+          </premis:preservationLevel>
+          <premis:preservationLevel xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
+            <premis:preservationLevelValue>LogicalStrategyMigration</premis:preservationLevelValue>
+            <premis:preservationLevelRationale>Bitbevaring kun muligt for dette format</premis:preservationLevelRationale>
+            <premis:preservationLevelDateAssigned>2012-11-28T16:04:44.975+01:00</premis:preservationLevelDateAssigned>
+          </premis:preservationLevel>
+          <premis:preservationLevel xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
+            <premis:preservationLevelValue>ConfidentialityLow</premis:preservationLevelValue>
+            <premis:preservationLevelDateAssigned>2012-11-28T16:04:44.975+01:00</premis:preservationLevelDateAssigned>
+          </premis:preservationLevel>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:digiprovMD>
+    <mets:digiprovMD CREATED="2012-11-28T16:04:44.975+01:00" ID="PremisEvent1">
+      <mets:mdWrap MDTYPE="PREMIS:EVENT">
+        <mets:xmlData>
+          <premis:event xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
+            <premis:eventIdentifier>
+              <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+              <premis:eventIdentifierValue>06b2b67e-5fe5-4554-ac45-a87195cbf975</premis:eventIdentifierValue>
+            </premis:eventIdentifier>
+            <premis:eventType>ingestion</premis:eventType>
+            <premis:eventDateTime>2012-11-28T16:04:44.999+01:00</premis:eventDateTime>
+            <premis:linkingAgentIdentifier>
+              <premis:linkingAgentIdentifierType>kbDkInternal</premis:linkingAgentIdentifierType>
+              <premis:linkingAgentIdentifierValue>kbDkIngest</premis:linkingAgentIdentifierValue>
+            </premis:linkingAgentIdentifier>
+            <premis:linkingObjectIdentifier>
+              <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+              <premis:linkingObjectIdentifierValue>14067980-0758-11e0-bc9e-0016357f605f</premis:linkingObjectIdentifierValue>
+            </premis:linkingObjectIdentifier>
+          </premis:event>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:digiprovMD>
+  </mets:amdSec>
+  <mets:fileSec>
+    <mets:fileGrp>
+      <mets:file ID="fileId1">
+        <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:14067980-0758-11e0-bc9e-0016357f605f"></mets:FLocat>
+      </mets:file>
+    </mets:fileGrp>
+  </mets:fileSec>
+  <mets:structMap TYPE="logical">
+    <mets:div DMDID="Mods1" ADMID="ModsRights1 Premis1 PremisEvent1 PremisObject1">
+      <mets:fptr FILEID="fileId1"></mets:fptr>
+    </mets:div>
+  </mets:structMap>
+</mets:mets>
