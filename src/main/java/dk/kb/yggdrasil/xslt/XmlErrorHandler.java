@@ -6,33 +6,56 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+/**
+ * Implements an XML error handler which can be used while parsing/validating XML files.
+ */
 public class XmlErrorHandler implements ErrorHandler {
 
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(XmlErrorHandler.class.getName());
-    
-	public int errors;
 
-	public int fatalErrors;
+    /** Errors accumulated. */
+    public int errors;
 
-	public int warnings;
+    /** Fatal errors accumulated. */
+    public int fatalErrors;
 
-	@Override
-	public void error(SAXParseException exception) throws SAXException {
-		++errors;
-		logger.error("SAX parsing error!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
-	}
+    /** Warnings accumulated. */
+    public int warnings;
 
-	@Override
-	public void fatalError(SAXParseException exception) throws SAXException {
-		++fatalErrors;
-		logger.error("SAX parsing error!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
-	}
+    /**
+     * Reset accumulated errors counters.
+     */
+    public void reset() {
+        errors = 0;
+        fatalErrors = 0;
+        warnings = 0;
+    }
 
-	@Override
-	public void warning(SAXParseException exception) throws SAXException {
-		++warnings;
-		logger.warn("SAX parsing warning!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
-	}
+    /**
+     * Returns a boolean indicating whether this handler has recorded any errors.
+     * @return a boolean indicating whether this handler has recorded any errors
+     */
+    public boolean hasError() {
+        return errors != 0 || fatalErrors != 0 || warnings != 0;
+    }
+
+    @Override
+    public void error(SAXParseException exception) throws SAXException {
+        ++errors;
+        logger.error("SAX parsing error!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
+    }
+
+    @Override
+    public void fatalError(SAXParseException exception) throws SAXException {
+        ++fatalErrors;
+        logger.error("SAX parsing error!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
+    }
+
+    @Override
+    public void warning(SAXParseException exception) throws SAXException {
+        ++warnings;
+        logger.warn("SAX parsing warning!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
+    }
 
 }

@@ -161,39 +161,36 @@ public class Workflow {
      * @param prs The current request
      */
     private void writeToWarc(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
-        
-		try {
-	        UUID packageId = UUID.randomUUID();
-			Uri resourceId = null;
-			Uri metadataId = null;
-			File writeDirectory = new File("/tmp"); //TODO read this information from yggdrasil.yml 
-	        WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(writeDirectory, packageId.toString());
-			// FIXME Write some WARC fields. 
-			w3.writeWarcinfoRecord(new byte[0], null);
-			File resource = prs.getContentPayload();
-			File metadata = prs.getMetadataPayload();
-			InputStream in;
-			if (resource != null) {
-				in = new FileInputStream(resource);
-				resourceId = w3.writeResourceRecord(in, resource.length(), ContentType.parseContentType("application/binary"), null);
-				in.close();
-			}
-			if (metadata != null) {
-				in = new FileInputStream(metadata);
-				metadataId = w3.writeMetadataRecord(in, metadata.length(), ContentType.parseContentType("application/json"), resourceId, null);
-				in.close();
-			}
-			w3.close();
-	        prs.setUploadPackage(new File(writeDirectory, packageId.toString()));
-		} catch (FileNotFoundException e) {
-			throw new YggdrasilException("Horrible exception while writing WARC record!", e);
-		} catch (IOException e) {
-			throw new YggdrasilException("Horrible exception while writing WARC record!", e);
-		}
+        try {
+            UUID packageId = UUID.randomUUID();
+            Uri resourceId = null;
+            Uri metadataId = null;
+            File writeDirectory = new File("/tmp"); //TODO read this information from yggdrasil.yml 
+            WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(writeDirectory, packageId.toString());
+            // FIXME Write some WARC fields. 
+            w3.writeWarcinfoRecord(new byte[0], null);
+            File resource = prs.getContentPayload();
+            File metadata = prs.getMetadataPayload();
+            InputStream in;
+            if (resource != null) {
+                in = new FileInputStream(resource);
+                resourceId = w3.writeResourceRecord(in, resource.length(), ContentType.parseContentType("application/binary"), null);
+                in.close();
+            }
+            if (metadata != null) {
+                in = new FileInputStream(metadata);
+                metadataId = w3.writeMetadataRecord(in, metadata.length(), ContentType.parseContentType("application/json"), resourceId, null);
+                in.close();
+            }
+            w3.close();
+            prs.setUploadPackage(new File(writeDirectory, packageId.toString()));
+        } catch (FileNotFoundException e) {
+            throw new YggdrasilException("Horrible exception while writing WARC record!", e);
+        } catch (IOException e) {
+            throw new YggdrasilException("Horrible exception while writing WARC record!", e);
+        }
     }
-    
-   
-    
+
     /**
      * Transform the metadata included with the request to the proper METS preservation format.
      */

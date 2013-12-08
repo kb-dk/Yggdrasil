@@ -1,8 +1,10 @@
 package dk.kb.yggdrasil.xslt;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -13,42 +15,84 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.xml.sax.EntityResolver;
-
+/**
+ * Implements an XSL transformer wrapper to make XSL transformation even simpler.
+ */
 public class XslTransformer {
 
-	private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    /** XSL transformer factory object. */
+    private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
-	private Transformer transformerImpl;
+    /** XSL transformer implementation for a specific stylesheet. */
+    private Transformer transformerImpl;
 
-	private XslTransformer() {
-	}
+    /**
+     * Private constructor.
+     */
+    private XslTransformer() {
+    }
 
-	public static XslTransformer getTransformer(Source source) throws TransformerConfigurationException {
-		XslTransformer transformer = new XslTransformer();
-		transformer.transformerImpl = transformerFactory.newTransformer(source);
-		return transformer;
-	}
+    /**
+     * Get a wrapped XSL transformer instance for supplied stylesheet source.
+     * @param source XSL source
+     * @return XSL transformer instance
+     * @throws TransformerConfigurationException if an exception occurs while processing
+     */
+    public static XslTransformer getTransformer(Source source) throws TransformerConfigurationException {
+        XslTransformer transformer = new XslTransformer();
+        transformer.transformerImpl = transformerFactory.newTransformer(source);
+        return transformer;
+    }
 
-	public static XslTransformer getTransformer(File xmlFile) throws TransformerConfigurationException {
-		return getTransformer(new StreamSource(xmlFile));
-	}
+    /**
+     * Get a wrapped XSL transformer instance for supplied stylesheet file.
+     * @param xmlFile XSL file
+     * @return XSL transformer instance
+     * @throws TransformerConfigurationException if an error occurs while processing
+     */
+    public static XslTransformer getTransformer(File xmlFile) throws TransformerConfigurationException {
+        return getTransformer(new StreamSource(xmlFile));
+    }
 
-	public Transformer getTransformerImpl() {
-		return transformerImpl;
-	}
+    /**
+     * Get XSL transformer instance.
+     * @return XSL transformer instance
+     */
+    public Transformer getTransformerImpl() {
+        return transformerImpl;
+    }
 
-	public void transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener, Result outputTarget) throws TransformerException {
-		transformerImpl.reset();
-		transformerImpl.setURIResolver(uriResolver);
-		transformerImpl.setErrorListener(errorListener);
-		transformerImpl.transform(xmlSource, outputTarget);
-	}
+    /**
+     * Transform XML source using the wrapped XSL transformer of this instance and output to supplied target.
+     * @param xmlSource source XML
+     * @param uriResolver URI resolver or null
+     * @param errorListener error listener or null
+     * @param outputTarget output result target to use
+     * @throws TransformerException if an exception occurs while transforming
+     */
+    public void transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener, Result outputTarget) throws TransformerException {
+        transformerImpl.reset();
+        transformerImpl.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformerImpl.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        transformerImpl.setURIResolver(uriResolver);
+        transformerImpl.setErrorListener(errorListener);
+        //transformerImpl.
+        transformerImpl.transform(xmlSource, outputTarget);
+    }
 
-	public Result transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener) throws TransformerException {
-		StreamResult result = new StreamResult();
-		transform(xmlSource, uriResolver, errorListener, result);
-		return result;
-	}
+    /**
+     * Transform XML source using the wrapped XSL transformer of this instance and return a byte array of the result.
+     * @param xmlSource source XML
+     * @param uriResolver URI resolver or null
+     * @param errorListener error listener or null
+     * @return byte array of the result
+     * @throws TransformerException if an exception occurs while transforming
+     */
+    public byte[] transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener) throws TransformerException {
+    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+        StreamResult result = new StreamResult(out);
+        transform(xmlSource, uriResolver, errorListener, result);
+        return out.toByteArray();
+    }
 
 }

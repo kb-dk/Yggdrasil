@@ -2205,7 +2205,7 @@
         </xsl:element>
       </xsl:element>
     </xsl:if>
-    ¨
+    
     <!-- Organisation affiliation of recipient || Modtagers organisation 
          with both 'Organisation affiliation of recipient' and 'Modtagers organisation' as genre.-->
     <xsl:if test="field[@name='Organisation affiliation of recipient'] or field[@name='Modtagers organisation']">

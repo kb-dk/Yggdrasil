@@ -12,28 +12,49 @@ import org.junit.runners.JUnit4;
 public class TestXmlValidator {
 
     @Test
-	public void test_xmlvalidator() {
-		URL url;
+    public void test_xmlvalidator() {
+        URL url;
+        File file;
 
-		url = this.getClass().getClassLoader().getResource("");
-		File cacheDir = new File(new File(url.getFile()), "entity_cache");
-		if (!cacheDir.exists() && !cacheDir.mkdirs()) {
-			Assert.fail("Could not make entity_cache directory!");
-		}
+        url = this.getClass().getClassLoader().getResource("");
+        File cacheDir = new File(new File(url.getFile()), "entity_cache");
+        if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+            Assert.fail("Could not make entity_cache directory!");
+        }
 
-		url = this.getClass().getClassLoader().getResource("xml/Carrebye.xml");
-		File file = new File(url.getFile());
+        url = this.getClass().getClassLoader().getResource("xml/Carrebye.xml");
+        file = new File(url.getFile());
 
-		XmlValidator xmlValidator = new XmlValidator();
+        XmlValidator xmlValidator = new XmlValidator();
+        XmlValidationResult result;
 
-		XmlEntityResolver entityResolver = new XmlEntityResolver(cacheDir);
-		XmlErrorHandler errorHandler = new XmlErrorHandler();
+        XmlEntityResolver entityResolver = new XmlEntityResolver(cacheDir);
+        XmlErrorHandler errorHandler = new XmlErrorHandler();
 
-		xmlValidator.validate(file, entityResolver, errorHandler);
+        result = xmlValidator.validate(file, entityResolver, errorHandler);
 
-		Assert.assertEquals(0, errorHandler.errors);
-		Assert.assertEquals(0, errorHandler.fatalErrors);
-		Assert.assertEquals(0, errorHandler.warnings);
+        Assert.assertTrue(result.bValidate);
+        Assert.assertNull(result.systemId);
+        Assert.assertEquals(1, result.xsiNamespaces.size());
+        Assert.assertEquals(9, result.schemas.size());
+
+        Assert.assertEquals(0, errorHandler.errors);
+        Assert.assertEquals(0, errorHandler.fatalErrors);
+        Assert.assertEquals(0, errorHandler.warnings);
+
+        url = this.getClass().getClassLoader().getResource("xml/Car_S-9092.tif.raw.xml");
+        file = new File(url.getFile());
+
+        result = xmlValidator.validate(file, entityResolver, errorHandler);
+
+        Assert.assertFalse(result.bValidate);
+        Assert.assertNull(result.systemId);
+        Assert.assertEquals(0, result.xsiNamespaces.size());
+        Assert.assertEquals(0, result.schemas.size());
+
+        Assert.assertEquals(0, errorHandler.errors);
+        Assert.assertEquals(0, errorHandler.fatalErrors);
+        Assert.assertEquals(0, errorHandler.warnings);
     }
 
 }

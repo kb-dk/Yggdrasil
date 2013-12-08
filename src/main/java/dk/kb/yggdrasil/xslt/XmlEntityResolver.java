@@ -17,85 +17,91 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import dk.kb.yggdrasil.MQ;
-
+/**
+ * Implements a caching XML entity resolver. Resolves and caches DTD and XSD.
+ */
 public class XmlEntityResolver implements EntityResolver {
 
     /** Logging mechanism. */
-    private static Logger logger = LoggerFactory.getLogger(MQ.class.getName());
-    
-	protected File cache_dir;
+    private static Logger logger = LoggerFactory.getLogger(XmlEntityResolver.class.getName());
 
-	public XmlEntityResolver(File cache_dir) {
-		this.cache_dir = cache_dir;
-		if (!cache_dir.exists()) {
-			cache_dir.mkdirs();
-		}
-	}
+    /** Path to cache directory. */
+    protected File cache_dir;
 
-	@Override
-	public synchronized InputSource resolveEntity(String publicId, String systemId)
-			throws SAXException, IOException {
-		logger.info("Resolving: " + systemId + " (\"" + publicId + "\")");
-		if (systemId != null) {
-			int pos = systemId.lastIndexOf("/");
-			if (pos != -1) {
-				String res = systemId.substring(pos + 1);
-				File file = new File(cache_dir, res);
+    /**
+     * Construct a caching XML entity resolver instance.
+     * @param cache_dir path to cache directory
+     */
+    public XmlEntityResolver(File cache_dir) {
+        this.cache_dir = cache_dir;
+        if (!cache_dir.exists()) {
+            cache_dir.mkdirs();
+        }
+    }
 
-				if (file.exists() && file.isFile()) {
-					/*
-					 * Load cached dtd.
-					 */
-					try {
-						logger.info(" Loading cached: " + file.getAbsolutePath());
-						return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
-					} catch (FileNotFoundException e) {
-						return null;
-					}
-				} else {
-					/*
-					 * Attempt to cache dtd.
-					 */
-					URL url;
-					InputStream in = null;
-					FileOutputStream out = null;
+    @Override
+    public synchronized InputSource resolveEntity(String publicId, String systemId)
+            throws SAXException, IOException {
+        logger.info("Resolving: " + systemId + " (\"" + publicId + "\")");
+        if (systemId != null) {
+            int pos = systemId.lastIndexOf("/");
+            if (pos != -1) {
+                String res = systemId.substring(pos + 1);
+                File file = new File(cache_dir, res);
 
-					try {
-						byte[] buffer = new byte[1024];
-						int len;
-						url = new URL(systemId);
-						in = url.openStream();
-						out = new FileOutputStream(file);
+                if (file.exists() && file.isFile()) {
+                    /*
+                     * Load cached dtd.
+                     */
+                    try {
+                        logger.info(" Loading cached: " + file.getAbsolutePath());
+                        return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
+                    } catch (FileNotFoundException e) {
+                        return null;
+                    }
+                } else {
+                    /*
+                     * Attempt to cache dtd.
+                     */
+                    URL url;
+                    InputStream in = null;
+                    FileOutputStream out = null;
 
-						while ((len = in.read( buffer, 0, 1024)) != -1) {
-							out.write(buffer, 0, len);
-						}
-						out.close();
-						in.close();
+                    try {
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        url = new URL(systemId);
+                        in = url.openStream();
+                        out = new FileOutputStream(file);
 
-						logger.info(" Saving cached: " + file.getAbsolutePath());
-						return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
-					} catch (MalformedURLException e) {
-						return null;
-					} catch (IOException e) {
-						return null;
-					} finally {
-						try {
-							if (out != null) {
-								out.close();
-							}
-						} catch (IOException e) {}
-						try {
-							if (in != null) {
-								in.close();
-							}
-						} catch (IOException e) {}
-					}
-				}
-			}
-		}
-		return null;
-	}
+                        while ((len = in.read( buffer, 0, 1024)) != -1) {
+                            out.write(buffer, 0, len);
+                        }
+                        out.close();
+                        in.close();
+
+                        logger.info(" Saving cached: " + file.getAbsolutePath());
+                        return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
+                    } catch (MalformedURLException e) {
+                        return null;
+                    } catch (IOException e) {
+                        return null;
+                    } finally {
+                        try {
+                            if (out != null) {
+                                out.close();
+                            }
+                        } catch (IOException e) {}
+                        try {
+                            if (in != null) {
+                                in.close();
+                            }
+                        } catch (IOException e) {}
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
 }
