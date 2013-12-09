@@ -36,7 +36,7 @@ public class XmlErrorHandler implements ErrorHandler {
      * Returns a boolean indicating whether this handler has recorded any errors.
      * @return a boolean indicating whether this handler has recorded any errors
      */
-    public boolean hasError() {
+    public boolean hasErrors() {
         return errors != 0 || fatalErrors != 0 || warnings != 0;
     }
 

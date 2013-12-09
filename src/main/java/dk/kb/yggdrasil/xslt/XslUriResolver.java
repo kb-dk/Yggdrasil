@@ -4,12 +4,13 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Implements an XSL URI resolver which can be used to resolve external XSL files.
- * Unused - so a project for thosse dark January nights.
+ * Unused - so a project for those dark January nights.
  */
 public class XslUriResolver implements URIResolver {
 
@@ -19,7 +20,7 @@ public class XslUriResolver implements URIResolver {
     @Override
     public Source resolve(String href, String base) throws TransformerException {
         logger.info("URIResolver: href=" + href + " - base=" + base);
-        return null;
+        throw new NotImplementedException("XslUriResolver.resolve(String href, String base)");
     }
 
 }

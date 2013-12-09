@@ -46,12 +46,12 @@ public class XslTransformer {
 
     /**
      * Get a wrapped XSL transformer instance for supplied stylesheet file.
-     * @param xmlFile XSL file
+     * @param xslFile XSL file
      * @return XSL transformer instance
      * @throws TransformerConfigurationException if an error occurs while processing
      */
-    public static XslTransformer getTransformer(File xmlFile) throws TransformerConfigurationException {
-        return getTransformer(new StreamSource(xmlFile));
+    public static XslTransformer getTransformer(File xslFile) throws TransformerConfigurationException {
+        return getTransformer(new StreamSource(xslFile));
     }
 
     /**
