@@ -12,8 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +23,7 @@ import org.junit.runners.JUnit4;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.utils.TravisUtils;
 
 /**
  * Tests for {@link dk.kb.yggdrasil.Bitrepository }
@@ -40,7 +39,7 @@ public class BitrepositoryTest {
 
     @Test
     public void testMissingYamlFile() {
-        if (runningOnTravis()) {
+        if (TravisUtils.runningOnTravis()) {
             return;
         }
         File missingConfigFile = new File(MISSING_YAML_FILE);
@@ -55,23 +54,9 @@ public class BitrepositoryTest {
         }
     }
 
-    private boolean runningOnTravis() {
-        final String TRAVIS_ID = "testing-worker";
-        InetAddress localhost = null;
-        try {
-            localhost = InetAddress.getLocalHost();
-            String localhostName = localhost.getCanonicalHostName().toLowerCase();
-            System.out.println("localhostname: " + localhostName);
-            return (localhostName.contains(TRAVIS_ID));
-        } catch (UnknownHostException e) {
-            System.out.println(e);
-        }
-        return false;
-    }
-
     @Test
     public void testIncorrectYamlFile() {
-        if (runningOnTravis()) {
+        if (TravisUtils.runningOnTravis()) {
             return;
         }
         File badConfigFile = new File(INCORRECT_YAML_FILE);
@@ -86,7 +71,7 @@ public class BitrepositoryTest {
 
     @Test
     public void testOkYamlFile() {
-        if (runningOnTravis()) {
+        if (TravisUtils.runningOnTravis()) {
             return;
         }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
@@ -102,7 +87,7 @@ public class BitrepositoryTest {
 
     @Test
     public void testUpload() throws YggdrasilException, IOException {
-        if (runningOnTravis()) {
+        if (TravisUtils.runningOnTravis()) {
             return;
         }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
@@ -120,7 +105,7 @@ public class BitrepositoryTest {
 
     @Test
     public void testUploadOnUnknownCollection() throws YggdrasilException, IOException {
-        if (runningOnTravis()) {
+        if (TravisUtils.runningOnTravis()) {
             return;
         }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
@@ -146,7 +131,7 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetFile() throws Exception {
-        if (runningOnTravis()) {
+        if (TravisUtils.runningOnTravis()) {
             return;
         }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
@@ -160,7 +145,7 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetChecksums() throws YggdrasilException, IOException {
-        if (runningOnTravis()) {
+        if (TravisUtils.runningOnTravis()) {
             return;
         }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
@@ -184,6 +169,9 @@ public class BitrepositoryTest {
     
     @Test
     public void testGetCollections() throws YggdrasilException {
+        if (TravisUtils.runningOnTravis()) {
+            return;
+        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         Bitrepository br = new Bitrepository(okConfigFile);
         List<String> knownCols = br.getKnownCollections();

@@ -6,10 +6,11 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import dk.kb.yggdrasil.utils.TravisUtils;
 
 /**
  * Tests for {@link dk.kb.yggdrasil.Main }
@@ -21,6 +22,9 @@ public class MainTest {
     
     @Test
     public void testMainMethodWithGoodConfigDir() throws Exception {
+        if (TravisUtils.runningOnTravis()) {
+            return;
+        }
         System.setProperty(Main.CONFIGURATION_DIRECTORY_PROPERTY, goodConfigDir.getAbsolutePath());
         //RabbitMqSettings mqSettings = new RabbitMqSettings(new File(goodConfigDir, Main.RABBITMQ_CONF_FILENAME));
         //MQ mq = MQ.getInstance(mqSettings);
