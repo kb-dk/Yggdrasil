@@ -2,6 +2,7 @@ package dk.kb.yggdrasil.db;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
@@ -13,6 +14,9 @@ import dk.kb.yggdrasil.json.PreservationRequest;
  * temporary files built during the workflow.
  */
 public class PreservationRequestState implements Serializable {
+    
+    /** Logging mechanism. */
+    private static final Logger logger = Logger.getLogger(PreservationRequestState.class.getName());
     
     /** The preservationRequest received from Valhal. */ 
     private PreservationRequest request;
@@ -122,4 +126,39 @@ public class PreservationRequestState implements Serializable {
         this.uploadPackage = uploadPackage;
     }
    
+    /**
+    * Reset the uploadpackage file.
+    */
+   public void resetUploadPackage() {
+       this.uploadPackage = null;
+   }
+   
+   /**
+    * Remove the temporary files referred to in this object, if they
+    * still exist.
+    */
+   public void cleanup() {
+       if (uploadPackage != null && uploadPackage.exists()) {
+           boolean deleted = uploadPackage.delete();
+           if (!deleted) {
+               logger.warning("Unable to delete uploadpackagefile '" 
+                       + uploadPackage.getAbsolutePath() + "'");
+           }
+       }
+       if (contentPayload != null && contentPayload.exists()) {
+           boolean deleted = contentPayload.delete();
+           if (!deleted) {
+               logger.warning("Unable to delete temporary file for contentPayload '" 
+                       + contentPayload.getAbsolutePath() + "'");
+           }
+       }
+       
+       if (metadataPayload != null && metadataPayload.exists()) {
+           boolean deleted = metadataPayload.delete();
+           if (!deleted) {
+               logger.warning("Unable to delete temporary file for metadataPayload '" 
+                       + metadataPayload.getAbsolutePath() + "'");
+           }
+       }
+   }
 }

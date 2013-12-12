@@ -69,7 +69,13 @@ public class Workflow {
     public void run() throws YggdrasilException {
         while (true) {
             String currentUUID = null;
-            PreservationRequest request = getNextRequest();
+            PreservationRequest request = null;
+            try {
+                request = getNextRequest();
+            } catch (YggdrasilException e) {
+                logger.error("Caught exception while retrieving message from rabbitmq. Skipping message", e);
+                continue;
+            }
             logger.info("Preservation request received.");
             PreservationRequestState prs = null;
             /* Validate message content. */
@@ -78,9 +84,19 @@ public class Workflow {
             } else {
                 prs = new PreservationRequestState(request, 
                         State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-                currentUUID = request.UUID;
-                updateRemotePreservationState(prs, State.PRESERVATION_REQUEST_RECEIVED);
-                sd.put(currentUUID, prs);   
+                // Add check about whether profle is a known collectionID or not known
+                String preservationProfile = prs.getRequest().Preservation_profile;
+                List<String> possibleCollections = bitrepository.getKnownCollections();
+                if (!possibleCollections.contains(preservationProfile)) {
+                    String errMsg = "The given preservation profile '" + preservationProfile  
+                            + "' does not match a known collection ID. "; 
+                    logger.error(errMsg);
+                    updateRemotePreservationStateToFailState(prs, errMsg);
+                } else {
+                    currentUUID = request.UUID;
+                    updateRemotePreservationState(prs, State.PRESERVATION_REQUEST_RECEIVED);
+                    sd.put(currentUUID, prs);
+                }
             }
 
             if (currentUUID != null) { // Message received is valid. proceed with workflow
@@ -103,25 +119,6 @@ public class Workflow {
     }
 
     /**
-     * Update the remote preservationState corresponding with this current request
-     * using the Update_URI field.
-     * @param prs The current request
-     * @param newPreservationstate The new Preservation State
-     * @throws YggdrasilException
-     */
-    private void updateRemotePreservationState(PreservationRequestState prs,
-            State newPreservationstate) throws YggdrasilException {
-        PreservationResponse response = new PreservationResponse();
-        response.preservation = new Preservation();
-        response.preservation.preservation_state = newPreservationstate.name();
-        response.preservation.preservation_details = newPreservationstate.getDescription();
-        byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
-        HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
-        logger.info("Preservation status updated to '" + newPreservationstate.name() 
-                +  "' using the updateURI.");
-    }
-
-    /**
      * Attempt to upload the packageFile to the bitrepository. 
      * @param currentUUID the currentUUID
      * @param prs The preservationRequest being processed.
@@ -131,13 +128,6 @@ public class Workflow {
         PreservationRequest pr = prs.getRequest();
         File packageFile = prs.getUploadPackage();
         String collectionID = pr.Preservation_profile;
-        List<String> possibleCollections = bitrepository.getKnownCollections();
-        if (!possibleCollections.contains(collectionID)) {
-            collectionID = possibleCollections.get(0);
-            logger.warn("The given preservation profile '" + pr.Preservation_profile 
-                    + "' does not match a known collection ID. Using '" 
-                    +  collectionID + "' as collectionID. Note this feature is deprecated");
-        }
         boolean success = bitrepository.uploadFile(packageFile, collectionID);
         if (success) {
             prs.setState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS);
@@ -147,6 +137,10 @@ public class Workflow {
                     + "' of package '" + packageFile.getName() + "' was successful.");
         } else {
             prs.setState(State.PRESERVATION_PACKAGE_UPLOAD_FAILURE);
+            if (packageFile.exists()) { // Delete here to reset the warcID to null in Valhal
+                packageFile.delete();
+            }
+            prs.resetUploadPackage(); // reset warcId to null
             updateRemotePreservationState(prs, State.PRESERVATION_PACKAGE_UPLOAD_FAILURE);
             sd.put(currentUUID, prs);
             logger.warn("Upload to bitrepository for UUID '" + currentUUID 
@@ -205,13 +199,24 @@ public class Workflow {
      * @throws YggdrasilException
      */
     private void doContentAndMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
-        logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");  
-        fetchContent(currentUUID, prs);
-        transformMetadata();
-        writeToWarc(currentUUID, prs);
-        uploadToBitrepository(currentUUID, prs);
-        //TODO update the remote preservation metadata with a packageId 
-        logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");
+        try {
+            logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");  
+            fetchContent(currentUUID, prs);
+            transformMetadata();
+            writeToWarc(currentUUID, prs);
+            uploadToBitrepository(currentUUID, prs);
+            logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");
+        } catch (YggdrasilException e) {
+            logger.error("An exception occurred during the workflow for UUID: " 
+                    + currentUUID, e);
+        } finally {
+           if (sd.hasEntry(currentUUID)) {
+               sd.delete(currentUUID);
+           }
+           // Cleanup
+           prs.cleanup();
+        }
+        
     }
     
     /**
@@ -221,13 +226,20 @@ public class Workflow {
      * @throws YggdrasilException
      */
     private void doMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
-        logger.info("Starting a metadata workflow for UUID '" + currentUUID + "'");
-        logger.warn("Implementation of metadata workflow still incomplete");
-        //transformMetadata();
-        //writeToWarc(currentUUID, prs);
-        //uploadToBitrepository(currentUUID, prs);
-        //TODO update the remote preservation metadata with a packageID
-        logger.info("Finished the metadata workflow for UUID '" + currentUUID + "' successfully");
+        try {
+            logger.info("Starting a metadata workflow for UUID '" + currentUUID + "'");
+            logger.warn("Implementation of metadata workflow still incomplete");
+            //transformMetadata();
+            //writeToWarc(currentUUID, prs);
+            //uploadToBitrepository(currentUUID, prs);
+            logger.info("Finished the metadata workflow for UUID '" + currentUUID + "' successfully");
+        } finally {
+            if (sd.hasEntry(currentUUID)) {
+                sd.delete(currentUUID);
+            }
+            // Cleanup
+            prs.cleanup();
+        }
     }
     
     
@@ -274,6 +286,41 @@ public class Workflow {
                 +  "' using the updateURI.");
         throw new YggdrasilException(reason);
     }
+
+    private void updateRemotePreservationStateToFailState(
+            PreservationRequestState prs, String reason) throws YggdrasilException {
+        PreservationResponse response = new PreservationResponse();
+        response.preservation = new Preservation();
+        response.preservation.preservation_state = State.PRESERVATION_REQUEST_FAILED.name();
+        response.preservation.preservation_details = reason;
+        byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
+        HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
+        logger.info("Preservation status updated to '" + State.PRESERVATION_REQUEST_FAILED.name() 
+                +  "' using the updateURI.");
+    }
+    
+    /**
+     * Update the remote preservationState corresponding with this current request
+     * using the Update_URI field.
+     * @param prs The current request
+     * @param newPreservationstate The new Preservation State
+     * @throws YggdrasilException
+     */
+    private void updateRemotePreservationState(PreservationRequestState prs,
+            State newPreservationstate) throws YggdrasilException {
+        PreservationResponse response = new PreservationResponse();
+        response.preservation = new Preservation();
+        response.preservation.preservation_state = newPreservationstate.name();
+        response.preservation.preservation_details = newPreservationstate.getDescription();
+        if (prs.getUploadPackage() != null) {
+            response.preservation.warc_id = prs.getUploadPackage().getName();
+        }
+        byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
+        HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
+        logger.info("Preservation status updated to '" + newPreservationstate.name() 
+                +  "' using the updateURI.");
+    }
+    
     
     /**
      * Wait until the next request arrives on the queue, and then return the request.

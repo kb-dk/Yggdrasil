@@ -50,7 +50,11 @@ public class MQ {
     private String exchangeName = "exchange"; //TODO should this be a parameter in the settings?
     /** exchange type direct means a message sent to only one recipient. */
     private String exchangeType = "direct";
-
+    
+    /** The only valid message type, currently. */ 
+    private static final String VALID_MESSAGE_TYPE = "PreservationRequest";
+    
+    
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(MQ.class.getName());
     
@@ -190,6 +194,10 @@ public class MQ {
            payload = delivery.getBody();
            boolean acknowledgeMultipleMessages = false;
            theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), acknowledgeMultipleMessages);
+           if (!messageType.equalsIgnoreCase(VALID_MESSAGE_TYPE)) {
+               throw new YggdrasilException("The message type '" 
+                       + messageType + "' is invalid. Currently, the only valid messagetype is " + VALID_MESSAGE_TYPE);
+           }
        } catch (IOException e) {
            throw new YggdrasilException("Unable to receive message from queue '"
                    + queueName + "'", e);

@@ -118,15 +118,19 @@ public enum State implements Serializable {
             return "The preservation request failed";
         }
     };
-
+    /** 
+     * @return The default description of this state.
+     */
     public abstract String getDescription();
     
     
     /** Set with the failstates in this enum class. */
     private static final Set<State> FAIL_STATES = new HashSet<State>(Arrays.asList(
             PRESERVATION_PACKAGE_UPLOAD_FAILURE,
-            PRESERVATION_METADATA_PACKAGED_FAILURE, PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE,
-            PRESERVATION_RESOURCES_DOWNLOAD_FAILURE));
+            PRESERVATION_METADATA_PACKAGED_FAILURE, 
+            PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE,
+            PRESERVATION_RESOURCES_DOWNLOAD_FAILURE,
+            PRESERVATION_REQUEST_FAILED));
 
     /**
      * @return set of failure states.
@@ -165,6 +169,12 @@ public enum State implements Serializable {
         }
     }
     
+    /**
+     * Check, if the state change from oldState to newState is valid.
+     * @param oldState The existing state
+     * @param newState The new state
+     * @return true, if the transition from oldState to newState is valid; otherwise false is returned.
+     */
     public static boolean isValidStateChange(State oldState, State newState){
         ArgumentCheck.checkNotNull(oldState, "State oldState");
         ArgumentCheck.checkNotNull(newState, "State newState");
@@ -176,6 +186,11 @@ public enum State implements Serializable {
         }
     }
     
+    /** 
+     * 
+     * @param aState A given state
+     * @return true, if the current state equals the given state, otherwise false.
+     */
     public boolean hasState(State aState) {
         return this.equals(aState);
     }
