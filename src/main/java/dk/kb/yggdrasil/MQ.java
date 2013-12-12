@@ -194,7 +194,7 @@ public class MQ {
            payload = delivery.getBody();
            boolean acknowledgeMultipleMessages = false;
            theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), acknowledgeMultipleMessages);
-           if (!messageType.equalsIgnoreCase(VALID_MESSAGE_TYPE)) {
+           if (!VALID_MESSAGE_TYPE.equalsIgnoreCase(messageType)) {
                throw new YggdrasilException("The message type '" 
                        + messageType + "' is invalid. Currently, the only valid messagetype is " + VALID_MESSAGE_TYPE);
            }
