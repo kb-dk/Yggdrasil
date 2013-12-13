@@ -15,6 +15,8 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+
 /**
  * Implements an XSL transformer wrapper to make XSL transformation even simpler.
  */
@@ -39,6 +41,7 @@ public class XslTransformer {
      * @throws TransformerConfigurationException if an exception occurs while processing
      */
     public static XslTransformer getTransformer(Source source) throws TransformerConfigurationException {
+        ArgumentCheck.checkNotNull(source, "source");
         XslTransformer transformer = new XslTransformer();
         transformer.transformerImpl = transformerFactory.newTransformer(source);
         return transformer;
@@ -51,6 +54,7 @@ public class XslTransformer {
      * @throws TransformerConfigurationException if an error occurs while processing
      */
     public static XslTransformer getTransformer(File xslFile) throws TransformerConfigurationException {
+        ArgumentCheck.checkExistsNormalFile(xslFile, "xslFile");
         return getTransformer(new StreamSource(xslFile));
     }
 
@@ -71,12 +75,14 @@ public class XslTransformer {
      * @throws TransformerException if an exception occurs while transforming
      */
     public void transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener, Result outputTarget) throws TransformerException {
+        ArgumentCheck.checkNotNull(xmlSource, "xmlSource");
+        ArgumentCheck.checkNotNull(outputTarget, "outputTarget");
         transformerImpl.reset();
         transformerImpl.setOutputProperty(OutputKeys.INDENT, "yes");
         transformerImpl.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
         transformerImpl.setURIResolver(uriResolver);
         transformerImpl.setErrorListener(errorListener);
-        //transformerImpl.
+        // TODO Add parameters, if required.
         transformerImpl.transform(xmlSource, outputTarget);
     }
 
@@ -89,7 +95,8 @@ public class XslTransformer {
      * @throws TransformerException if an exception occurs while transforming
      */
     public byte[] transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener) throws TransformerException {
-    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ArgumentCheck.checkNotNull(xmlSource, "xmlSource");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         StreamResult result = new StreamResult(out);
         transform(xmlSource, uriResolver, errorListener, result);
         return out.toByteArray();

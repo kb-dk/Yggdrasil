@@ -20,6 +20,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+
 /**
  * Implements an XML validator for well-formed-ness and against DTD/XSD if they are defined.
  */
@@ -71,6 +73,7 @@ public class XmlValidator {
      * @return XML validation result
      */
     public XmlValidationResult validate(File xmlFile, EntityResolver entityResolver, ErrorHandler errorHandler) {
+        ArgumentCheck.checkExistsNormalFile(xmlFile, "xmlFile");
         XmlValidationResult result = new XmlValidationResult();
         InputStream in = null;
         try {

@@ -48,7 +48,6 @@ public class XmlEntityResolver implements EntityResolver {
             if (pos != -1) {
                 String res = systemId.substring(pos + 1);
                 File file = new File(cache_dir, res);
-
                 if (file.exists() && file.isFile()) {
                     /*
                      * Load cached dtd.
@@ -57,6 +56,7 @@ public class XmlEntityResolver implements EntityResolver {
                         logger.info(" Loading cached: " + file.getAbsolutePath());
                         return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
                     } catch (FileNotFoundException e) {
+                        logger.warn(e.toString(), e);
                         return null;
                     }
                 } else {
@@ -66,25 +66,24 @@ public class XmlEntityResolver implements EntityResolver {
                     URL url;
                     InputStream in = null;
                     FileOutputStream out = null;
-
                     try {
                         byte[] buffer = new byte[1024];
                         int len;
                         url = new URL(systemId);
                         in = url.openStream();
                         out = new FileOutputStream(file);
-
                         while ((len = in.read( buffer, 0, 1024)) != -1) {
                             out.write(buffer, 0, len);
                         }
                         out.close();
                         in.close();
-
                         logger.info(" Saving cached: " + file.getAbsolutePath());
                         return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
                     } catch (MalformedURLException e) {
+                        logger.warn(e.toString(), e);
                         return null;
                     } catch (IOException e) {
+                        logger.warn(e.toString(), e);
                         return null;
                     } finally {
                         try {
