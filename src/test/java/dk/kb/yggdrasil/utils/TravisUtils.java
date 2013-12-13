@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 public class TravisUtils {
     
     public static boolean runningOnTravis() {
-        final String TRAVIS_ID = "testing-worker";
+        final String TRAVIS_ID = "travis";
         InetAddress localhost = null;
         try {
             localhost = InetAddress.getLocalHost();
