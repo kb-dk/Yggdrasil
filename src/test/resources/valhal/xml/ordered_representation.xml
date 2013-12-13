@@ -1,0 +1,43 @@
+<metadata>
+	<provenanceMetadata>
+		<fields>
+			<label>OrderedRepresentation</label>
+			<uuid>c0855fc0-3d71-0131-2b93-0050562881f4</uuid>
+		</fields>
+	</provenanceMetadata>
+	<preservationMetadata>
+		<fields>
+			<preservation_profile>eternity</preservation_profile>
+			<preservation_state>PRESERVATION_STATE_INITIATED</preservation_state>
+			<preservation_details>The preservation button has been pushed.
+			</preservation_details>
+			<preservation_modify_date>2013-12-13T11:46:38.003+01:00
+			</preservation_modify_date>
+			<preservation_comment />
+			<preservation_bitsafety>Maximum Bitsafety (15 x copies: 10 in
+				Bitrepository with daily integrity checks, 5 on open sites on the
+				Internet, 1 on other the Moon and 1 in another galaxy)
+			</preservation_bitsafety>
+			<preservation_confidentiality>Minimum confidentiality (public
+				accessible through the Internet)</preservation_confidentiality>
+		</fields>
+	</preservationMetadata>
+	<techMetadata>
+		<mets xmlns="http://www.loc.gov/METS/" version="1.0\">
+			<structMap>
+				<div ORDER="1" ID="arre1fm006.tif">
+					<fptr FILEID="bf024620-3d71-0131-2b8d-0050562881f4" />
+				</div>
+				<div ORDER="2" ID="arre1fm001.tif">
+					<fptr FILEID="bb8dbd30-3d71-0131-2b80-0050562881f4" />
+				</div>
+				<div ORDER="3" ID="arre1fm003.tif">
+					<fptr FILEID="bd3cea80-3d71-0131-2b87-0050562881f4" />
+				</div>
+			</structMap>
+		</mets>
+	</techMetadata>
+	<descMetadata>
+		<fields />
+	</descMetadata>
+</metadata>

@@ -1,0 +1,41 @@
+<metadata>
+	<descMetadata>
+		<dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<dcterms:extent>416 bytes</dcterms:extent>
+		</dc>
+	</descMetadata>
+	<provenanceMetadata>
+		<fields>
+			<uuid>bd3cea80-3d71-0131-2b87-0050562881f4</uuid>
+		</fields>
+	</provenanceMetadata>
+	<preservationMetadata>
+		<fields>
+			<preservation_profile>eternity</preservation_profile>
+			<preservation_state>PRESERVATION_STATE_INITIATED</preservation_state>
+			<preservation_details>The preservation button has been pushed.
+			</preservation_details>
+			<preservation_modify_date>2013-12-13T11:46:37.685+01:00
+			</preservation_modify_date>
+			<preservation_comment />
+			<preservation_bitsafety>Maximum Bitsafety (15 x copies: 10 in
+				Bitrepository with daily integrity checks, 5 on open sites on the
+				Internet, 1 on other the Moon and 1 in another galaxy)
+			</preservation_bitsafety>
+			<preservation_confidentiality>Minimum confidentiality (public
+				accessible through the Internet)</preservation_confidentiality>
+		</fields>
+	</preservationMetadata>
+	<techMetadata>
+		<fields>
+			<created>2013-12-02 12:20:52 +0100</created>
+			<last_accessed>2013-12-02 12:20:57 +0100</last_accessed>
+			<last_modified>2013-12-02 12:20:52 +0100</last_modified>
+			<file_checksum>a48b83764e88757447cbf9e65e4d8f40</file_checksum>
+			<original_filename>arre1fm003.tif</original_filename>
+			<mime_type>image/tiff</mime_type>
+			<file_size>15851</file_size>
+			<file_uuid>bd3c8b10-3d71-0131-2b86-0050562881f4</file_uuid>
+		</fields>
+	</techMetadata>
+</metadata>

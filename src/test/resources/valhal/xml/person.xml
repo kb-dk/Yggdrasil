@@ -1,0 +1,32 @@
+<metadata>
+	<provenanceMetadata>
+		<fields>
+			<uuid>df6e44c0-3351-0131-e367-0050562881f4</uuid>
+		</fields>
+	</provenanceMetadata>
+	<preservationMetadata>
+		<fields>
+			<preservation_profile>simple</preservation_profile>
+			<preservation_state>PRESERVATION_STATE_INITIATED</preservation_state>
+			<preservation_details>The preservation button has been pushed.
+			</preservation_details>
+			<preservation_modify_date>2013-12-13T13:59:56.309+01:00
+			</preservation_modify_date>
+			<preservation_comment />
+			<preservation_bitsafety>Medium Bitsafety (Bitrepository with 3 x
+				copies: 2 full and one checksum, and regularly integrity checks)
+			</preservation_bitsafety>
+			<preservation_confidentiality>Medium confidentiality (no access
+				through bitrepository, and limited access to basic_files at
+				pillars/backends)</preservation_confidentiality>
+		</fields>
+	</preservationMetadata>
+	<descMetadata>
+		<fields>
+			<firstname>S&#xF8;ren Aabye</firstname>
+			<lastname>Kierkegaard</lastname>
+			<date_of_birth>05/05 1813</date_of_birth>
+			<date_of_death>11/11 1855</date_of_death>
+		</fields>
+	</descMetadata>
+</metadata>
