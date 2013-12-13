@@ -11,10 +11,10 @@ public class TravisUtils {
         try {
             localhost = InetAddress.getLocalHost();
             String localhostName = localhost.getCanonicalHostName().toLowerCase();
-            boolean onTravis = localhostName.contains(TRAVIS_ID);
             String user = System.getProperty("user.name");
-            System.out.println("user: " + user);
-            System.out.println("Is machine (" + localhostName + "): running on travis" +  onTravis); 
+            boolean onTravis = localhostName.contains(TRAVIS_ID) || TRAVIS_ID.equalsIgnoreCase(user); 
+            //System.out.println("user: " + user);
+            //System.out.println("Is machine (" + localhostName + "): running on travis" +  onTravis); 
             return onTravis;
         } catch (UnknownHostException e) {
             System.out.println(e);
