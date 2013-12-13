@@ -12,7 +12,9 @@ public class TravisUtils {
             localhost = InetAddress.getLocalHost();
             String localhostName = localhost.getCanonicalHostName().toLowerCase();
             boolean onTravis = localhostName.contains(TRAVIS_ID);
-            System.out.println("Running on Travis machine (" + localhostName + "): " +  onTravis); 
+            String user = System.getProperty("user.name");
+            System.out.println("user: " + user);
+            System.out.println("Is machine (" + localhostName + "): running on travis" +  onTravis); 
             return onTravis;
         } catch (UnknownHostException e) {
             System.out.println(e);
