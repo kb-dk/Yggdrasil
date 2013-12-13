@@ -11,7 +11,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -45,7 +44,6 @@ public class MqTest {
     public static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
 
     @Test
-    @Ignore
     public void finalTest() throws YggdrasilException, IOException {
         RabbitMqSettings settings = fetchMqSettings();
         System.out.println("using brokerUri: " + settings.getBrokerUri());
@@ -53,12 +51,12 @@ public class MqTest {
         assertTrue(settings.equals(mq.getSettings()));
         String message = "Hello world";
         String queueName = settings.getPreservationDestination();
-        mq.publishOnQueue(queueName, message.getBytes());
+        mq.publishOnQueue(queueName, message.getBytes(), MQ.VALID_MESSAGE_TYPE);
         byte[] messageReceived = mq.receiveMessageFromQueue(queueName);
 
         Assert.assertArrayEquals(message.getBytes(), messageReceived);
         message = "Hello X";
-        mq.publishOnQueue(queueName, message.getBytes());
+        mq.publishOnQueue(queueName, message.getBytes(), MQ.VALID_MESSAGE_TYPE);
         messageReceived = mq.receiveMessageFromQueue(queueName);
 
         Assert.assertArrayEquals(message.getBytes(), messageReceived);

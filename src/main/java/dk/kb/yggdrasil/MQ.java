@@ -52,7 +52,7 @@ public class MQ {
     private String exchangeType = "direct";
     
     /** The only valid message type, currently. */ 
-    private static final String VALID_MESSAGE_TYPE = "PreservationRequest";
+    public static final String VALID_MESSAGE_TYPE = "PreservationRequest";
     
     
     /** Logging mechanism. */
@@ -148,13 +148,17 @@ public class MQ {
     * @param queueName A given MQ queue.
     * @param ch An already created channel to the MQ broker.
     * @param message The message to be published on the queue.
+    * @param messageType The Type of the message
     * @throws YggdrasilException If Unable to publish message to the queue.
     */
-   public void publishOnQueue(String queueName, byte[] message)
+   public void publishOnQueue(String queueName, byte[] message, String messageType)
            throws YggdrasilException {
        try {
            String routingKey = queueName;
-           theChannel.basicPublish(exchangeName, routingKey, MQ.getMQProperties(), message);
+           AMQP.BasicProperties messageProps = MQ.getMQProperties();
+           messageProps.setType(messageType);
+           messageProps.setTimestamp(new Date());
+           theChannel.basicPublish(exchangeName, routingKey, messageProps, message);
        } catch (IOException e) {
            throw new YggdrasilException("Unable to publish message to queue '"
                    + queueName + "'", e);
@@ -190,7 +194,7 @@ public class MQ {
            String messageType = delivery.getProperties().getType();
            Date sentDate = delivery.getProperties().getTimestamp();
            logger.info("received message of type '" + messageType 
-                   + "' with timestamp " + sentDate);
+                   + "' with timestamp '" + sentDate + "'");
            payload = delivery.getBody();
            boolean acknowledgeMultipleMessages = false;
            theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), acknowledgeMultipleMessages);
