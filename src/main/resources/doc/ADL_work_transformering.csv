@@ -1,0 +1,111 @@
+ADL WORK transformering til METS;;;
+"Forklaring af værdier i først kolonne: XXX = felt, ""XXX"" = konstant værdi, [XXX] = funktion";;;
+Forklaring af værdier i anden kolonne: XXX = element navn, '/' = adskillelse mellem under-element, '@' = attribut, [x] = udgave af element;;;
+;;;
+ADL;METS;CONDITION;namespace
+;mets;;mets
+provenanceMetadata/fields/uuid;mets@OBJID;;
+"""Work""";mets@TYPE;;
+[profile_uri];mets@PROFILE;;
+;mets/metsHdr;;mets
+[TIME_NOW];mets/metsHdr@CREATEDATE;;
+;mets/metsHdr/agent[1];;mets
+"""kbDk""";mets/metsHdr/agent[1]@ID;;
+"""CREATOR""";mets/metsHdr/agent[1]@ROLE;;
+"""ORGANIZATION""";mets/metsHdr/agent[1]@TYPE;;
+"""Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek""";mets/metsHdr/agent[1]/name;;mets
+;mets/metsHdr/agent[2];;mets
+"""kbDkYggdrasil""";mets/metsHdr/agent[2]@ID;;
+"""CREATOR""";mets/metsHdr/agent[2]@ROLE;;
+"""OTHER""";mets/metsHdr/agent[2]@TYPE;;
+"""API""";mets/metsHdr/agent[2]@OTHERTYPE;;
+[Yggdrasil-version];mets/metsHdr/agent[2]/name;;mets
+"""dk.kb.yggdrasil.MetsGenerator (??)""";mets/metsHdr/agent[2]/note;;mets
+;mets/metsHdr/agent[3];;mets
+"""kbDkNsa""";mets/metsHdr/agent[3]@ID;;
+"""EDITOR""";mets/metsHdr/agent[3]@ROLE;;
+"""OTHER""";mets/metsHdr/agent[3]@TYPE;;
+"""DEPARTMENT""";mets/metsHdr/agent[3]@OTHERTYPE;;
+"""NSA: Nationalsamlingsafdelingen""";mets/metsHdr/agent[3]/name;;mets
+;mets/dmdSec;;mets
+[DATE-NOW];mets/dmdSec@CREATED;;
+"""Mods1""";mets/dmdSec@ID;;
+;mets/dmdSec/mdWrap;;mets
+"""MODS""";mets/dmdSec/mdWrap@MDTYPE;;
+;mets/dmdSec/mdWrap/xmlData;;mets
+;mets/dmdSec/mdWrap/xmlData/mods;;mods
+[copy-of] descMetadata/mods/genre;mets/dmdSec/mdWrap/xmlData/mods/genre;;mods
+[copy-of] descMetadata/mods/identifier[@type='isbn];mets/dmdSec/mdWrap/xmlData/mods/identifier[@type='isbn];;mods
+[copy-of] descMetadata/mods/locator;mets/dmdSec/mdWrap/xmlData/mods/locator;;mods
+[copy-of] descMetadata/mods/language;mets/dmdSec/mdWrap/xmlData/mods/language;;mods
+[copy-of] descMetadata/mods/originInfo;mets/dmdSec/mdWrap/xmlData/mods/originInfo;;mods
+[copy-of] descMetadata/mods/physicalDescription;mets/dmdSec/mdWrap/xmlData/mods/physicalDescription;;mods
+[copy-of] descMetadata/mods/subject;mets/dmdSec/mdWrap/xmlData/mods/subject;;mods
+[copy-of] descMetadata/mods/titleInfo;mets/dmdSec/mdWrap/xmlData/mods/titleInfo;;mods
+[copy-of] descMetadata/mods/typeOfResource;mets/dmdSec/mdWrap/xmlData/mods/typeOfResource;;mods
+;mets/dmdSec/mdWrap/xmlData/mods/name[x];Hver author-> author[x];mods
+"""urn:uuid:"" + author[x]/uuid";mets/dmdSec/mdWrap/xmlData/mods/name[x]@valueURI;;
+author[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
+;mets/dmdSec/mdWrap/xmlData/mods/name[x]/role;;mods
+"""author""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[1];;mods
+"""text""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[1]@type;;
+"""marcrelator""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[1]@authority;;
+"""aut""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2];;mods
+"""code""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2]@type;;
+"""marcrelator""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2]@authority;;
+;mets/dmdSec/mdWrap/xmlData/mods/name[x];Hver related_person -> per[x];mods
+"""urn:uuid:"" + per[x]/uuid";mets/dmdSec/mdWrap/xmlData/mods/name[x]@valueURI;;
+per[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
+;mets/dmdSec/mdWrap/xmlData/mods/name[x]/role;;mods
+"""other""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm;;mods
+"""text""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm@type;;
+"""marcrelator""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm@authority;;
+;mets/amdSec;;mets
+;mets/amdSec/rightsMD;;mets
+[DATE-NOW];mets/amdSec/rightsMD@CREATED;;
+"""ModsRights1""";mets/amdSec/rightsMD@ID;;
+;mets/amdSec/rightsMD/mdWrap;;mets
+"""MODS""";mets/amdSec/rightsMD/mdWrap@MDTYPE;;
+;mets/amdSec/rightsMD/mdWrap/xmlData;;mets
+;mets/amdSec/rightsMD/mdWrap/xmlData/mods;;mods
+"""Det Kongelige Bibliotek""";mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods
+;mets/amdSec/digiprovMD[1];;mets
+[DATE-NOW];mets/amdSec/digiprovMD[1]@CREATED;;
+"""Premis1""";mets/amdSec/digiprovMD[1]@ID;;
+;mets/amdSec/digiprovMD[1]/mdWrap;;mets
+"""PREMIS""";mets/amdSec/digiprovMD[1]/mdWrap@MDTYPE;;
+;mets/amdSec/digiprovMD[1]/mdWrap/xmlData;;mets
+;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[1];preservation/bitsafety;premis
+preservationMetadata/fields/preservation_bitsafety;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[1]/preservationLevelValue;;premis
+preservationMetadata/fields/preservation_modify_date;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[1]/preservationLevelDateAssigned;;premis
+;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[2];preservation/confidentiality;premis
+preservationMetadata/fields/preservation_confidentiality;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[2]/preservationLevelValue;;premis
+preservationMetadata/fields/preservation_modify_date;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[2]/preservationLevelDateAssigned;;premis
+;mets/amdSec/digiprovMD[2];;mets
+"""PremisEvent1""";mets/amdSec/digiprovMD[2]@ID;;
+[DATE-NOW];mets/amdSec/digiprovMD[2]@CREATED;;
+;mets/amdSec/digiprovMD[2]/mdWrap;;mets
+"""PREMIS:EVENT""";mets/amdSec/digiprovMD[2]/mdWrap@MDTYPE;;
+;mets/amdSec/digiprovMD[2]/mdWrap/xmlData;;mets
+;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event;;premis
+;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/eventIdentifier;;premis
+"""UUID""";mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/eventIdentifier/eventIdentifierType;;premis
+[UUID];mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/eventIdentifier/eventIdentifierValue;;premis
+"""ingestion""";mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/eventType;;premis
+[DATE-NOW];mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/eventDateTime;;premis
+;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingAgentIdentifier;;premis
+"""kbDkInternal""";mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingAgentIdentifier/linkingAgentIdentifierType;;premis
+"""kbDkIngest""";mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingAgentIdentifier/linkingAgentIdentifierValue;;premis
+;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingObjectIdentifier;;premis
+"""UUID""";mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingObjectIdentifier/linkingObjectIdentifierType;;premis
+provenanceMetadata/fields/uuid;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingObjectIdentifier/linkingObjectIdentifierValue;;premis
+;mets/structMap;;mets
+"""logical""";mets/structMap@TYPE;;
+;mets/structMap/div;;mets
+"""Mods1""";mets/structMap/div@DMDID;;
+"""ModsRights1 Premis1 PremisEvent1""";mets/structMap/div@AMDID;;
+;mets/structMap/div/div[x];Hver repræsentation -> rep[x];mets
+rep[x]/name;mets/structMap/div/div[x]@ID;;
+;mets/structMap/div/div[x]/mptr;;mets
+"""URN""";mets/structMap/div/div[x]/mptr@LOCTYPE;;
+"""urn:uuid:"" + rep[x]/uuid";mets/structMap/div/div[x]/mptr@xlink:href;;
