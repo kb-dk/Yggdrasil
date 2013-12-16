@@ -260,8 +260,9 @@ public class Workflow {
             try {
                 tmpFile = payload.writeToFile();
             } catch (IOException e) {
-                updateRemotePreservationStateAndThrowException(prs, 
-                        "Unable to write content to local file: " + e);
+                String reason = "Unable to write content to local file: " + e;
+                updateRemotePreservationStateToFailState(prs, reason);
+                throw new YggdrasilException(reason, e);
             }
             prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
             prs.setContentPayload(tmpFile);
@@ -274,19 +275,12 @@ public class Workflow {
         }   
     }
     
-    private void updateRemotePreservationStateAndThrowException(
-            PreservationRequestState prs, String reason) throws YggdrasilException {
-        PreservationResponse response = new PreservationResponse();
-        response.preservation = new Preservation();
-        response.preservation.preservation_state = State.PRESERVATION_REQUEST_FAILED.name();
-        response.preservation.preservation_details = reason;
-        byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
-        HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
-        logger.info("Preservation status updated to '" + State.PRESERVATION_REQUEST_FAILED.name() 
-                +  "' using the updateURI.");
-        throw new YggdrasilException(reason);
-    }
-
+    /**
+     * Set remote preservation state to PRESERVATION_REQUEST_FAILED with a given reason.      
+     * @param prs a given preservationrequeststate
+     * @param reason The reason for failing this request
+     * @throws YggdrasilException
+     */
     private void updateRemotePreservationStateToFailState(
             PreservationRequestState prs, String reason) throws YggdrasilException {
         PreservationResponse response = new PreservationResponse();

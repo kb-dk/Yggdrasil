@@ -2,7 +2,9 @@ package dk.kb.yggdrasil.db;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
@@ -16,7 +18,8 @@ import dk.kb.yggdrasil.json.PreservationRequest;
 public class PreservationRequestState implements Serializable {
     
     /** Logging mechanism. */
-    private static final Logger logger = Logger.getLogger(PreservationRequestState.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(
+            PreservationRequestState.class.getName());
     
     /** The preservationRequest received from Valhal. */ 
     private PreservationRequest request;
@@ -139,24 +142,21 @@ public class PreservationRequestState implements Serializable {
     */
    public void cleanup() {
        if (uploadPackage != null && uploadPackage.exists()) {
-           boolean deleted = uploadPackage.delete();
-           if (!deleted) {
-               logger.warning("Unable to delete uploadpackagefile '" 
+           if (!uploadPackage.delete()) {
+               logger.warn("Unable to delete uploadpackagefile '" 
                        + uploadPackage.getAbsolutePath() + "'");
            }
        }
        if (contentPayload != null && contentPayload.exists()) {
-           boolean deleted = contentPayload.delete();
-           if (!deleted) {
-               logger.warning("Unable to delete temporary file for contentPayload '" 
+           if (!contentPayload.delete()) {
+               logger.warn("Unable to delete temporary file for contentPayload '" 
                        + contentPayload.getAbsolutePath() + "'");
            }
        }
        
        if (metadataPayload != null && metadataPayload.exists()) {
-           boolean deleted = metadataPayload.delete();
-           if (!deleted) {
-               logger.warning("Unable to delete temporary file for metadataPayload '" 
+           if (!metadataPayload.delete()) {
+               logger.warn("Unable to delete temporary file for metadataPayload '" 
                        + metadataPayload.getAbsolutePath() + "'");
            }
        }
