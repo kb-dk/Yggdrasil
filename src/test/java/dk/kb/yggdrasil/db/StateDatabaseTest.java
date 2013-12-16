@@ -15,7 +15,6 @@ import org.junit.runners.JUnit4;
 import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.Metadata;
 import dk.kb.yggdrasil.json.PreservationRequest;
 
 @RunWith(JUnit4.class)
@@ -49,19 +48,22 @@ public class StateDatabaseTest {
         String UUID_sample = "sample_uuid";
         pr.UUID = UUID_sample;
         pr.File_UUID = "dasdasdsdasd";
+        
+        /*
         Metadata m = new Metadata();
         m.descMetadata = "Some descriptive metadata";
         m.preservationMetadata = "Some preservation metadata";
         m.provenanceMetadata = "Some provenance metadata";
         m.techMetadata = "Some technical metadata";
-        pr.metadata = m;
+        */
+        pr.metadata = "Some technical metadata";
 
         PreservationRequestState prs = new PreservationRequestState(pr, 
                 State.PRESERVATION_REQUEST_RECEIVED, UUID_sample);
         sd.put(UUID_sample, prs);
         PreservationRequestState df = sd.getRecord(UUID_sample);
         assertEquals("dasdasdsdasd", df.getRequest().File_UUID);
-        assertEquals("Some technical metadata", df.getRequest().metadata.techMetadata);
+        assertEquals("Some technical metadata", df.getRequest().metadata);
         sd.delete(UUID_sample);
         sd.cleanup();
     }

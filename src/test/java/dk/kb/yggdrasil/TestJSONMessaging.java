@@ -18,7 +18,6 @@ import com.antiaction.common.json.JSONObjectMappings;
 import com.antiaction.common.json.JSONStructure;
 import com.antiaction.common.json.JSONText;
 
-import dk.kb.yggdrasil.json.Metadata;
 import dk.kb.yggdrasil.json.Preservation;
 import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.json.PreservationResponse;
@@ -53,11 +52,14 @@ public class TestJSONMessaging {
         request.Update_URI = "uuuri";
         request.File_UUID = "fuuid";
         request.Content_URI = "curi";
+        request.metadata = "Some metadata";
+        /*
         request.metadata = new Metadata();
         request.metadata.descMetadata = "desc";
         request.metadata.preservationMetadata = "pres";
         request.metadata.provenanceMetadata = "provo";
         request.metadata.techMetadata = "techko";
+        */
 
         try {
             out.reset();
@@ -76,10 +78,12 @@ public class TestJSONMessaging {
             Assert.assertEquals("fuuid", request.File_UUID);
             Assert.assertEquals("curi", request.Content_URI);
             Assert.assertNotNull(request.metadata);
+            /*
             Assert.assertEquals("desc", request.metadata.descMetadata);
             Assert.assertEquals("pres", request.metadata.preservationMetadata);
             Assert.assertEquals("provo", request.metadata.provenanceMetadata);
             Assert.assertEquals("techko", request.metadata.techMetadata);
+            */
 
             PreservationResponse response = new PreservationResponse();
             Preservation preservation = new Preservation();

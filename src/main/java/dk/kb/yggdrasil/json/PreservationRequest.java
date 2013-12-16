@@ -35,7 +35,7 @@ public class PreservationRequest implements Serializable {
     public String Content_URI;
 
     /** Metadata data. */
-    public Metadata metadata;
+    public String metadata;
 
     public boolean isMessageValid() {
         StringBuffer missingContent = new StringBuffer();
