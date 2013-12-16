@@ -29,99 +29,61 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  */
 public enum State implements Serializable {
     /** Preservation request received and understood (i.e. the message is complete). */
-    PRESERVATION_REQUEST_RECEIVED {
-        @Override
-        public String getDescription() {
-            return "Preservation request received and validated";
-        }
-    },
+    PRESERVATION_REQUEST_RECEIVED("Preservation request received and validated"),
+    
     /** Preservation request incomplete. Something is missing. Failstate. */
-    PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE {
-        @Override
-        public String getDescription() {
-            return "Preservation request incomplete. Something is missing";
-        }
-    },
+    PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE
+    ("Preservation request incomplete. Something is missing"),
+    
     /** Metadata packaged successfully. */
-    PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY {
-        @Override
-        public String getDescription() {
-            return "Metadata packaged successfully.";
-        }
-    },
+    PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY("Metadata packaged successfully."),
+    
     /** Metadata packaged unsuccessfully (eg. METS error or similar). Failstate. */
-    PRESERVATION_METADATA_PACKAGED_FAILURE {
-        @Override
-        public String getDescription() {
-            return "Metadata packaged unsuccessfully (eg. METS error or similarly)";
-        }
-    },
+    PRESERVATION_METADATA_PACKAGED_FAILURE(
+            "Metadata packaged unsuccessfully (eg. METS error or similarly)"),
+    
     /** Resources downloaded successfully. */
-    PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS {
-        @Override
-        public String getDescription() {
-            return "Resources downloaded successfully";
-        }
-    },
+    PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS("Resources downloaded successfully"),
+
     /** Resources downloaded unsuccessfully. Failstate. */
-    PRESERVATION_RESOURCES_DOWNLOAD_FAILURE {
-        @Override
-        public String getDescription() {
-            return "Resources downloaded unsuccessfully";
-        }
-    },
+    PRESERVATION_RESOURCES_DOWNLOAD_FAILURE("Resources downloaded unsuccessfully"),
+
     /** Package complete (metadata and ressources written to the WARC format).
      * and ready to initiate upload. */
-    PRESERVATION_PACKAGE_COMPLETE {
-        @Override
-        public String getDescription() {
-            return "metadata and ressources has been written to the WARC format";
-        }
-    },
+    PRESERVATION_PACKAGE_COMPLETE("metadata and ressources has been written to the WARC format"),
+    
     /** Waiting for more requests before upload is initiated.
      * If the request does not have the requirement, that it should be packaged in its own package.
      * Then it arrives into this state. However, we can only package data together with
      * the same bitrepository profile. So each profile must have its own waiting queue.
      */
-    PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA {
-        @Override
-        public String getDescription() {
-            return "Waiting for more requests before upload to bitrepository is initiated";
-        }
-    },
+    PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA(
+            "Waiting for more requests before upload to bitrepository is initiated"),
+    
     /** Initiated upload to Bitrepository. */
-    PRESERVATION_PACKAGE_UPLOAD_INITIATED {
-        @Override
-        public String getDescription() {
-            return "Upload to bitrepository initiated";
-        }
-    },
+    PRESERVATION_PACKAGE_UPLOAD_INITIATED("Upload to bitrepository initiated"),
+    
     /** Upload to Bitrepository failed. Failstate. */
-    PRESERVATION_PACKAGE_UPLOAD_FAILURE {
-        @Override
-        public String getDescription() {
-            return "Upload to bitrepository failed.";
-        }
-    },
+    PRESERVATION_PACKAGE_UPLOAD_FAILURE("Upload to bitrepository failed."),
+    
     /** Upload to Bitrepository was successful. */
-    PRESERVATION_PACKAGE_UPLOAD_SUCCESS {
-        @Override
-        public String getDescription() {
-            return "Upload to bitrepository was successful";
-        }
-    },
+    PRESERVATION_PACKAGE_UPLOAD_SUCCESS("Upload to bitrepository was successful"),
     
     /** Preservation request failed */
-    PRESERVATION_REQUEST_FAILED {
-        @Override
-        public String getDescription() {
-            return "The preservation request failed";
-        }
-    };
+    PRESERVATION_REQUEST_FAILED("The preservation request failed");
+    
+    private State(String description) {
+        this.defaultDescription = description;
+    }
+    
     /** 
      * @return The default description of this state.
      */
-    public abstract String getDescription();
+    public String getDescription() {
+        return this.defaultDescription;
+    }
+    
+    private String defaultDescription; 
     
     
     /** Set with the failstates in this enum class. */
