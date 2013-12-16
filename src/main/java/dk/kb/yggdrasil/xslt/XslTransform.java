@@ -48,6 +48,8 @@ public class XslTransform {
 
                 file = new File(args[2]);
                 RandomAccessFile raf = new RandomAccessFile(file, "rw");
+                raf.seek(0);
+                raf.setLength(0);
                 raf.write(bytes);
                 raf.close();
                 result = xmlValidator.validate(file, entityResolver, errorHandler);
