@@ -52,7 +52,7 @@
         
         <xsl:element name="mets:agent">
           <xsl:attribute name="ID">
-            <xsl:value-of select="'kbDkYggdrasil1.0'" />
+            <xsl:value-of select="'kbDkYggdrasil'" />
           </xsl:attribute>
           <xsl:attribute name="ROLE"> 
             <xsl:value-of select="'CREATOR'" />
@@ -71,25 +71,23 @@
           </xsl:element>
         </xsl:element>
         
-        <xsl:for-each select="field[@name='Department']">
-          <xsl:element name="mets:agent">
-            <xsl:attribute name="ID">
-              <xsl:value-of select="'kbDkNsa'" />
-            </xsl:attribute>
-            <xsl:attribute name="ROLE">
-              <xsl:value-of select="'EDITOR'" />
-            </xsl:attribute>
-            <xsl:attribute name="TYPE">
-              <xsl:value-of select="'OTHER'" />
-            </xsl:attribute>
-            <xsl:attribute name="OTHERTYPE">
-              <xsl:value-of select="'DEPARTMENT'" />
-            </xsl:attribute>
-            <xsl:element name="mets:name">
-              <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
-            </xsl:element>
+        <xsl:element name="mets:agent">
+          <xsl:attribute name="ID">
+            <xsl:value-of select="'kbDkNsa'" />
+          </xsl:attribute>
+          <xsl:attribute name="ROLE">
+            <xsl:value-of select="'EDITOR'" />
+          </xsl:attribute>
+          <xsl:attribute name="TYPE">
+            <xsl:value-of select="'OTHER'" />
+          </xsl:attribute>
+          <xsl:attribute name="OTHERTYPE">
+            <xsl:value-of select="'DEPARTMENT'" />
+          </xsl:attribute>
+          <xsl:element name="mets:name">
+            <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
           </xsl:element>
-        </xsl:for-each>
+        </xsl:element>
       </xsl:element>
       <!-- END metsHdr -->
       
@@ -111,6 +109,12 @@
               <xsl:copy-of select="descMetadata/mods:mods/mods:genre" />
               <xsl:copy-of select="descMetadata/mods:mods/mods:identifier[@type='isbn']" />
               <xsl:copy-of select="descMetadata/mods:mods/mods:locator" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:language" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:originInfo" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:physicalDescription" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:subject" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:titleInfo" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:typeOfResource" />
               <xsl:for-each select="author">
                 <xsl:element name="mods:name">
                   <xsl:attribute name="valueURI">
@@ -159,12 +163,6 @@
                   </xsl:element>
                 </xsl:element>
               </xsl:for-each>
-              <xsl:copy-of select="descMetadata/mods:mods/mods:language" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:originInfo" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:titleInfo" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:subject" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:physicalDescription" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:typeOfResource" />
             </mods:mods>
 <!--             <xsl:copy-of select="descMetadata"/>  -->
             <!-- END MODS -->
@@ -212,19 +210,19 @@
               <!-- Preservation level for bit safety. -->
               <premis:preservationLevel xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
                 <xsl:element name="premis:preservationLevelValue">
-                  <xsl:value-of select="'preservation/bitSafety'" />
+                  <xsl:value-of select="preservationMetadata/fields/preservation_bitsafety" />
                 </xsl:element>
                 <xsl:element name="premis:preservationLevelDateAssigned">
-                  <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+                  <xsl:value-of select="preservationMetadata/fields/preservation_modify_date" />
                 </xsl:element>
               </premis:preservationLevel>
               <!-- Preservation level for confidentiality. -->
               <premis:preservationLevel xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
                 <xsl:element name="premis:preservationLevelValue">
-                  <xsl:value-of select="'preservation/confidentality'" />
+                  <xsl:value-of select="preservationMetadata/fields/preservation_confidentiality" />
                 </xsl:element>
                 <xsl:element name="premis:preservationLevelDateAssigned">
-                  <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+                  <xsl:value-of select="preservationMetadata/fields/preservation_modify_date" />
                 </xsl:element>
               </premis:preservationLevel>
             </xsl:element>
@@ -271,7 +269,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingObjectIdentifierValue">
-                    <xsl:value-of select="'RandomUUID'" />
+                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
                   </xsl:element>
                 </xsl:element>
               </premis:event>

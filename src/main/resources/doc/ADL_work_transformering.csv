@@ -104,8 +104,8 @@ provenanceMetadata/fields/uuid;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/li
 ;mets/structMap/div;;mets
 """Mods1""";mets/structMap/div@DMDID;;
 """ModsRights1 Premis1 PremisEvent1""";mets/structMap/div@AMDID;;
-;mets/structMap/div/div[x];Hver repræsentation -> rep[x];mets
-rep[x]/name;mets/structMap/div/div[x]@ID;;
+;mets/structMap/div/div[x];Hver representation -> rep[x];mets
+rep[x]/name;mets/structMap/div/div[x]@LABEL;;
 ;mets/structMap/div/div[x]/mptr;;mets
 """URN""";mets/structMap/div/div[x]/mptr@LOCTYPE;;
 """urn:uuid:"" + rep[x]/uuid";mets/structMap/div/div[x]/mptr@xlink:href;;
