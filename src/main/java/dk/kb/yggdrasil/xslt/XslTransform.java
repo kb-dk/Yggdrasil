@@ -22,16 +22,17 @@ public class XslTransform {
             System.out.println("Usage: transform <input.xml> <transformer.xsl> <output.xml>");
         } else {
             try {
-                File file = new File(args[1]);
-                XslTransformer transformer = XslTransformer.getTransformer(file);
+                File xslFile = new File(args[1]);
+                XslTransformer transformer = XslTransformer.getTransformer(xslFile);
 
                 XslUriResolver uriResolver = new XslUriResolver();
                 XslErrorListener errorListener = new XslErrorListener();
 
-                file = new File(args[0]);
-                Source source = new StreamSource(file);
+                File xmlFile = new File(args[0]);
+                Source source = new StreamSource(xmlFile);
                 byte[] bytes = transformer.transform(source, uriResolver, errorListener);
 
+                // Un-comment to enable DTD/XSL caching.
                 /*
                 File cacheDir = new File(new File(url.getFile()), "entity_cache");
                 if (!cacheDir.exists() && !cacheDir.mkdirs()) {
@@ -46,13 +47,13 @@ public class XslTransform {
                 XmlValidator xmlValidator = new XmlValidator();
                 XmlValidationResult result;
 
-                file = new File(args[2]);
-                RandomAccessFile raf = new RandomAccessFile(file, "rw");
+                File outputFile = new File(args[2]);
+                RandomAccessFile raf = new RandomAccessFile(outputFile, "rw");
                 raf.seek(0);
                 raf.setLength(0);
                 raf.write(bytes);
                 raf.close();
-                result = xmlValidator.validate(file, entityResolver, errorHandler);
+                result = xmlValidator.validate(outputFile, entityResolver, errorHandler);
                 if (result != null) {
                     System.out.println("Validated: " + result.bValidate);
                     System.out.println("    Valid: " + !errorHandler.hasErrors());

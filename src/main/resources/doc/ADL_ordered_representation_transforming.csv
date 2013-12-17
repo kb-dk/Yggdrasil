@@ -5,7 +5,8 @@ Forklaring af værdier i anden kolonne: XXX = element navn, '/' = adskillelse mel
 ADL;METS;CONDITION;namespace
 ;mets;;mets
 provenanceMetadata/fields/uuid;mets@OBJID;;
-"""OrderedRepresentation""";mets@TYPE;;
+"""Representation""";mets@TYPE;If file;
+"""OrderedRepresentation""";mets@TYPE;if techMetadata;
 [profile_uri];mets@PROFILE;;
 ;mets/metsHdr;;mets
 [TIME_NOW];mets/metsHdr@CREATEDATE;;
@@ -75,13 +76,18 @@ preservation/date_update;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLe
 ;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingObjectIdentifier;;premis
 """UUID""";mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingObjectIdentifier/linkingObjectIdentifierType;;premis
 provenanceMetadata/uuid;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/linkingObjectIdentifier/linkingObjectIdentifierValue;;premis
-;mets/structMap;;mets
+;mets/structMap;If file or techMetadata;mets
 """logical""";mets/structMap@TYPE;;
 ;mets/structMap/div;;mets
 """Mods1""";mets/structMap/div@DMDID;;
 """ModsRights1 Premis1 PremisEvent1""";mets/structMap/div@AMDID;;
-;mets/structMap/div/div[x];Hver repræsentation -> rep[x];mets
-techMetadata/mets/structMap/div[x]@ID;mets/structMap/div/div[x]@ID;;
+;mets/structMap/div/div;If file;mets
+file/name;mets/structMap/div/div@LABEL;;
+;mets/structMap/div/div/mptr;;mets
+"""URN""";mets/structMap/div/div/mptr@LOCTYPE;;
+"concat(""urn:uuid:"" + file/uuid)";mets/structMap/div/div/mptr@xlink:href;;
+;mets/structMap/div/div[x];If techMetadata then Hver repræsentation -> rep[x];mets
+techMetadata/mets/structMap/div[x]@ID;mets/structMap/div/div[x]@LABEL;;
 techMetadata/mets/structMap/div[x]@ORDER;mets/structMap/div/div[x]@ORDER;;
 ;mets/structMap/div/div[x]/mptr;;mets
 """URN""";mets/structMap/div/div[x]/mptr@LOCTYPE;;
