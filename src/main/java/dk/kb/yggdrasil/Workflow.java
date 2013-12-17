@@ -7,13 +7,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.jwat.common.ContentType;
 import org.jwat.common.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
 
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
@@ -24,6 +34,11 @@ import dk.kb.yggdrasil.json.Preservation;
 import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.warc.WarcWriterWrapper;
+import dk.kb.yggdrasil.xslt.XmlValidationResult;
+import dk.kb.yggdrasil.xslt.XmlValidator;
+import dk.kb.yggdrasil.xslt.XslErrorListener;
+import dk.kb.yggdrasil.xslt.XslTransformer;
+import dk.kb.yggdrasil.xslt.XslUriResolver;
 
 /**
  * The class handling the workflow, and the updates being sent back to Valhal.
@@ -187,9 +202,49 @@ public class Workflow {
 
     /**
      * Transform the metadata included with the request to the proper METS preservation format.
+     * @param prs 
+     * @param currentUUID 
+     * @throws YggdrasilException 
      */
-    private void transformMetadata() {
-     // FIXME replace with proper metadata transformation code
+    private void transformMetadata(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
+        // FIXME replace with proper metadata transformation code
+        String theMetadata = prs.getRequest().metadata;
+        String transformerScriptToUse = "work";
+        String scriptSuffix = ".xsl";
+        URL url = this.getClass().getClassLoader().getResource("xslt/" 
+                + transformerScriptToUse + scriptSuffix);
+        File xslFile = new File(url.getFile());
+        InputStream metadataInputStream = null;
+        File outputFile = null;
+        try {
+            XslTransformer xsltransform = XslTransformer.getTransformer(xslFile);
+            XslUriResolver uriResolver = new XslUriResolver();
+            XslErrorListener errorListener = new XslErrorListener();
+            metadataInputStream = new ByteArrayInputStream(theMetadata.getBytes());
+            Source xmlSource = new StreamSource(metadataInputStream);
+            outputFile = new File(UUID.randomUUID().toString());
+            Result outputTarget = new StreamResult(outputFile);
+            xsltransform.transform(xmlSource, uriResolver, errorListener, outputTarget);
+            EntityResolver entityResolver = null;
+            File xmlFile = outputFile;
+            ErrorHandler errorHandler = null;
+            XmlValidationResult r = new XmlValidator().validate(xmlFile, entityResolver, 
+                    errorHandler);
+            if (!r.bValidate) {
+                updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
+            } else {
+                prs.setMetadataPayload(outputFile);
+                updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
+            }
+        } catch (TransformerConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
+        } catch (TransformerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
+        }
     }
 
     /**
@@ -202,7 +257,7 @@ public class Workflow {
         try {
             logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");  
             fetchContent(currentUUID, prs);
-            transformMetadata();
+            transformMetadata(currentUUID, prs);
             writeToWarc(currentUUID, prs);
             uploadToBitrepository(currentUUID, prs);
             logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");
