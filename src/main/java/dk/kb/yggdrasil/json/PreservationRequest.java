@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import com.antiaction.common.json.annotation.JSONNullable;
 
-import dk.kb.yggdrasil.json.Metadata;
-
 /**
  * JSON preservation request object representation.
  */
@@ -25,7 +23,7 @@ public class PreservationRequest implements Serializable {
 
     /** Preservation state update URI. */
     public String Update_URI;
-
+   
     /** Optional content UUID. */
     @JSONNullable
     public String File_UUID;
@@ -33,6 +31,9 @@ public class PreservationRequest implements Serializable {
     /** Optional content URI. */
     @JSONNullable
     public String Content_URI;
+    
+    /** Metadata model. */
+    public String Model;
 
     /** Metadata data. */
     public String metadata;
@@ -48,6 +49,11 @@ public class PreservationRequest implements Serializable {
         if (Update_URI == null || Update_URI.isEmpty()) {
             missingContent.append("Mandatory field 'Update_URI' is undefined");
         }
+        
+        if (Model == null || Model.isEmpty()) {
+            missingContent.append("Mandatory field 'Model' is undefined");
+        }
+        
         if (missingContent.length() > 0) {
             logger.warn(missingContent.toString());
             return false;

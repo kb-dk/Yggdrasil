@@ -56,6 +56,9 @@ public class Workflow {
     /** The Bitrepository connection used by this workflow. */
     private Bitrepository bitrepository;
     
+    /** The general settings used by Yggdrasil. */
+    private Config config;
+    
     /** Size of pushback buffer for determining the encoding of the json message. */ 
     private static int PUSHBACKBUFFERSIZE = 4;
     
@@ -68,13 +71,15 @@ public class Workflow {
      * @param states
      * @param bitrepository
      */
-    public Workflow(MQ rabbitconnector, StateDatabase states, Bitrepository bitrepository) {
+    public Workflow(MQ rabbitconnector, StateDatabase states, Bitrepository bitrepository, Config config) {
         ArgumentCheck.checkNotNull(rabbitconnector, "MQ rabbitconnector");
-        ArgumentCheck.checkNotNull(rabbitconnector, "StateDatabase states");
-        ArgumentCheck.checkNotNull(rabbitconnector, "Bitrepository bitrepository");
+        ArgumentCheck.checkNotNull(states, "StateDatabase states");
+        ArgumentCheck.checkNotNull(bitrepository, "Bitrepository bitrepository");
+        ArgumentCheck.checkNotNull(config, "Config config");
         this.mq = rabbitconnector;
         this.sd = states;
         this.bitrepository = bitrepository;
+        this.config = config;
     }
     
     /**
@@ -174,7 +179,7 @@ public class Workflow {
             UUID packageId = UUID.randomUUID();
             Uri resourceId = null;
             Uri metadataId = null;
-            File writeDirectory = new File("/tmp"); //TODO read this information from yggdrasil.yml 
+            File writeDirectory = config.getTemporaryDir(); 
             WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(writeDirectory, packageId.toString());
             // FIXME Write some WARC fields. 
             w3.writeWarcinfoRecord(new byte[0], null);
@@ -207,9 +212,8 @@ public class Workflow {
      * @throws YggdrasilException 
      */
     private void transformMetadata(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
-        // FIXME replace with proper metadata transformation code
         String theMetadata = prs.getRequest().metadata;
-        String transformerScriptToUse = "work";
+        String transformerScriptToUse = prs.getRequest().Model.toLowerCase();
         String scriptSuffix = ".xsl";
         URL url = this.getClass().getClassLoader().getResource("xslt/" 
                 + transformerScriptToUse + scriptSuffix);
@@ -237,11 +241,9 @@ public class Workflow {
                 updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
         } catch (TransformerConfigurationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
         } catch (TransformerException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
         }
@@ -257,7 +259,7 @@ public class Workflow {
         try {
             logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");  
             fetchContent(currentUUID, prs);
-            transformMetadata(currentUUID, prs);
+            //transformMetadata(currentUUID, prs); // FIXME ENABLE WHEN READY
             writeToWarc(currentUUID, prs);
             uploadToBitrepository(currentUUID, prs);
             logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");

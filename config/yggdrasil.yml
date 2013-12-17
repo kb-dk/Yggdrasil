@@ -1,9 +1,12 @@
 development:
-  database_dir: src/test/resources/databasedir	
+  database_dir: src/test/resources/databasedir
+  temporary_dir: src/test/resources/tmpdir	
 
 test:
-  database_dir: databasehome	
+  database_dir: databasehome
+  temporary_dir: temporarydir		
 
 production: 
-  database_dir: databasehome	
+  database_dir: databasehome
+  temporary_dir: temporarydir		
 
