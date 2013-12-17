@@ -43,7 +43,7 @@ provenanceMetadata/fields/uuid;mets@OBJID;;
 [copy-of] descMetadata/mods/subject;mets/dmdSec/mdWrap/xmlData/mods/subject;;mods
 [copy-of] descMetadata/mods/titleInfo;mets/dmdSec/mdWrap/xmlData/mods/titleInfo;;mods
 [copy-of] descMetadata/mods/typeOfResource;mets/dmdSec/mdWrap/xmlData/mods/typeOfResource;;mods
-;mets/dmdSec/mdWrap/xmlData/mods/name[x];Hver author-> author[x];mods
+;mets/dmdSec/mdWrap/xmlData/mods/name[x];Each author-> author[x];mods
 """urn:uuid:"" + author[x]/uuid";mets/dmdSec/mdWrap/xmlData/mods/name[x]@valueURI;;
 author[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
 ;mets/dmdSec/mdWrap/xmlData/mods/name[x]/role;;mods
@@ -53,7 +53,7 @@ author[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
 """aut""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2];;mods
 """code""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2]@type;;
 """marcrelator""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2]@authority;;
-;mets/dmdSec/mdWrap/xmlData/mods/name[x];Hver related_person -> per[x];mods
+;mets/dmdSec/mdWrap/xmlData/mods/name[x];Each related_person -> per[x];mods
 """urn:uuid:"" + per[x]/uuid";mets/dmdSec/mdWrap/xmlData/mods/name[x]@valueURI;;
 per[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
 ;mets/dmdSec/mdWrap/xmlData/mods/name[x]/role;;mods
@@ -104,7 +104,7 @@ provenanceMetadata/fields/uuid;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/li
 ;mets/structMap/div;;mets
 """Mods1""";mets/structMap/div@DMDID;;
 """ModsRights1 Premis1 PremisEvent1""";mets/structMap/div@AMDID;;
-;mets/structMap/div/div[x];Hver representation -> rep[x];mets
+;mets/structMap/div/div[x];Each representation -> rep[x];mets
 rep[x]/name;mets/structMap/div/div[x]@LABEL;;
 ;mets/structMap/div/div[x]/mptr;;mets
 """URN""";mets/structMap/div/div[x]/mptr@LOCTYPE;;
