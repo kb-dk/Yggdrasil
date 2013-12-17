@@ -9,10 +9,6 @@
     xmlns:mods="http://www.loc.gov/mods/v3"
     xmlns:premis="info:lc/xmlns/premis-v2"
     
-    xmlns:ns0="http://www.kb.dk/" 
-    xmlns:ns1="info:fedora/fedora-system:def/model#" 
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    
     extension-element-prefixes="java">
 
   <xsl:output encoding="UTF-8" method="xml" indent="yes" />
@@ -110,39 +106,35 @@
             <xsl:value-of select="'MODS'" />
           </xsl:attribute>
           <xsl:element name="mets:xmlData">
-
-          <!-- START name -->
+            <!-- START MODS -->
+            <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
+              <!-- START name -->
               <xsl:element name="mods:name">
                 <xsl:attribute name="lang">
                   <xsl:value-of select="'da'"/>
                 </xsl:attribute>
-                  <xsl:element name="mods:namePart">
-                    <xsl:attribute name="type">
-                      <xsl:value-of select="'personal'"/>
-                    </xsl:attribute>
-                    <xsl:value-of select="concat(descMetadata/fields/firstname, ' ', descMetadata/fields/lastname)"/>
-                  </xsl:element>
-                  <xsl:element name="mods:namePart">
-                    <xsl:attribute name="type">
-                      <xsl:value-of select="'given'"/>
-                    </xsl:attribute>
-                    <xsl:value-of select="descMetadata/fields/firstname" /> 
-                  </xsl:element>
-                  <xsl:element name="mods:namePart">
-                    <xsl:attribute name="type">
-                      <xsl:value-of select="'family'"/>
-                    </xsl:attribute>
-                    <xsl:value-of select="descMetadata/fields/lastname" /> 
-                  </xsl:element>
-                  <xsl:element name="mods:namePart">
-                    <xsl:attribute name="type">
-                      <xsl:value-of select="'date'"/>
-                    </xsl:attribute>
-                    <xsl:value-of select="concat(descMetadata/fields/date_of_birth, '-', descMetadata/fields/date_of_death)"/>
-                  </xsl:element>
+                <xsl:element name="mods:namePart">
+                  <xsl:attribute name="type">
+                    <xsl:value-of select="'given'"/>
+                  </xsl:attribute>
+                  <xsl:value-of select="descMetadata/fields/firstname" /> 
+                </xsl:element>
+                <xsl:element name="mods:namePart">
+                  <xsl:attribute name="type">
+                    <xsl:value-of select="'family'"/>
+                  </xsl:attribute>
+                  <xsl:value-of select="descMetadata/fields/lastname" /> 
+                </xsl:element>
+                <xsl:element name="mods:namePart">
+                  <xsl:attribute name="type">
+                    <xsl:value-of select="'date'"/>
+                  </xsl:attribute>
+                  <xsl:value-of select="concat(descMetadata/fields/date_of_birth, '-', descMetadata/fields/date_of_death)"/>
+                </xsl:element>
               </xsl:element>
-          <!-- END name -->
-            
+              <!-- END name -->
+            </mods:mods>
+            <!-- END MODS -->              
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -163,11 +155,13 @@
               <xsl:value-of select="'MODS'" />
             </xsl:attribute>
             <xsl:element name="mets:xmlData">
+              <!-- START MODS -->
               <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
                 <xsl:element name="mods:accessCondition">
                   <xsl:value-of select="'Det Kongelige Bibliotek'" />
                 </xsl:element>
               </mods:mods>
+              <!-- END MODS -->  
             </xsl:element>
           </xsl:element>
         </xsl:element>
@@ -246,7 +240,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingObjectIdentifierValue">
-                    <xsl:value-of select="'RandomUUID'" />
+                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
                   </xsl:element>
                 </xsl:element>
               </premis:event>
@@ -261,7 +255,6 @@
         <xsl:attribute name="TYPE">
           <xsl:value-of select="'logical'" />
         </xsl:attribute>
-        
         <xsl:element name="mets:div">
           <xsl:attribute name="DMDID">
             <xsl:value-of select="'Mods1'" />

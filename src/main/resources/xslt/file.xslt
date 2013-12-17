@@ -106,20 +106,22 @@
             <xsl:value-of select="'MODS'" />
           </xsl:attribute>
           <xsl:element name="mets:xmlData">
-
-          <!-- START title -->
-          <xsl:element name="mods:titleInfo">
-            <xsl:element name="mods:title">
-              <xsl:value-of select="techMetadata/fields/original_filename"/>
-            </xsl:element>
-          </xsl:element>
-          <!-- END title -->
-            
+            <!-- START MODS -->
+            <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
+              <!-- START title -->
+              <xsl:element name="mods:titleInfo">
+                <xsl:element name="mods:title">
+                  <xsl:value-of select="techMetadata/fields/original_filename"/>
+                </xsl:element>
+              </xsl:element>
+              <!-- END title -->
+              </mods:mods>
+              <!-- END MODS -->  
           </xsl:element>
         </xsl:element>
       </xsl:element>
       <!-- END dmdSec -->
-
+      
       <!-- START amdSec -->
       <xsl:element name="mets:amdSec">
         <!-- ADD MODS (rights) -->
@@ -135,11 +137,13 @@
               <xsl:value-of select="'MODS'" />
             </xsl:attribute>
             <xsl:element name="mets:xmlData">
+              <!-- START MODS -->
               <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
                 <xsl:element name="mods:accessCondition">
                   <xsl:value-of select="'Det Kongelige Bibliotek'" />
                 </xsl:element>
               </mods:mods>
+              <!-- END MODS -->  
             </xsl:element>
           </xsl:element>
         </xsl:element>
@@ -218,7 +222,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingObjectIdentifierValue">
-                    <xsl:value-of select="'RandomUUID'" />
+                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
                   </xsl:element>
                 </xsl:element>
               </premis:event>
@@ -247,7 +251,6 @@
                     <xsl:value-of select="'RandomUUID'" />
                   </xsl:element>
                 </xsl:element>
-                
                 <!-- BEGIN SignificantProperties -->
                   <xsl:element name="premis:significantProperties">
                     <xsl:element name="premis:significantPropertiesExtension">
@@ -255,7 +258,6 @@
                     </xsl:element>
                   </xsl:element>
                 <!-- END SignificantProperties -->
-                
                 <!-- BEGIN objectCharacteristics -->
                 <xsl:element name="premis:objectCharacteristics">
                   <!--Mandatory for a PREMIS File object, set to 0 (zero - the default value) here as no information is received from the repository.-->
@@ -286,7 +288,6 @@
                   </xsl:element>
                 </xsl:element>
                 <!-- END SignificantProperties -->
-                
                 <xsl:element name="premis:linkingIntellectualEntityIdentifier">
                   <xsl:element name="premis:linkingIntellectualEntityIdentifierType">
                     <xsl:value-of select="'UUID'" />

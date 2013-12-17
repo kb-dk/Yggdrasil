@@ -2,7 +2,7 @@ ADL PERSON transformering til METS;;;
 "Forklaring af værdier i først kolonne: XXX = felt, ""XXX"" = konstant værdi, [XXX] = funktion";;;
 Forklaring af værdier i anden kolonne: XXX = element navn, '/' = adskillelse mellem under-element, '@' = attribut, [x] = udgave af element;;;
 ;;;
-ADL;METS;IF;Kommentar
+ADL;METS;CONDITION;namespace
 ;mets;;
 provenanceMetadata/fields/uuid;mets@OBJID;;
 """Person""";mets@TYPE;;
@@ -34,26 +34,17 @@ provenanceMetadata/fields/uuid;mets@OBJID;;
 """MODS""";mets/dmdSec/mdWrap@MDTYPE;;
 ;mets/dmdSec/mdWrap/xmlData;;
 ;mets/dmdSec/mdWrap/xmlData/name;;mods
-"""da""";mets/dmdSec/mdWrap/xmlData/name/@lang;;mods
-;mets/dmdSec/mdWrap/xmlData/name/namePartt[1];;mods
-"""personal""";mets/dmdSec/mdWrap/xmlData/name/namePart[1]/@type;;mods
-[CONCAT(descMetadata/fields/firstname, ' ', descMetadata/fields/lastname)];mets/dmdSec/mdWrap/xmlData/name/namePartt[1];;mods
-;mets/dmdSec/mdWrap/xmlData/name/namePartt[2];;mods
-"""given""";mets/dmdSec/mdWrap/xmlData/name/namePartt[2]/@type;;mods
-descMetadata/fields/firstname;mets/dmdSec/mdWrap/xmlData/name/namePartt[2];;mods
-;mets/dmdSec/mdWrap/xmlData/name/namePartt[3];;mods
-"""family""";mets/dmdSec/mdWrap/xmlData/name/namePartt[3]/@type;;mods
-descMetadata/fields/lastname;mets/dmdSec/mdWrap/xmlData/name/namePartt[3];;mods
-;mets/dmdSec/mdWrap/xmlData/name/namePartt[4];;mods
-"""date""";mets/dmdSec/mdWrap/xmlData/name/namePartt[4]/@type;;mods
-[CONCAT(descMetadata/fields/date_of_birth, '-', descMetadata/fields/date_of_death)];mets/dmdSec/mdWrap/xmlData/name/namePartt[4];;mods
-;mets/dmdSec/mdWrap/xmlData/role;RELS-EXT/rdf:RDF/rdf:Description/ns0:isMemberOf;mods
-;mets/dmdSec/mdWrap/xmlData/role/roleTermt[1];;mods
-;mets/dmdSec/mdWrap/xmlData/role/roleTermt[1]/@type;;mods
-;mets/dmdSec/mdWrap/xmlData/role/roleTermt[1]/@authority;;mods
-;mets/dmdSec/mdWrap/xmlData/role/roleTermt[2];;mods
-;mets/dmdSec/mdWrap/xmlData/role/roleTerm[2]/@type;;mods
-;mets/dmdSec/mdWrap/xmlData/role/roleTerm[2]/@authority;;mods
+;mets/dmdSec/mdWrap/xmlData/mods;;mods
+"""da""";mets/dmdSec/mdWrap/xmlData/mods/name/@lang;;mods
+;mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[1];;mods
+"""given""";mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[1]/@type;;mods
+descMetadata/fields/firstname;mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[1];;mods
+;mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[2];;mods
+"""family""";mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[2]/@type;;mods
+descMetadata/fields/lastname;mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[2];;mods
+;mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[3];;mods
+"""date""";mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[3]/@type;;mods
+[CONCAT(descMetadata/fields/date_of_birth, '-', descMetadata/fields/date_of_death)];mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[3];;mods
 """ModsRights1""";mets/amdSec/rightsMD@ID;;
 [DATE-NOW];mets/amdSec/rightsMD@CREATED;;
 ;mets/amdSec/rightsMD/mdWrap;;
