@@ -265,22 +265,4 @@
           <xsl:for-each select="representation">
             <xsl:element name="mets:div">
               <xsl:attribute name="LABEL">
-                <xsl:value-of select="name" />
-              </xsl:attribute>
-              <xsl:element name="mets:mptr">
-                <xsl:attribute name="LOCTYPE">
-                  <xsl:value-of select="'URN'" />
-                </xsl:attribute>
-                <xsl:attribute name="xlink:href">
-                  <xsl:value-of select="concat('urn:uuid:', uuid)" />
-                </xsl:attribute>
-              </xsl:element>
-            </xsl:element>
-          </xsl:for-each>
-        </xsl:element>
-      </xsl:element>
-      <!-- END structMap -->
-      
-    </mets:mets>
-  </xsl:template>
-</xsl:transform> 
+   

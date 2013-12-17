@@ -335,6 +335,4 @@
       </xsl:element>
       <!-- END structMap -->
       
-    </mets:mets>
-  </xsl:template>
-</xsl:transform> 
+    </mets:mets>
