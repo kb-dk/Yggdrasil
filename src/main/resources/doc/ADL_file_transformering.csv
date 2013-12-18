@@ -1,6 +1,6 @@
 ADL FILE transformering til METS;;;;
-"Forklaring af værdier i først kolonne: XXX = felt, ""XXX"" = konstant værdi, [XXX] = funktion";;;;
-Forklaring af værdier i anden kolonne: XXX = element navn, '/' = adskillelse mellem under-element, '@' = attribut, [x] = udgave af element;;;;
+"Forklaring af vÃ¦rdier i fÃ¸rst kolonne: XXX = felt, ""XXX"" = konstant vÃ¦rdi, [XXX] = funktion";;;;
+Forklaring af vÃ¦rdier i anden kolonne: XXX = element navn, '/' = adskillelse mellem under-element, '@' = attribut, [x] = udgave af element;;;;
 ;;;;
 ADL;METS;CONDITION;namespace;Kommentar
 ;mets;;mets;
@@ -13,7 +13,7 @@ provenanceMetadata/fields/uuid;mets@OBJID;;;
 """kbDk""";mets/metsHdr/agent[1]@ID;;;
 """CREATOR""";mets/metsHdr/agent[1]@ROLE;;;
 """ORGANIZATION""";mets/metsHdr/agent[1]@TYPE;;;
-"""Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek""";mets/metsHdr/agent[1]/name;;mets;
+"""Det Kongelige Bibliotek, Nationalbibliotek og KÃ¸benhavns Universitetsbibliotek""";mets/metsHdr/agent[1]/name;;mets;
 ;mets/metsHdr/agent[2];;mets;
 """kbDkYggdrasil""";mets/metsHdr/agent[2]@ID;;;
 """CREATOR""";mets/metsHdr/agent[2]@ROLE;;;
@@ -59,7 +59,7 @@ techMetadata/fields/file_checksum;mets/amdSec/techMD/mdWrap/xmlData/object/objec
 techMetadata/fields/file_size;mets/amdSec/techMD/mdWrap/xmlData/object/objectCharacteristics/size;;premis;
 ;mets/amdSec/techMD/mdWrap/xmlData/object/objectCharacteristics/format/;;premis;
 ;mets/amdSec/techMD/mdWrap/xmlData/object/objectCharacteristics/format/formatDesignation;;premis;
-techMetadata/fields/mime_type;mets/amdSec/techMD/mdWrap/xmlData/object/objectCharacteristics/format/formatDesignation/formatName;;premis;"I KBDOMS er værdien af formatName feltet et format navn som fx ""TIFF Image"", men da værdien som her modtages er en MIME-TYPE bruges denne i stedet for. Hvis det senere bliver muligt også at modtage feltværdien som format navn er formatDesignationComplexType som formatName er en del af en xs:sequence type og denne vil derfor kunne tilføjes. Det at bruge MIME-TYPE værdier i forbindelse med formatName bliver også brugt af The National Library of Australia, hvilket fx fremgår af Figur 5 i dokumentet ""A Checklist and a Case for Documenting PREMIS-METS Decisions in a METS Profile"" som kan findes her: http://www.dlib.org/dlib/september10/vermaaten/09vermaaten.html og her: http://www.loc.gov/standards/premis/premis_mets_checklist.pdf"
+techMetadata/fields/mime_type;mets/amdSec/techMD/mdWrap/xmlData/object/objectCharacteristics/format/formatDesignation/formatName;;premis;"I KBDOMS er vÃ¦rdien af formatName feltet et format navn som fx ""TIFF Image"", men da vÃ¦rdien som her modtages er en MIME-TYPE bruges denne i stedet for. Hvis det senere bliver muligt ogsÃ¥ at modtage feltvÃ¦rdien som format navn er formatDesignationComplexType som formatName er en del af en xs:sequence type og denne vil derfor kunne tilfÃ¸jes. Det at bruge MIME-TYPE vÃ¦rdier i forbindelse med formatName bliver ogsÃ¥ brugt af The National Library of Australia, hvilket fx fremgÃ¥r af Figur 5 i dokumentet ""A Checklist and a Case for Documenting PREMIS-METS Decisions in a METS Profile"" som kan findes her: http://www.dlib.org/dlib/september10/vermaaten/09vermaaten.html og her: http://www.loc.gov/standards/premis/premis_mets_checklist.pdf"
 ;mets/amdSec/techMD/mdWrap/xmlData/object/linkingIntellectualEntityIdentifier;;premis;
 """UUID""";mets/amdSec/techMD/mdWrap/xmlData/object/linkingIntellectualEntityIdentifier/linkingIntellectualEntityIdentifierType;;premis;
 provenanceMetadata/fields/uuid;mets/amdSec/techMD/mdWrap/xmlData/object/linkingIntellectualEntityIdentifier/linkingIntellectualEntityIdentifierValue;;premis;
@@ -70,7 +70,7 @@ provenanceMetadata/fields/uuid;mets/amdSec/techMD/mdWrap/xmlData/object/linkingI
 """MODS""";mets/amdSec/rightsMD/mdWrap@MDTYPE;;;
 ;mets/amdSec/rightsMD/mdWrap/xmlData;;mets;
 ;mets/amdSec/rightsMD/mdWrap/xmlData/mods;;mods;
-"""Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek""";mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods;
+"""Det Kongelige Bibliotek, Nationalbibliotek og KÃ¸benhavns Universitetsbibliotek""";mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods;
 ;mets/amdSec/digiprovMD[1];;mets;
 """Premis1""";mets/amdSec/digiprovMD[1]@ID;;;
 [DATE-NOW];mets/amdSec/digiprovMD[1]@CREATED;;;
