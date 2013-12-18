@@ -85,7 +85,7 @@
             <xsl:value-of select="'DEPARTMENT'" />
           </xsl:attribute>
           <xsl:element name="mets:name">
-            <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
+            <xsl:value-of select="'NSA: Nationalsamlingsafdelingen'" />
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -165,7 +165,7 @@
                       <xsl:value-of select="techMetadata/fields/file_checksum" />
                     </xsl:element>
                     <xsl:element name="premis:messageDigestOriginator">
-                      <xsl:value-of select="'Det Kongelige Bibliotek'" />
+                      <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
                     </xsl:element>
                   </xsl:element>
                   <!--Size of the file in bytes.-->  
@@ -209,7 +209,7 @@
               <!-- START MODS -->
               <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
                 <xsl:element name="mods:accessCondition">
-                  <xsl:value-of select="'Det Kongelige Bibliotek'" />
+                  <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
                 </xsl:element>
               </mods:mods>
               <!-- END MODS -->  
@@ -328,7 +328,6 @@
         <xsl:attribute name="TYPE">
           <xsl:value-of select="'logical'" />
         </xsl:attribute>
-        
         <xsl:element name="mets:div">
           <xsl:attribute name="DMDID">
             <xsl:value-of select="'Mods1'" />

@@ -85,7 +85,7 @@
             <xsl:value-of select="'DEPARTMENT'" />
           </xsl:attribute>
           <xsl:element name="mets:name">
-            <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
+            <xsl:value-of select="'NSA: Nationalsamlingsafdelingen'" />
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -156,7 +156,7 @@
               <!-- START MODS -->
               <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
                 <xsl:element name="mods:accessCondition">
-                  <xsl:value-of select="'Det Kongelige Bibliotek'" />
+                  <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
                 </xsl:element>
               </mods:mods>
               <!-- END MODS -->  
