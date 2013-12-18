@@ -70,7 +70,7 @@ provenanceMetadata/fields/uuid;mets/amdSec/techMD/mdWrap/xmlData/object/linkingI
 """MODS""";mets/amdSec/rightsMD/mdWrap@MDTYPE;;;
 ;mets/amdSec/rightsMD/mdWrap/xmlData;;mets;
 ;mets/amdSec/rightsMD/mdWrap/xmlData/mods;;mods;
-"""Det Kongelige Bibliotek""";mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods;
+"""Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek""";mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods;
 ;mets/amdSec/digiprovMD[1];;mets;
 """Premis1""";mets/amdSec/digiprovMD[1]@ID;;;
 [DATE-NOW];mets/amdSec/digiprovMD[1]@CREATED;;;
@@ -104,15 +104,14 @@ provenanceMetadata/fields/uuid;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/li
 ;mets/fileSec;;mets;
 ;mets/fileSec/fileGrp;;mets;
 ;mets/fileSec/fileGrp/file;;mets;
-[getFileID(provenanceMetadata/fields/uuid)];mets/fileSec/fileGrp/file@ID;;;
+techMetadata/fields/original_filename;mets/fileSec/fileGrp/file@ID;;;
 ;mets/fileSec/fileGrp/file/Flocat;;mets;
 """URN""";mets/fileSec/fileGrp/file/Flocat@LOCTYPE;;;
-[CONCAT('urn:uuid:', provenanceMetadata/fields/uuid)];mets/fileSec/fileGrp/file/Flocat@xlink:href;;;
+[CONCAT('urn:uuid:', techMetadata/fields/file_uuid)];mets/fileSec/fileGrp/file/Flocat@xlink:href;;;
 ;mets/structMap;;mets;
 """logical""";mets/structMap@TYPE;;;
 ;mets/structMap/div;;mets;
 """Mods1""";mets/structMap/div@DMDID;;;
 """ModsRights1 Premis1 PremisEvent1"" ""PremisObject1""";mets/structMap/div@AMDID;;;
 ;mets/structMap/fptr;;mets;
-[getFileID(provenanceMetadata/fields/uuid)];mets/structMap/fptr@FILEID;;;
-                                          
+techMetadata/fields/original_filename;mets/structMap/fptr@FILEID;;;
