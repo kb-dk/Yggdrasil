@@ -71,25 +71,23 @@
           </xsl:element>
         </xsl:element>
         
-        <xsl:for-each select="field[@name='Department']">
-          <xsl:element name="mets:agent">
-            <xsl:attribute name="ID">
-              <xsl:value-of select="'kbDkNsa'" />
-            </xsl:attribute>
-            <xsl:attribute name="ROLE">
-              <xsl:value-of select="'EDITOR'" />
-            </xsl:attribute>
-            <xsl:attribute name="TYPE">
-              <xsl:value-of select="'OTHER'" />
-            </xsl:attribute>
-            <xsl:attribute name="OTHERTYPE">
-              <xsl:value-of select="'DEPARTMENT'" />
-            </xsl:attribute>
-            <xsl:element name="mets:name">
-              <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
-            </xsl:element>
+        <xsl:element name="mets:agent">
+          <xsl:attribute name="ID">
+            <xsl:value-of select="'kbDkNsa'" />
+          </xsl:attribute>
+          <xsl:attribute name="ROLE">
+            <xsl:value-of select="'EDITOR'" />
+          </xsl:attribute>
+          <xsl:attribute name="TYPE">
+            <xsl:value-of select="'OTHER'" />
+          </xsl:attribute>
+          <xsl:attribute name="OTHERTYPE">
+            <xsl:value-of select="'DEPARTMENT'" />
+          </xsl:attribute>
+          <xsl:element name="mets:name">
+            <xsl:value-of select="'NSA: Nationalsamlingsafdelingen'" />
           </xsl:element>
-        </xsl:for-each>
+        </xsl:element>
       </xsl:element>
       <!-- END metsHdr -->
       
@@ -158,7 +156,7 @@
               <!-- START MODS -->
               <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
                 <xsl:element name="mods:accessCondition">
-                  <xsl:value-of select="'Det Kongelige Bibliotek'" />
+                  <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
                 </xsl:element>
               </mods:mods>
               <!-- END MODS -->  
@@ -262,21 +260,6 @@
           <xsl:attribute name="ADMID">
             <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1'" />
           </xsl:attribute>
-          <xsl:for-each select="representation">
-            <xsl:element name="mets:div">
-              <xsl:attribute name="LABEL">
-                <xsl:value-of select="name" />
-              </xsl:attribute>
-              <xsl:element name="mets:mptr">
-                <xsl:attribute name="LOCTYPE">
-                  <xsl:value-of select="'URN'" />
-                </xsl:attribute>
-                <xsl:attribute name="xlink:href">
-                  <xsl:value-of select="concat('urn:uuid:', uuid)" />
-                </xsl:attribute>
-              </xsl:element>
-            </xsl:element>
-          </xsl:for-each>
         </xsl:element>
       </xsl:element>
       <!-- END structMap -->

@@ -11,8 +11,14 @@ import dk.kb.yggdrasil.utils.YamlTools;
 /** The class reading the yggdrasil.yml file. */
 public class Config {
 
-    private String DATABASE_DIR_PROPERTY = "database_dir";
+    /** The database directory property. */
+    private final String DATABASE_DIR_PROPERTY = "database_dir";
+    /** The database directory.  (created if it doesn't exist. ) */
     private File databaseDir;
+    /** The temporary directory property.  */
+    private final String TEMPORARY_DIR_PROPERTY = "temporary_dir";
+    /** The temporary directory. (created if it doesn't exist. )*/
+    private File tmpDir;
     
     /**
      * Constructor for class reading the general Yggdrasil config file.
@@ -23,7 +29,34 @@ public class Config {
        ArgumentCheck.checkExistsNormalFile(yggrasilConfigFile, "File yggrasilConfigFile");
        Map<String, LinkedHashMap> settings = YamlTools.loadYamlSettings(yggrasilConfigFile);
        Map<String, Object> valuesMap = settings.get(RunningMode.getMode().toString());
-       databaseDir = new File((String) valuesMap.get(DATABASE_DIR_PROPERTY));
+       String databaseDirAsString = (String) valuesMap.get(DATABASE_DIR_PROPERTY);
+       if (databaseDirAsString == null || databaseDirAsString.isEmpty()) {
+           throw new YggdrasilException("The property '" + DATABASE_DIR_PROPERTY 
+                   + "' is undefined in config file '" 
+                   + yggrasilConfigFile.getAbsolutePath() + "'");
+       }
+       databaseDir = new File(databaseDirAsString);
+       if (!databaseDir.exists()) {
+           if (!databaseDir.mkdirs()) {
+               throw new YggdrasilException("Unable to create necessary database directory '"
+                       + databaseDir.getAbsolutePath() + "'");
+           }
+       }
+       
+       String temporaryDirAsString = (String) valuesMap.get(TEMPORARY_DIR_PROPERTY);
+       if (temporaryDirAsString == null || temporaryDirAsString.isEmpty()) {
+           throw new YggdrasilException("The property '" + TEMPORARY_DIR_PROPERTY 
+                   + "' is undefined in config file '" 
+                   + yggrasilConfigFile.getAbsolutePath() + "'");
+       }
+       tmpDir = new File(temporaryDirAsString);
+       
+       if (!tmpDir.exists()) {
+           if (!tmpDir.mkdirs()) {
+               throw new YggdrasilException("Unable to create necessary tmp directory '"
+                       + tmpDir.getAbsolutePath() + "'");
+           }
+       }
     }
     
     /** 
@@ -32,5 +65,12 @@ public class Config {
     public File getDatabaseDir() {
         return databaseDir;
     }
+    
+    /** 
+     * @return the temporary directory
+     */
+    public File getTemporaryDir() {
+        return tmpDir;
+    }  
     
 }

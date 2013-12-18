@@ -53,6 +53,7 @@ public class TestJSONMessaging {
         request.File_UUID = "fuuid";
         request.Content_URI = "curi";
         request.metadata = "Some metadata";
+        request.Model = "work";
         /*
         request.metadata = new Metadata();
         request.metadata.descMetadata = "desc";
@@ -77,6 +78,7 @@ public class TestJSONMessaging {
             Assert.assertEquals("uuuri", request.Update_URI);
             Assert.assertEquals("fuuid", request.File_UUID);
             Assert.assertEquals("curi", request.Content_URI);
+            Assert.assertEquals("work", request.Model);
             Assert.assertNotNull(request.metadata);
             /*
             Assert.assertEquals("desc", request.metadata.descMetadata);

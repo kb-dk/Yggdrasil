@@ -10,7 +10,7 @@
     xmlns:premis="info:lc/xmlns/premis-v2"
     
     extension-element-prefixes="java">
-
+  
   <xsl:output encoding="UTF-8" method="xml" indent="yes" />
 
   <xsl:template match="metadata">
@@ -71,25 +71,23 @@
           </xsl:element>
         </xsl:element>
         
-        <xsl:for-each select="field[@name='Department']">
-          <xsl:element name="mets:agent">
-            <xsl:attribute name="ID">
-              <xsl:value-of select="'kbDkNsa'" />
-            </xsl:attribute>
-            <xsl:attribute name="ROLE">
-              <xsl:value-of select="'EDITOR'" />
-            </xsl:attribute>
-            <xsl:attribute name="TYPE">
-              <xsl:value-of select="'OTHER'" />
-            </xsl:attribute>
-            <xsl:attribute name="OTHERTYPE">
-              <xsl:value-of select="'DEPARTMENT'" />
-            </xsl:attribute>
-            <xsl:element name="mets:name">
-              <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
-            </xsl:element>
+        <xsl:element name="mets:agent">
+          <xsl:attribute name="ID">
+            <xsl:value-of select="'kbDkNsa'" />
+          </xsl:attribute>
+          <xsl:attribute name="ROLE">
+            <xsl:value-of select="'EDITOR'" />
+          </xsl:attribute>
+          <xsl:attribute name="TYPE">
+            <xsl:value-of select="'OTHER'" />
+          </xsl:attribute>
+          <xsl:attribute name="OTHERTYPE">
+            <xsl:value-of select="'DEPARTMENT'" />
+          </xsl:attribute>
+          <xsl:element name="mets:name">
+            <xsl:value-of select="'NSA: Nationalsamlingsafdelingen'" />
           </xsl:element>
-        </xsl:for-each>
+        </xsl:element>
       </xsl:element>
       <!-- END metsHdr -->
       
@@ -115,8 +113,8 @@
                 </xsl:element>
               </xsl:element>
               <!-- END title -->
-              </mods:mods>
-              <!-- END MODS -->  
+            </mods:mods>
+            <!-- END MODS -->  
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -124,6 +122,77 @@
       
       <!-- START amdSec -->
       <xsl:element name="mets:amdSec">
+        <!-- ADD PREMIS:OBJECT -->
+        <xsl:element name="mets:techMD">
+          <xsl:attribute name="CREATED">
+            <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+          </xsl:attribute>
+          <xsl:attribute name="ID">
+            <xsl:value-of select="'PremisObject1'" />
+          </xsl:attribute>
+          <xsl:element name="mets:mdWrap">
+            <xsl:attribute name="MDTYPE">
+              <xsl:value-of select="'PREMIS:OBJECT'" />
+            </xsl:attribute>
+            <xsl:element name="mets:xmlData">
+              <premis:object xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd" xsi:type="premis:file">
+                <xsl:element name="premis:objectIdentifier">
+                  <xsl:element name="premis:objectIdentifierType">
+                    <xsl:value-of select="'UUID'" />
+                  </xsl:element>
+                  <xsl:element name="premis:objectIdentifierValue">
+                    <xsl:value-of select="'RandomUUID'" />
+                  </xsl:element>
+                </xsl:element>
+                <!-- BEGIN SignificantProperties -->
+                <xsl:element name="premis:significantProperties">
+                  <xsl:element name="premis:significantPropertiesExtension">
+                    <xsl:copy-of select="fitsMetadata"/> 
+                  </xsl:element>
+                </xsl:element>
+                <!-- END SignificantProperties -->
+                <!-- BEGIN objectCharacteristics -->
+                <xsl:element name="premis:objectCharacteristics">
+                  <!--Mandatory for a PREMIS File object, set to 0 (zero - the default value) here as no information is received from the repository.-->
+                  <xsl:element name="premis:compositionLevel">
+                    <xsl:value-of select="0" />
+                  </xsl:element>
+                  <xsl:element name="premis:fixity">
+                    <xsl:element name="premis:messageDigestAlgorithm">
+                      <xsl:value-of select="'MD5'" />
+                    </xsl:element>
+                    <xsl:element name="premis:messageDigest">
+                      <xsl:value-of select="techMetadata/fields/file_checksum" />
+                    </xsl:element>
+                    <xsl:element name="premis:messageDigestOriginator">
+                      <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
+                    </xsl:element>
+                  </xsl:element>
+                  <!--Size of the file in bytes.-->  
+                  <xsl:element name="premis:size">
+                    <xsl:value-of select="techMetadata/fields/file_size" />
+                  </xsl:element>
+                  <xsl:element name="premis:format">
+                    <xsl:element name="premis:formatDesignation">
+                      <xsl:element name="premis:formatName">
+                        <xsl:value-of select="techMetadata/fields/mime_type" />
+                      </xsl:element>
+                    </xsl:element>
+                  </xsl:element>
+                </xsl:element>
+                <!-- END SignificantProperties -->
+                <xsl:element name="premis:linkingIntellectualEntityIdentifier">
+                  <xsl:element name="premis:linkingIntellectualEntityIdentifierType">
+                    <xsl:value-of select="'UUID'" />
+                  </xsl:element>
+                  <xsl:element name="premis:linkingIntellectualEntityIdentifierValue">
+                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
+                  </xsl:element>
+                </xsl:element>
+              </premis:object>
+            </xsl:element>
+          </xsl:element>
+        </xsl:element>
         <!-- ADD MODS (rights) -->
         <xsl:element name="mets:rightsMD">
           <xsl:attribute name="CREATED">
@@ -140,7 +209,7 @@
               <!-- START MODS -->
               <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
                 <xsl:element name="mods:accessCondition">
-                  <xsl:value-of select="'Det Kongelige Bibliotek'" />
+                  <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
                 </xsl:element>
               </mods:mods>
               <!-- END MODS -->  
@@ -229,86 +298,36 @@
             </xsl:element>
           </xsl:element>
         </xsl:element>
-        <!-- ADD PREMIS:OBJECT -->
-        <xsl:element name="mets:digiprovMD">
-          <xsl:attribute name="CREATED">
-            <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
-          </xsl:attribute>
-          <xsl:attribute name="ID">
-            <xsl:value-of select="'PremisObject1'" />
-          </xsl:attribute>
-          <xsl:element name="mets:mdWrap">
-            <xsl:attribute name="MDTYPE">
-              <xsl:value-of select="'PREMIS:OBJECT'" />
+      </xsl:element>
+      <!-- END amdSec -->
+
+
+      <!-- START fileSec -->
+      <xsl:element name="mets:fileSec">
+        <xsl:element name="mets:fileGrp">
+          <xsl:element name="mets:file">
+            <xsl:attribute name="ID">
+              <xsl:value-of select="techMetadata/fields/original_filename" />
             </xsl:attribute>
-            <xsl:element name="mets:xmlData">
-              <premis:object xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd" xsi:type="premis:file">
-                <xsl:element name="premis:objectIdentifier">
-                  <xsl:element name="premis:objectIdentifierType">
-                    <xsl:value-of select="'UUID'" />
-                  </xsl:element>
-                  <xsl:element name="premis:objectIdentifierValue">
-                    <xsl:value-of select="'RandomUUID'" />
-                  </xsl:element>
-                </xsl:element>
-                <!-- BEGIN SignificantProperties -->
-                  <xsl:element name="premis:significantProperties">
-                    <xsl:element name="premis:significantPropertiesExtension">
-                      <xsl:copy-of select="fitsMetadata"/> 
-                    </xsl:element>
-                  </xsl:element>
-                <!-- END SignificantProperties -->
-                <!-- BEGIN objectCharacteristics -->
-                <xsl:element name="premis:objectCharacteristics">
-                  <!--Mandatory for a PREMIS File object, set to 0 (zero - the default value) here as no information is received from the repository.-->
-                  <xsl:element name="premis:compositionLevel">
-                    <xsl:value-of select="0" />
-                  </xsl:element>
-                  <xsl:element name="premis:fixity">
-                    <xsl:element name="premis:messageDigestAlgorithm">
-                      <xsl:value-of select="'MD5'" />
-                    </xsl:element>
-                    <xsl:element name="premis:messageDigest">
-                      <xsl:value-of select="techMetadata/fields/file_checksum" />
-                    </xsl:element>
-                    <xsl:element name="premis:messageDigestOriginator">
-                      <xsl:value-of select="'Det Kongelige Bibliotek'" />
-                    </xsl:element>
-                  </xsl:element>
-                  <!--Size of the file in bytes.-->  
-                  <xsl:element name="premis:size">
-                    <xsl:value-of select="techMetadata/fields/file_size" />
-                  </xsl:element>
-                  <xsl:element name="premis:format">
-                    <xsl:element name="premis:formatDesignation">
-                      <xsl:element name="premis:formatName">
-                        <xsl:value-of select="techMetadata/fields/mime_type" />
-                      </xsl:element>
-                    </xsl:element>
-                  </xsl:element>
-                </xsl:element>
-                <!-- END SignificantProperties -->
-                <xsl:element name="premis:linkingIntellectualEntityIdentifier">
-                  <xsl:element name="premis:linkingIntellectualEntityIdentifierType">
-                    <xsl:value-of select="'UUID'" />
-                  </xsl:element>
-                  <xsl:element name="premis:linkingIntellectualEntityIdentifierValue">
-                    <xsl:value-of select="'linkingIntellectualEntityIdentifierValue_PLACE_HOLDER'" />
-                  </xsl:element>
-                </xsl:element>
-              </premis:object>
+            <xsl:element name="mets:FLocat">
+              <xsl:attribute name="LOCTYPE">
+                <xsl:value-of select="'URN'" />
+              </xsl:attribute>
+              <xsl:attribute name="xlink:href">
+                <xsl:value-of select="concat('urn:uuid:', techMetadata/fields/file_uuid)" />
+              </xsl:attribute>
             </xsl:element>
           </xsl:element>
         </xsl:element>
       </xsl:element>
-      <!-- END amdSec -->
+      <!-- END fileSec -->
+      
 
       <!-- START structMap -->
       <xsl:element name="mets:structMap">
         <xsl:attribute name="TYPE">
           <xsl:value-of select="'logical'" />
         </xsl:attribute>
-        
         <xsl:element name="mets:div">
           <xsl:attribute name="DMDID">
             <xsl:value-of select="'Mods1'" />
@@ -316,21 +335,11 @@
           <xsl:attribute name="ADMID">
             <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1 PremisObject1'" />
           </xsl:attribute>
-          <xsl:for-each select="representation">
-            <xsl:element name="mets:div">
-              <xsl:attribute name="LABEL">
-                <xsl:value-of select="name" />
-              </xsl:attribute>
-              <xsl:element name="mets:mptr">
-                <xsl:attribute name="LOCTYPE">
-                  <xsl:value-of select="'URN'" />
-                </xsl:attribute>
-                <xsl:attribute name="xlink:href">
-                  <xsl:value-of select="concat('urn:uuid:', uuid)" />
-                </xsl:attribute>
-              </xsl:element>
-            </xsl:element>
-          </xsl:for-each>
+          <xsl:element name="mets:fptr">
+            <xsl:attribute name="FILEID">
+              <xsl:value-of select="techMetadata/fields/original_filename" />
+            </xsl:attribute>
+          </xsl:element>
         </xsl:element>
       </xsl:element>
       <!-- END structMap -->

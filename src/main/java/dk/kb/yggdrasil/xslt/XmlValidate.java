@@ -17,7 +17,14 @@ public class XmlValidate {
             try {
                 XmlValidator xmlValidator = new XmlValidator();
                 File xmlFile = new File(args[0]);
-                //XmlEntityResolver entityResolver = new XmlEntityResolver(cache_dir);
+                // Un-comment to enable DTD/XSL caching.
+                /*
+                File cacheDir = new File(new File(url.getFile()), "entity_cache");
+                if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+                    Assert.fail("Could not make entity_cache directory!");
+                }
+                XmlEntityResolver entityResolver = new XmlEntityResolver(cacheDir);
+                */
                 XmlEntityResolver entityResolver = null;
                 XmlErrorHandler errorHandler = new XmlErrorHandler();
                 XmlValidationResult result = xmlValidator.validate(xmlFile, entityResolver, errorHandler);

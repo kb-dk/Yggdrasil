@@ -82,7 +82,7 @@ public class XslTransformer {
         transformerImpl.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
         transformerImpl.setURIResolver(uriResolver);
         transformerImpl.setErrorListener(errorListener);
-        // TODO Add parameters, if required.
+        // Feature: Add parameters, if required.
         transformerImpl.transform(xmlSource, outputTarget);
     }
 

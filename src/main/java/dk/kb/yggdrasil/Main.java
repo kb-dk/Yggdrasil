@@ -119,7 +119,7 @@ public class Main {
         Main main = new Main(sd, mq, bitrepository);
         if (!isUnittestmode) {
             logger.info("Starting main workflow of Yggdrasil program");
-            Workflow wf = new Workflow(mq, sd, bitrepository);
+            Workflow wf = new Workflow(mq, sd, bitrepository, generalConfig);
             wf.run();
         }   
         logger.info("Shutting down the Yggdrasil Main program");

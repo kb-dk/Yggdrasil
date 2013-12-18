@@ -19,9 +19,18 @@
 
   <xsl:template name="orderedrepresentation_mets_generator">
     <mets:mets xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version191/mets.xsd">
-      <xsl:attribute name="TYPE">
-        <xsl:value-of select="'OrderedRepresentation'" />
-      </xsl:attribute>
+
+      <xsl:if test="file">
+        <xsl:attribute name="TYPE">
+          <xsl:value-of select="'Representation'" />
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:if test="techMetadata">
+        <xsl:attribute name="TYPE">
+          <xsl:value-of select="'OrderedRepresentation'" />
+        </xsl:attribute>
+      </xsl:if>
+
       <xsl:attribute name="OBJID">
         <xsl:value-of select="provenanceMetadata/fields/uuid" />
       </xsl:attribute>
@@ -159,19 +168,19 @@
               <!-- Preservation level for bit safety. -->
               <premis:preservationLevel xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
                 <xsl:element name="premis:preservationLevelValue">
-                  <xsl:value-of select="'preservation/bitSafety'" />
+                  <xsl:value-of select="preservationMetadata/fields/preservation_bitsafety" />
                 </xsl:element>
                 <xsl:element name="premis:preservationLevelDateAssigned">
-                  <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+                  <xsl:value-of select="preservationMetadata/fields/preservation_modify_date" />
                 </xsl:element>
               </premis:preservationLevel>
               <!-- Preservation level for confidentiality. -->
               <premis:preservationLevel xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
                 <xsl:element name="premis:preservationLevelValue">
-                  <xsl:value-of select="'preservation/confidentality'" />
+                  <xsl:value-of select="preservationMetadata/fields/preservation_confidentiality" />
                 </xsl:element>
                 <xsl:element name="premis:preservationLevelDateAssigned">
-                  <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+                  <xsl:value-of select="preservationMetadata/fields/preservation_modify_date" />
                 </xsl:element>
               </premis:preservationLevel>
             </xsl:element>
@@ -218,7 +227,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingObjectIdentifierValue">
-                    <xsl:value-of select="'RandomUUID'" />
+                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
                   </xsl:element>
                 </xsl:element>
               </premis:event>
@@ -228,61 +237,61 @@
       </xsl:element>
       <!-- END amdSec -->
 
+      <xsl:if test="file or techMetadata">
       <!-- START structMap -->
-      <xsl:element name="mets:structMap">
-        <xsl:attribute name="TYPE">
-          <xsl:value-of select="'logical'" />
-        </xsl:attribute>
+        <xsl:element name="mets:structMap">
+          <xsl:attribute name="TYPE">
+            <xsl:value-of select="'logical'" />
+          </xsl:attribute>
+          <xsl:element name="mets:div">
+            <xsl:attribute name="DMDID">
+              <xsl:value-of select="'Mods1'" />
+            </xsl:attribute>
+            <xsl:attribute name="ADMID">
+              <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1'" />
+            </xsl:attribute>
 
-        <xsl:element name="mets:div">
-          <xsl:attribute name="DMDID">
-            <xsl:value-of select="'Mods1'" />
-          </xsl:attribute>
-          <xsl:attribute name="ADMID">
-            <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1'" />
-          </xsl:attribute>
-          <xsl:for-each select="techMetadata/mets:mets/mets:structMap/mets:div">
-            <xsl:element name="mets:div">
-              <xsl:attribute name="ID">
-                <xsl:value-of select="@ID" />
-              </xsl:attribute>
-              <xsl:attribute name="ORDER">
-                <xsl:value-of select="@ORDER" />
-              </xsl:attribute>
-<!--
-              <xsl:call-template name="orderedrepresentation_mptr">
-                <xsl:with-param name="fptr" select="mets:fptr" />
-              </xsl:call-template>
--->
-              <xsl:element name="mets:mptr">
-                <xsl:attribute name="LOCTYPE">
-                  <xsl:value-of select="'URN'" />
+            <xsl:if test="file">
+              <xsl:element name="mets:div">
+                <xsl:attribute name="LABEL">
+                  <xsl:value-of select="file/name" />
                 </xsl:attribute>
-                <xsl:attribute name="xlink:href">
-                  <xsl:value-of select="concat('urn:uuid:', mets:fptr/@FILEID)" />
-                </xsl:attribute>
+                <xsl:element name="mets:mptr">
+                  <xsl:attribute name="LOCTYPE">
+                    <xsl:value-of select="'URN'" />
+                  </xsl:attribute>
+                  <xsl:attribute name="xlink:href">
+                    <xsl:value-of select="concat('urn:uuid:', file/uuid)" />
+                  </xsl:attribute>
+                </xsl:element>
               </xsl:element>
+            </xsl:if>
+            <xsl:if test="techMetadata">
+              <xsl:for-each select="techMetadata/mets:mets/mets:structMap/mets:div">
+                <xsl:element name="mets:div">
+                  <xsl:attribute name="LABEL">
+                    <xsl:value-of select="@ID" />
+                  </xsl:attribute>
+                  <xsl:attribute name="ORDER">
+                    <xsl:value-of select="@ORDER" />
+                  </xsl:attribute>
+                  <xsl:element name="mets:mptr">
+                    <xsl:attribute name="LOCTYPE">
+                      <xsl:value-of select="'URN'" />
+                    </xsl:attribute>
+                    <xsl:attribute name="xlink:href">
+                      <xsl:value-of select="concat('urn:uuid:', mets:fptr/@FILEID)" />
+                    </xsl:attribute>
+                  </xsl:element>
+                </xsl:element>
+              </xsl:for-each>
+            </xsl:if>
 
-            </xsl:element>
-          </xsl:for-each>
+          </xsl:element>
         </xsl:element>
-      </xsl:element>
-      <!-- END structMap -->
+        <!-- END structMap -->
+      </xsl:if>
 
     </mets:mets>
   </xsl:template>
-<!--
-  <xsl:template name="orderedrepresentation_mptr">
-    <xsl:param name="fptr" />
-    <xsl:variable name="FILEID" select="$fptr/@FILEID" />
-    <xsl:element name="mets:mptr">
-      <xsl:attribute name="LOCTYPE">
-        <xsl:value-of select="'URN'" />
-      </xsl:attribute>
-      <xsl:attribute name="xlink:href">
-        <xsl:value-of select="concat('urn:uuid:', $FILEID)" />
-      </xsl:attribute>
-    </xsl:element>
-  </xsl:template>
--->
 </xsl:transform>
