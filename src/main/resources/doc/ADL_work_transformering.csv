@@ -57,7 +57,7 @@ author[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
 """urn:uuid:"" + per[x]/uuid";mets/dmdSec/mdWrap/xmlData/mods/name[x]@valueURI;;
 per[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
 ;mets/dmdSec/mdWrap/xmlData/mods/name[x]/role;;mods
-"""other""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm;;mods
+"""related person""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm;;mods
 """text""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm@type;;
 """marcrelator""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm@authority;;
 ;mets/amdSec;;mets
@@ -75,10 +75,10 @@ per[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
 ;mets/amdSec/digiprovMD[1]/mdWrap;;mets
 """PREMIS""";mets/amdSec/digiprovMD[1]/mdWrap@MDTYPE;;
 ;mets/amdSec/digiprovMD[1]/mdWrap/xmlData;;mets
-;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[1];preservation/bitsafety;premis
+;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[1];;premis
 preservationMetadata/fields/preservation_bitsafety;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[1]/preservationLevelValue;;premis
 preservationMetadata/fields/preservation_modify_date;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[1]/preservationLevelDateAssigned;;premis
-;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[2];preservation/confidentiality;premis
+;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[2];;premis
 preservationMetadata/fields/preservation_confidentiality;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[2]/preservationLevelValue;;premis
 preservationMetadata/fields/preservation_modify_date;mets/amdSec/digiprovMD[1]/mdWrap/xmlData/preservationLevel[2]/preservationLevelDateAssigned;;premis
 ;mets/amdSec/digiprovMD[2];;mets
