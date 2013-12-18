@@ -2,6 +2,7 @@ package dk.kb.yggdrasil.xslt;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,5 +127,12 @@ public class TestXslt {
             Assert.fail("Unexpected exception!");
 		}
     }
+    
+    @Test
+    public void test_xslt2() {
+        URL url = this.getClass().getClassLoader().getResource("xslt/work.xslt");
+        assertTrue(url != null && !url.getFile().isEmpty());
+    }
+    
 
 }

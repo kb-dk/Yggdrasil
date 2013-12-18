@@ -1,0 +1,7 @@
+models:
+  work: work.xslt
+  basicfile: file.xslt
+  book: book.xslt
+  orderedrepresentation: ordered_representation.xsl
+  singlefilerepresentation: file.xslt
+  person: person.xslt
