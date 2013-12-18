@@ -71,25 +71,23 @@
           </xsl:element>
         </xsl:element>
         
-        <xsl:for-each select="field[@name='Department']">
-          <xsl:element name="mets:agent">
-            <xsl:attribute name="ID">
-              <xsl:value-of select="'kbDkNsa'" />
-            </xsl:attribute>
-            <xsl:attribute name="ROLE">
-              <xsl:value-of select="'EDITOR'" />
-            </xsl:attribute>
-            <xsl:attribute name="TYPE">
-              <xsl:value-of select="'OTHER'" />
-            </xsl:attribute>
-            <xsl:attribute name="OTHERTYPE">
-              <xsl:value-of select="'DEPARTMENT'" />
-            </xsl:attribute>
-            <xsl:element name="mets:name">
-              <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
-            </xsl:element>
+        <xsl:element name="mets:agent">
+          <xsl:attribute name="ID">
+            <xsl:value-of select="'kbDkNsa'" />
+          </xsl:attribute>
+          <xsl:attribute name="ROLE">
+            <xsl:value-of select="'EDITOR'" />
+          </xsl:attribute>
+          <xsl:attribute name="TYPE">
+            <xsl:value-of select="'OTHER'" />
+          </xsl:attribute>
+          <xsl:attribute name="OTHERTYPE">
+            <xsl:value-of select="'DEPARTMENT'" />
+          </xsl:attribute>
+          <xsl:element name="mets:name">
+            <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
           </xsl:element>
-        </xsl:for-each>
+        </xsl:element>
       </xsl:element>
       <!-- END metsHdr -->
       
@@ -115,8 +113,8 @@
                 </xsl:element>
               </xsl:element>
               <!-- END title -->
-              </mods:mods>
-              <!-- END MODS -->  
+            </mods:mods>
+            <!-- END MODS -->  
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -309,14 +307,14 @@
         <xsl:element name="mets:fileGrp">
           <xsl:element name="mets:file">
             <xsl:attribute name="ID">
-              <xsl:value-of select="java:dk.kb.metadata.utils.FileIdHandler.getFileID(provenanceMetadata/fields/uuid)" />
+              <xsl:value-of select="techMetadata/fields/original_filename" />
             </xsl:attribute>
             <xsl:element name="mets:FLocat">
               <xsl:attribute name="LOCTYPE">
                 <xsl:value-of select="'URN'" />
               </xsl:attribute>
               <xsl:attribute name="xlink:href">
-                <xsl:value-of select="concat('urn:uuid:', provenanceMetadata/fields/uuid)" />
+                <xsl:value-of select="concat('urn:uuid:', techMetadata/fields/file_uuid)" />
               </xsl:attribute>
             </xsl:element>
           </xsl:element>
@@ -340,7 +338,7 @@
           </xsl:attribute>
           <xsl:element name="mets:fptr">
             <xsl:attribute name="FILEID">
-              <xsl:value-of select="java:dk.kb.metadata.utils.FileIdHandler.getFileID(provenanceMetadata/fields/uuid)" />
+              <xsl:value-of select="techMetadata/fields/original_filename" />
             </xsl:attribute>
           </xsl:element>
         </xsl:element>

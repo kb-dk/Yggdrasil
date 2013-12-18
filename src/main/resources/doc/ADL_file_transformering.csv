@@ -114,4 +114,4 @@ provenanceMetadata/fields/uuid;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/li
 """Mods1""";mets/structMap/div@DMDID;;;
 """ModsRights1 Premis1 PremisEvent1"" ""PremisObject1""";mets/structMap/div@AMDID;;;
 ;mets/structMap/fptr;;mets;
-[getFileID(provenanceMetadata/fields/uuid)];mets/structMap/fptr@FILEID;;;
+[getFileID(provenanceMetadata/fields/uuid)];mets/structMap/fpt

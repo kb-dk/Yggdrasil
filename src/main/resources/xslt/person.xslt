@@ -71,25 +71,23 @@
           </xsl:element>
         </xsl:element>
         
-        <xsl:for-each select="field[@name='Department']">
-          <xsl:element name="mets:agent">
-            <xsl:attribute name="ID">
-              <xsl:value-of select="'kbDkNsa'" />
-            </xsl:attribute>
-            <xsl:attribute name="ROLE">
-              <xsl:value-of select="'EDITOR'" />
-            </xsl:attribute>
-            <xsl:attribute name="TYPE">
-              <xsl:value-of select="'OTHER'" />
-            </xsl:attribute>
-            <xsl:attribute name="OTHERTYPE">
-              <xsl:value-of select="'DEPARTMENT'" />
-            </xsl:attribute>
-            <xsl:element name="mets:name">
-              <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
-            </xsl:element>
+        <xsl:element name="mets:agent">
+          <xsl:attribute name="ID">
+            <xsl:value-of select="'kbDkNsa'" />
+          </xsl:attribute>
+          <xsl:attribute name="ROLE">
+            <xsl:value-of select="'EDITOR'" />
+          </xsl:attribute>
+          <xsl:attribute name="TYPE">
+            <xsl:value-of select="'OTHER'" />
+          </xsl:attribute>
+          <xsl:attribute name="OTHERTYPE">
+            <xsl:value-of select="'DEPARTMENT'" />
+          </xsl:attribute>
+          <xsl:element name="mets:name">
+            <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
           </xsl:element>
-        </xsl:for-each>
+        </xsl:element>
       </xsl:element>
       <!-- END metsHdr -->
       
@@ -262,7 +260,10 @@
           <xsl:attribute name="ADMID">
             <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1'" />
           </xsl:attribute>
-          <xsl:for-each select="representation">
-            <xsl:element name="mets:div">
-              <xsl:attribute name="LABEL">
-   
+        </xsl:element>
+      </xsl:element>
+      <!-- END structMap -->
+      
+    </mets:mets>
+  </xsl:template>
+</xsl:transform> 
