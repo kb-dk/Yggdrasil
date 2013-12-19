@@ -55,7 +55,6 @@ public class MqTest {
         String queueName = settings.getPreservationDestination();
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         MqResponse messageReceived = mq.receiveMessageFromQueue(queueName); 
- 
 
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
         message = "Hello X";
@@ -66,6 +65,20 @@ public class MqTest {
         mq.cleanup();
     }
 
+    @Test 
+    public void sendShutdown() throws YggdrasilException, IOException {
+        RabbitMqSettings settings = fetchMqSettings();
+        System.out.println("using brokerUri: " + settings.getBrokerUri());
+        MQ mq = new MQ(settings);
+        String queueName = settings.getPreservationDestination();
+        String message = "Shutdown Message";
+        mq.publishOnQueue(queueName, message.getBytes(), MQ.SHUTDOWN_MESSAGE_TYPE);
+        MqResponse messageReceived = mq.receiveMessageFromQueue(queueName);
+        assertTrue(messageReceived.getMessageType().equals(MQ.SHUTDOWN_MESSAGE_TYPE));
+        assertTrue(messageReceived.getPayload().equals(message.getBytes()));
+    }
+    
+    
     @Test
     public void testReceived() throws KeyManagementException,
     NoSuchAlgorithmException, URISyntaxException, IOException, YggdrasilException {

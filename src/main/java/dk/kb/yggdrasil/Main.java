@@ -68,19 +68,7 @@ public class Main {
             isUnittestmode = true;
         }
         
-        File configdir = null;
-        String configDirStr = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
-        if (configDirStr != null) {
-            configdir = new File(configDirStr);
-        } else {
-            configDirStr = System.getenv(CONFIGURATION_DIRECTORY_PROPERTY);
-            if (configDirStr != null) {
-                configdir = new File(configDirStr);
-            } else {
-                File userHomeDir = new File(System.getProperty(USER_HOME_PROPERTY));
-                configdir = new File(userHomeDir, "Yggdrasil/config");
-            }
-        }
+        File configdir = getConfigDir();
         if (!configdir.exists()) {
             throw new YggdrasilException("Fatal error: The chosen configuration directory '"
                     + configdir.getAbsolutePath() + "' does not exist. ");
@@ -141,6 +129,26 @@ public class Main {
             logger.debug("Ignoring exception while closing down RabbitMQ", e);
         }
         sd.cleanup();
+    }
+    
+    /** 
+     * @return the configuration directory.
+     */
+    public static File getConfigDir() {
+        File configdir = null;
+        String configDirStr = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
+        if (configDirStr != null) {
+            configdir = new File(configDirStr);
+        } else {
+            configDirStr = System.getenv(CONFIGURATION_DIRECTORY_PROPERTY);
+            if (configDirStr != null) {
+                configdir = new File(configDirStr);
+            } else {
+                File userHomeDir = new File(System.getProperty(USER_HOME_PROPERTY));
+                configdir = new File(userHomeDir, "Yggdrasil/config");
+            }
+        }
+        return configdir;
     }
 
 }
