@@ -19,18 +19,9 @@
 
   <xsl:template name="orderedrepresentation_mets_generator">
     <mets:mets xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version191/mets.xsd">
-
-      <xsl:if test="file">
-        <xsl:attribute name="TYPE">
-          <xsl:value-of select="'Representation'" />
-        </xsl:attribute>
-      </xsl:if>
-      <xsl:if test="techMetadata">
-        <xsl:attribute name="TYPE">
-          <xsl:value-of select="'OrderedRepresentation'" />
-        </xsl:attribute>
-      </xsl:if>
-
+      <xsl:attribute name="TYPE">
+        <xsl:value-of select="'Representation'" />
+      </xsl:attribute>
       <xsl:attribute name="OBJID">
         <xsl:value-of select="provenanceMetadata/fields/uuid" />
       </xsl:attribute>
@@ -46,7 +37,7 @@
 
         <xsl:element name="mets:agent">
           <xsl:attribute name="ID">
-            <xsl:value-of select="'kbDk'" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganizationID()" />
           </xsl:attribute>
           <xsl:attribute name="ROLE"> 
             <xsl:value-of select="'CREATOR'" />
@@ -55,13 +46,13 @@
             <xsl:value-of select="'ORGANIZATION'" />
           </xsl:attribute>
           <xsl:element name="mets:name">
-            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganization()" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganizationName()" />
           </xsl:element>
         </xsl:element>
 
         <xsl:element name="mets:agent">
           <xsl:attribute name="ID">
-            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getID()" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getAPIID()" />
           </xsl:attribute>
           <xsl:attribute name="ROLE"> 
             <xsl:value-of select="'CREATOR'" />
@@ -83,7 +74,7 @@
         <xsl:for-each select="field[@name='Department']">
           <xsl:element name="mets:agent">
             <xsl:attribute name="ID">
-              <xsl:value-of select="'kbDkNsa'" />
+              <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentID()" />
             </xsl:attribute>
             <xsl:attribute name="ROLE">
               <xsl:value-of select="'EDITOR'" />
@@ -95,7 +86,7 @@
               <xsl:value-of select="'DEPARTMENT'" />
             </xsl:attribute>
             <xsl:element name="mets:name">
-              <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartment()" />
+              <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentName()" />
             </xsl:element>
           </xsl:element>
         </xsl:for-each>
@@ -237,6 +228,7 @@
       </xsl:element>
       <!-- END amdSec -->
 
+      <!-- Produces invalid XML if no file or techMetadata is present. -->
       <xsl:if test="file or techMetadata">
       <!-- START structMap -->
         <xsl:element name="mets:structMap">

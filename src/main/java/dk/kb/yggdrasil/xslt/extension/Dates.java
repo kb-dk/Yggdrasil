@@ -16,16 +16,16 @@ public class Dates {
 
     /** A single instance of the DatatypeFactory to prevent overlap from recreating it too often.*/
     private static DatatypeFactory factory = null;
-    
+
     /**
-     * Private constructor to prevent instantiation of utility class.
+     * Private constructor to prevent instantiation of extension class.
      */
     private Dates() {
     }
-    
+
     /**
      * Turns a date into a XMLGregorianCalendar.
-     * 
+     *
      * @param date The date.
      * @return The XMLGregorianCalendar.
      */
@@ -42,14 +42,14 @@ public class Dates {
             throw res;
         }
     }
-    
+
     /**
      * @return The current date in the XML date format.
      */
     public static String getCurrentDate() {
         return getXmlGregorianCalendar(new Date()).toString();
     }
-    
+
     /**
      * Retrieves the a date in the XML format, which needs to be transformed from another given format.
      * @param format The format of the given date.
@@ -67,7 +67,7 @@ public class Dates {
                 Date date2 = formater2.parse(dateString);
                 return getXmlGregorianCalendar(date2).toString();
             } catch (ParseException e2) {
-                IllegalStateException res = new IllegalStateException("Can neither parse date '" + dateString + "' in format '" + format + "'. " 
+                IllegalStateException res = new IllegalStateException("Can neither parse date '" + dateString + "' in format '" + format + "'. "
                         + "Caught exceptions: " + e + " , " + e2, e2);
                 throw res;
             }

@@ -24,7 +24,6 @@ import org.jwat.common.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
 
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
@@ -36,6 +35,7 @@ import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.warc.WarcWriterWrapper;
 import dk.kb.yggdrasil.xslt.Models;
+import dk.kb.yggdrasil.xslt.XmlErrorHandler;
 import dk.kb.yggdrasil.xslt.XmlValidationResult;
 import dk.kb.yggdrasil.xslt.XmlValidator;
 import dk.kb.yggdrasil.xslt.XslErrorListener;
@@ -250,10 +250,10 @@ public class Workflow {
             xsltransform.transform(xmlSource, uriResolver, errorListener, outputTarget);
             EntityResolver entityResolver = null;
             File xmlFile = outputFile;
-            ErrorHandler errorHandler = null;
-            XmlValidationResult r = new XmlValidator().validate(xmlFile, entityResolver, 
-                    errorHandler);
-            if (!r.bValidate) {
+            XmlErrorHandler errorHandler = new XmlErrorHandler();
+            XmlValidationResult result = new XmlValidationResult();
+            boolean bValid = new XmlValidator().testDefinedValidity(new FileInputStream(xmlFile), entityResolver, errorHandler, result);
+            if (!bValid) {
                 updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
                 String errMsg = "The output metadata is invalid: ";
                 try {
@@ -278,7 +278,13 @@ public class Workflow {
             logger.error(errMsg, e);
             updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
             throw new YggdrasilException(errMsg);
-        }
+        } catch (FileNotFoundException e) {
+            final String errMsg = "Error occurred during transformation of metadata for uuid '"
+                    + currentUUID + "'";
+            logger.error(errMsg, e);
+            updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
+            throw new YggdrasilException(errMsg);
+		}
     }
 
     /**

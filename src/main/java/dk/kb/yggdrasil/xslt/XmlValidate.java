@@ -29,8 +29,10 @@ public class XmlValidate {
                 XmlErrorHandler errorHandler = new XmlErrorHandler();
                 XmlValidationResult result = xmlValidator.validate(xmlFile, entityResolver, errorHandler);
                 if (result != null) {
-                    System.out.println("Validated: " + result.bValidate);
-                    System.out.println("    Valid: " + !errorHandler.hasErrors());
+                    System.out.println("       bDtd: " + result.bDtdUsed);
+                    System.out.println("       bXsd: " + result.bXsdUsed);
+                    System.out.println("bWellformed: " + result.bWellformed);
+                    System.out.println("     bValid: " + result.bValid);
                 } else {
                     System.out.println("Unable to validate file!");
                 }

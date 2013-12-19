@@ -17,7 +17,7 @@ public class TestModels {
         assertTrue(m.getMapper().keySet().size() == 6);
         //Map<String,String> m1 = m.getMapper();
         //for (Entry<String, String> entry: m1.entrySet()) {
-        //    System.out.println("(model, xslt)=(" + entry.getKey() 
+        //    System.out.println("(model, xslt)=(" + entry.getKey()
         //            + ", " + entry.getValue() + ")");
         //}
     }

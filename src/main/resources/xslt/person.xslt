@@ -26,18 +26,18 @@
         <xsl:value-of select="provenanceMetadata/fields/uuid" />
       </xsl:attribute>
       <xsl:attribute name="PROFILE">
-        <xsl:value-of select="java:dk.kb.metadata.Constants.getProfileURL()" />
+        <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getProfileURL()" />
       </xsl:attribute>
             
       <!-- START metsHdr -->
       <xsl:element name="mets:metsHdr">
         <xsl:attribute name="CREATEDATE">
-          <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+          <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
         </xsl:attribute>
 
         <xsl:element name="mets:agent">
           <xsl:attribute name="ID">
-            <xsl:value-of select="'kbDk'" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganizationID()" />
           </xsl:attribute>
           <xsl:attribute name="ROLE"> 
             <xsl:value-of select="'CREATOR'" />
@@ -46,13 +46,13 @@
             <xsl:value-of select="'ORGANIZATION'" />
           </xsl:attribute>
           <xsl:element name="mets:name">
-            <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganizationName()" />
           </xsl:element>
         </xsl:element>
         
         <xsl:element name="mets:agent">
           <xsl:attribute name="ID">
-            <xsl:value-of select="'kbDkYggdrasil1.0'" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getAPIID()" />
           </xsl:attribute>
           <xsl:attribute name="ROLE"> 
             <xsl:value-of select="'CREATOR'" />
@@ -64,16 +64,16 @@
             <xsl:value-of select="'API'" />
           </xsl:attribute>
           <xsl:element name="mets:name">
-            <xsl:value-of select="'KB Yggdrasil v. 1.0'" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getAPIName()" />
           </xsl:element>
           <xsl:element name="mets:note">
-            <xsl:value-of select="'dk.kb.yggdrasil.MetsGenerator (??)'" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getAPINote()" />
           </xsl:element>
         </xsl:element>
         
         <xsl:element name="mets:agent">
           <xsl:attribute name="ID">
-            <xsl:value-of select="'kbDkNsa'" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentID()" />
           </xsl:attribute>
           <xsl:attribute name="ROLE">
             <xsl:value-of select="'EDITOR'" />
@@ -85,7 +85,7 @@
             <xsl:value-of select="'DEPARTMENT'" />
           </xsl:attribute>
           <xsl:element name="mets:name">
-            <xsl:value-of select="'NSA: Nationalsamlingsafdelingen'" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentName()" />
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -94,7 +94,7 @@
       <!-- START dmdSec -->
       <xsl:element name="mets:dmdSec">
         <xsl:attribute name="CREATED">
-          <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+          <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
         </xsl:attribute>    
         <xsl:attribute name="ID">
           <xsl:value-of select="'Mods1'" />
@@ -143,7 +143,7 @@
         <!-- ADD MODS (rights) -->
         <xsl:element name="mets:rightsMD">
           <xsl:attribute name="CREATED">
-            <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
           </xsl:attribute>
           <xsl:attribute name="ID">
             <xsl:value-of select="'ModsRights1'" />
@@ -156,7 +156,7 @@
               <!-- START MODS -->
               <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
                 <xsl:element name="mods:accessCondition">
-                  <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
+                  <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getModsAccessCondition()" />
                 </xsl:element>
               </mods:mods>
               <!-- END MODS -->  
@@ -166,7 +166,7 @@
         <!-- ADD PREMIS -->
         <xsl:element name="mets:digiprovMD">
           <xsl:attribute name="CREATED">
-            <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
           </xsl:attribute>
           <xsl:attribute name="ID">
             <xsl:value-of select="'Premis1'" />
@@ -200,7 +200,7 @@
         <!-- ADD PREMIS:EVENT -->
         <xsl:element name="mets:digiprovMD">
           <xsl:attribute name="CREATED">
-            <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
           </xsl:attribute>
           <xsl:attribute name="ID">
             <xsl:value-of select="'PremisEvent1'" />
@@ -223,7 +223,7 @@
                   <xsl:value-of select="'ingestion'" />
                 </xsl:element>
                 <xsl:element name="premis:eventDateTime">
-                  <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+                  <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
                 </xsl:element>
                 <xsl:element name="premis:linkingAgentIdentifier">
                   <xsl:element name="premis:linkingAgentIdentifierType">

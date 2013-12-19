@@ -1,7 +1,9 @@
 package dk.kb.yggdrasil.xslt.extension;
 
+import dk.kb.yggdrasil.xslt.XslTransformer;
+
 /**
- * Matrjosjka agent XSLT functions.
+ * Yggdrasil Matrjosjka agent XSLT functions.
  */
 public class Agent {
 
@@ -11,23 +13,38 @@ public class Agent {
     /** The current version of the agent. */
     public static final String VERSION = "1.0.0-SNAPSHOT";
 
-    /** Agent ID.*/
-    public static final String AGENT_ID = "kbDkYggdrasil1.0";
+    /** Organization ID. */
+    public static final String ORGANIZATION_ID = "kbDk";
 
-    /** Agent API name. */
+    /** Organization name. */
+    public static final String ORGANIZATION_NAME = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
+
+    /** API ID. */
+    public static final String API_ID = "kbDkYggdrasil1.0";
+
+    /** API name. */
     public static final String API_NAME = "KB Yggdrasil v. " + VERSION;
 
-    /** Agent API note. */
-    public static final String API_NOTE = "dk.kb.yggdrasil.MetsGenerator (??)";
+    /** API note. */
+    public static final String API_NOTE = XslTransformer.class.getName() + " (" + VERSION + ")";
 
-    /** Name of the organization. */
-    public static final String ORGANIZATION = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
+    /** Department ID. */
+    public static final String DEPARTMENT_ID = "kbDkNsa";
 
-    /** Name of the department. */
-    public static final String DEPARTMENT = "NSA: National Samlings Afdelingen";
+    /** Department name. */
+    public static final String DEPARTMENT_NAME = "NSA: Nationalsamlingsafdelingen";
+
+    /** PREMIS message digest originator. */
+    public static final String MESSAGE_DIGEST_ORIGINATOR = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
 
     /** MODS access condition. */
-    public static final String MODSACCESSCONDITION = "Det Kongelige Bibliotek";
+    public static final String MODS_ACCESS_CONDITION = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
+
+    /**
+     * Private constructor to prevent instantiation of extension class.
+     */
+    private Agent() {
+    }
 
     /**
      * @return The current version METS profile.
@@ -37,45 +54,66 @@ public class Agent {
     }
 
     /**
-     * @return The name of the agent for the API.
+     * @return id of the organization
      */
-    public static String getID() {
-        return AGENT_ID;
+    public static String getOrganizationID() {
+        return ORGANIZATION_ID;
     }
 
     /**
-     * @return The name of the entire API.
+     * @return name of the organization
+     */
+    public static String getOrganizationName() {
+        return ORGANIZATION_NAME;
+    }
+
+    /**
+     * @return The name of the API.
+     */
+    public static String getAPIID() {
+        return API_ID;
+    }
+
+    /**
+     * @return The name of the API.
      */
     public static String getAPIName() {
         return API_NAME;
     }
 
     /**
-     * @return The note of the entire API.
+     * @return The note of the API.
      */
     public static String getAPINote() {
         return API_NOTE;
     }
 
     /**
-     * @return name of the organization
+     * @return id of the department
      */
-    public static String getOrganization() {
-        return ORGANIZATION;
+    public static String getDepartmentID() {
+        return DEPARTMENT_ID;
     }
 
     /**
      * @return name of the department
      */
-    public static String getDepartment() {
-        return DEPARTMENT;
+    public static String getDepartmentName() {
+        return DEPARTMENT_NAME;
     }
 
     /**
-     * @return mods access condition
+     * @return PREMIS message digest originator
+     */
+    public static String getMessageDigestOriginator() {
+        return MESSAGE_DIGEST_ORIGINATOR;
+    }
+
+    /**
+     * @return MODS access condition
      */
     public static String getModsAccessCondition() {
-        return MODSACCESSCONDITION;
+        return MODS_ACCESS_CONDITION;
     }
 
 }

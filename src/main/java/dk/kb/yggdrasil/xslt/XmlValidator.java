@@ -18,7 +18,6 @@ import org.w3c.dom.DocumentType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 
@@ -34,7 +33,7 @@ public class XmlValidator {
     public static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 
     /** Schema validation enabler value. */
-    public static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema"; 
+    public static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
     /** Cached document builder factory without DTD/Scheme validation. */
     private DocumentBuilderFactory factoryParsing;
@@ -72,9 +71,13 @@ public class XmlValidator {
      * @param errorHandler error handler or null
      * @return XML validation result
      */
-    public XmlValidationResult validate(File xmlFile, EntityResolver entityResolver, ErrorHandler errorHandler) {
+    public XmlValidationResult validate(File xmlFile, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler) {
         ArgumentCheck.checkExistsNormalFile(xmlFile, "xmlFile");
         XmlValidationResult result = new XmlValidationResult();
+        if (errorHandler == null) {
+            errorHandler = new XmlErrorHandler();
+        }
+        errorHandler.reset();
         InputStream in = null;
         try {
             /*
@@ -86,6 +89,7 @@ public class XmlValidator {
             result.document = builderParsing.parse(in);
             in.close();
             in = null;
+            result.bWellformed = !errorHandler.hasErrors();
             /*
              * Look for references to DTD or XSD.
              */
@@ -94,7 +98,7 @@ public class XmlValidator {
                 result.systemId = documentType.getSystemId();
             }
             if (result.systemId != null) {
-                result.bValidate = true;
+                result.bDtdUsed = true;
             } else {
                 XPathFactory xpf = XPathFactory.newInstance();
                 XPath xp = xpf.newXPath();
@@ -106,20 +110,20 @@ public class XmlValidator {
                     node = nodes.item(i).getAttributes().getNamedItem("xmlns:xsi");
                     if (node != null) {
                         result.xsiNamespaces.add(node.getNodeValue());
-                        result.bValidate = true;
+                        result.bXsdUsed = true;
                     }
                     node = nodes.item(i).getAttributes().getNamedItem("xsi:schemaLocation");
                     if (node != null) {
                         // debug
                         result.schemas.add(node.getNodeValue());
-                        result.bValidate = true;
+                        result.bXsdUsed = true;
                     }
                 }
             }
             /*
              * Validate against DTD/XSD.
              */
-            if (result.bValidate) {
+            if (result.bDtdUsed || result.bXsdUsed) {
                 in = new FileInputStream(xmlFile);
                 builderValidating.reset();
                 builderValidating.setEntityResolver(entityResolver);
@@ -127,6 +131,7 @@ public class XmlValidator {
                 result.document = builderValidating.parse(in);
                 in.close();
                 in = null;
+                result.bValid = !errorHandler.hasErrors();
             }
         } catch (Throwable t) {
             logger.error("Exception validating XML stream!", t.toString(), t);
@@ -141,6 +146,118 @@ public class XmlValidator {
             }
         }
         return result;
+    }
+
+    /**
+     * Test XML document for well-formed-ness and look for DTD/XSD references.
+     * @param in XML input stream
+     * @param entityResolver XML entity resolver or null
+     * @param errorHandler error handler or null
+     * @param result validation results
+     */
+    public boolean testStructuralValidity(InputStream in, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) {
+        ArgumentCheck.checkNotNull(in, "in");
+        ArgumentCheck.checkNotNull(result, "result");
+        if (errorHandler == null) {
+            errorHandler = new XmlErrorHandler();
+        }
+        errorHandler.reset();
+        result.reset();
+        try {
+            /*
+             * Test for well-formed-ness.
+             */
+            builderParsing.reset();
+            builderParsing.setErrorHandler(errorHandler);
+            result.document = builderParsing.parse(in);
+            in.close();
+            in = null;
+            result.bWellformed = !errorHandler.hasErrors();
+            /*
+             * Look for references to DTD or XSD.
+             */
+            DocumentType documentType = result.document.getDoctype();
+            if (documentType != null) {
+                result.systemId = documentType.getSystemId();
+            }
+            if (result.systemId != null) {
+                result.bDtdUsed = true;
+            } else {
+                XPathFactory xpf = XPathFactory.newInstance();
+                XPath xp = xpf.newXPath();
+                NodeList nodes;
+                Node node;
+                // JDK6 XPath engine supposedly only implements v1.0 of the specs.
+                nodes = (NodeList)xp.evaluate("//*", result.document.getDocumentElement(), XPathConstants.NODESET);
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    node = nodes.item(i).getAttributes().getNamedItem("xmlns:xsi");
+                    if (node != null) {
+                        result.xsiNamespaces.add(node.getNodeValue());
+                        result.bXsdUsed = true;
+                    }
+                    node = nodes.item(i).getAttributes().getNamedItem("xsi:schemaLocation");
+                    if (node != null) {
+                        // debug
+                        result.schemas.add(node.getNodeValue());
+                        result.bXsdUsed = true;
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            logger.error("Exception validating XML stream!", t.toString(), t);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    logger.error("Exception closing stream!", e.toString(), e);
+                }
+                in = null;
+            }
+        }
+        return !errorHandler.hasErrors();
+    }
+
+    /**
+     * Validate XML document against any DTD/XSD found.
+     * @param in XML input stream
+     * @param entityResolver XML entity resolver or null
+     * @param errorHandler error handler or null
+     * @param result validation results
+     */
+    public boolean testDefinedValidity(InputStream in, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) {
+        ArgumentCheck.checkNotNull(in, "in");
+        ArgumentCheck.checkNotNull(result, "result");
+        if (errorHandler == null) {
+            errorHandler = new XmlErrorHandler();
+        }
+        try {
+            /*
+             * Validate against DTD/XSD.
+             */
+            builderValidating.reset();
+            builderValidating.setEntityResolver(entityResolver);
+            builderValidating.setErrorHandler(errorHandler);
+            result.document = builderValidating.parse(in);
+            in.close();
+            in = null;
+            result.bValid = !errorHandler.hasErrors();
+            if (result.bValid) {
+                result.bWellformed = true;
+            }
+        } catch (Throwable t) {
+            logger.error("Exception validating XML stream!", t.toString(), t);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    logger.error("Exception closing stream!", e.toString(), e);
+                }
+                in = null;
+            }
+        }
+        return !errorHandler.hasErrors();
     }
 
 }
