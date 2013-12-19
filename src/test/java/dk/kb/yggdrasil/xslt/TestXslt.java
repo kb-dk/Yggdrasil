@@ -21,17 +21,17 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestXslt {
 
-    private static String[] xsltFiles = {
+    private static String[] oldXsltFiles = {
         "xslt/transformRepresentationMets.xsl",
         "xslt/retrieveMetsRelationship.xsl",
         "xslt/transformToMets.xsl",
         "xslt/transformToMix.xsl",
         "xslt/transformToMods.xsl",
-        "xslt/transformToPremis.xsl"
+        "xslt/transformToPremis.xsl",
     };
 
     @Test
-    public void test_xslt() {
+    public void test_old_xslt() {
         URL url;
         File file;
         StreamSource source;
@@ -39,9 +39,9 @@ public class TestXslt {
         /*
          * Try to initialize and validate some XSL files.
          */
-        for (int i=0; i<xsltFiles.length; ++i) {
+        for (int i=0; i<oldXsltFiles.length; ++i) {
             try {
-                url = this.getClass().getClassLoader().getResource(xsltFiles[i]);
+                url = this.getClass().getClassLoader().getResource(oldXsltFiles[i]);
                 file = new File(url.getFile());
                 source = new StreamSource(file);
                 //source.setSystemId(file.getPath());
@@ -125,6 +125,38 @@ public class TestXslt {
 			e.printStackTrace();
             Assert.fail("Unexpected exception!");
 		}
+    }
+
+    public static String[] newXsltFiles = new String[] {
+    	"xslt/book.xslt",
+    	"xslt/file.xslt",
+    	"xslt/ordered_representation.xsl",
+    	"xslt/person.xslt",
+    	"xslt/work.xslt"
+    };
+
+    @Test
+    public void test_new_xslt() {
+        URL url;
+        File file;
+        StreamSource source;
+        XslTransformer transformer;
+        /*
+         * Try to initialize and validate some XSL files.
+         */
+        for (int i=0; i<oldXsltFiles.length; ++i) {
+            try {
+                url = this.getClass().getClassLoader().getResource(oldXsltFiles[i]);
+                file = new File(url.getFile());
+                source = new StreamSource(file);
+                //source.setSystemId(file.getPath());
+                transformer = XslTransformer.getTransformer(source);
+                Assert.assertNotNull(transformer);
+            } catch (TransformerConfigurationException e) {
+                e.printStackTrace();
+                Assert.fail("Unexpected exception!");
+            }
+        }
     }
 
 }

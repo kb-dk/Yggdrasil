@@ -11,6 +11,15 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestXmlValidator {
 
+    public static String[] xmlFiles = new String[] {
+        "valhal/xml/basic_file.xml",
+        "valhal/xml/book.xml",
+        "valhal/xml/ordered_representation.xml",
+        "valhal/xml/person.xml",
+        "valhal/xml/single_file_representation.xml",
+        "valhal/xml/work.xml"
+    };
+
     @Test
     public void test_xmlvalidator() {
         URL url;
@@ -55,6 +64,25 @@ public class TestXmlValidator {
         Assert.assertEquals(0, errorHandler.errors);
         Assert.assertEquals(0, errorHandler.fatalErrors);
         Assert.assertEquals(0, errorHandler.warnings);
+
+        // FIXME
+        /*
+        for (int i=0; i<xmlFiles.length; ++i) {
+            url = this.getClass().getClassLoader().getResource(xmlFiles[i]);
+            file = new File(url.getFile());
+            errorHandler.reset();
+            result = xmlValidator.validate(file, entityResolver, errorHandler);
+
+            Assert.assertFalse(result.bValidate);
+            Assert.assertNull(result.systemId);
+            Assert.assertEquals(0, result.xsiNamespaces.size());
+            Assert.assertEquals(0, result.schemas.size());
+
+            Assert.assertEquals(0, errorHandler.errors);
+            Assert.assertEquals(0, errorHandler.fatalErrors);
+            Assert.assertEquals(0, errorHandler.warnings);
+        }
+        */
     }
 
 }

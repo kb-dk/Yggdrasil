@@ -13,11 +13,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * Utility class for calendar issues.
  */
 public final class CalendarUtils {
-    /** Private constructor to prevent instantiation of utility class. */
-    private CalendarUtils() {}
-    
+
     /** A single instance of the DatatypeFactory to prevent overlap from recreating it too often.*/
     private static DatatypeFactory factory = null;
+    
+	/** Private constructor to prevent instantiation of utility class. */
+    private CalendarUtils() {
+    }
     
     /**
      * Turns a date into a XMLGregorianCalendar.
@@ -27,10 +29,9 @@ public final class CalendarUtils {
      */
     public static XMLGregorianCalendar getXmlGregorianCalendar(Date date) {
         try {
-        	if(factory == null) {
+        	if (factory == null) {
         		factory = DatatypeFactory.newInstance();
         	}
-        	
         	GregorianCalendar gc = new GregorianCalendar();
         	gc.setTime(date);
             return factory.newXMLGregorianCalendar(gc);
@@ -72,4 +73,5 @@ public final class CalendarUtils {
             }
         }
     }
+
 }
