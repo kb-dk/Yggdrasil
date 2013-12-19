@@ -23,6 +23,8 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.messaging.MQ;
+import dk.kb.yggdrasil.messaging.MqResponse;
 
 /**
  * These tests require an rabbitmq to be present on localhost
@@ -51,15 +53,16 @@ public class MqTest {
         assertTrue(settings.equals(mq.getSettings()));
         String message = "Hello world";
         String queueName = settings.getPreservationDestination();
-        mq.publishOnQueue(queueName, message.getBytes(), MQ.VALID_MESSAGE_TYPE);
-        byte[] messageReceived = mq.receiveMessageFromQueue(queueName);
+        mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
+        MqResponse messageReceived = mq.receiveMessageFromQueue(queueName); 
+ 
 
-        Assert.assertArrayEquals(message.getBytes(), messageReceived);
+        Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
         message = "Hello X";
-        mq.publishOnQueue(queueName, message.getBytes(), MQ.VALID_MESSAGE_TYPE);
+        mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         messageReceived = mq.receiveMessageFromQueue(queueName);
 
-        Assert.assertArrayEquals(message.getBytes(), messageReceived);
+        Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
         mq.cleanup();
     }
 

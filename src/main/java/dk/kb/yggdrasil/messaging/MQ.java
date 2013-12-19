@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.messaging;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,6 +22,7 @@ import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 
+import dk.kb.yggdrasil.RabbitMqSettings;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 /**
@@ -52,8 +53,10 @@ public class MQ {
     private String exchangeType = "direct";
     
     /** The only valid message type, currently. */ 
-    public static final String VALID_MESSAGE_TYPE = "PreservationRequest";
+    public static final String PRESERVATIONREQUEST_MESSAGE_TYPE = "PreservationRequest";
     
+    /** The only valid message type, currently. */ 
+    public static final String SHUTDOWN_MESSAGE_TYPE = "Shutdown";
     
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(MQ.class.getName());
@@ -169,10 +172,10 @@ public class MQ {
     * Receive message from a given queue. If no message is waiting on the queue, this message will
     * wait until a message arrives on the queue.
     * @param queueName The name of the queue.
-    * @return the bytes delivered in the message when a message is received.
+    * @return the messageType and bytes delivered in the message when a message is received.
     * @throws YggdrasilException
     */
-   public byte[] receiveMessageFromQueue(String queueName) throws YggdrasilException {
+   public MqResponse receiveMessageFromQueue(String queueName) throws YggdrasilException {
        QueueingConsumer consumer = null;
        String consumerTag = null;
        if (existingConsumers.containsKey(queueName)) {
@@ -189,19 +192,17 @@ public class MQ {
            }
        }
        byte[] payload = null;
+       String messageType = null;
        try {
            QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-           String messageType = delivery.getProperties().getType();
+           messageType = delivery.getProperties().getType();
            Date sentDate = delivery.getProperties().getTimestamp();
            logger.info("received message of type '" + messageType 
                    + "' with timestamp '" + sentDate + "'");
            payload = delivery.getBody();
            boolean acknowledgeMultipleMessages = false;
-           theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), acknowledgeMultipleMessages);
-           if (!VALID_MESSAGE_TYPE.equalsIgnoreCase(messageType)) {
-               throw new YggdrasilException("The message type '" 
-                       + messageType + "' is invalid. Currently, the only valid messagetype is " + VALID_MESSAGE_TYPE);
-           }
+           theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), 
+                   acknowledgeMultipleMessages);
        } catch (IOException e) {
            throw new YggdrasilException("Unable to receive message from queue '"
                    + queueName + "'", e);
@@ -216,7 +217,7 @@ public class MQ {
                    + queueName + "'", e);
        }
 
-       return payload;
+       return new MqResponse(messageType, payload);
    }
    
    public RabbitMqSettings getSettings() {

@@ -3,5 +3,5 @@ models:
   basicfile: file.xslt
   book: book.xslt
   orderedrepresentation: ordered_representation.xsl
-  singlefilerepresentation: file.xslt
+  singlefilerepresentation: ordered_representation.xsl
   person: person.xslt
