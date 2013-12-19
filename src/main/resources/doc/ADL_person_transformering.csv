@@ -1,6 +1,6 @@
 ADL PERSON transformering til METS;;;
-"Forklaring af værdier i først kolonne: XXX = felt, ""XXX"" = konstant værdi, [XXX] = funktion";;;
-Forklaring af værdier i anden kolonne: XXX = element navn, '/' = adskillelse mellem under-element, '@' = attribut, [x] = udgave af element;;;
+"Forklaring af vÃ¦rdier i fÃ¸rst kolonne: XXX = felt, ""XXX"" = konstant vÃ¦rdi, [XXX] = funktion";;;
+Forklaring af vÃ¦rdier i anden kolonne: XXX = element navn, '/' = adskillelse mellem under-element, '@' = attribut, [x] = udgave af element;;;
 ;;;
 ADL;METS;CONDITION;namespace
 ;mets;;mets
@@ -13,7 +13,7 @@ provenanceMetadata/fields/uuid;mets@OBJID;;
 """kbDk""";mets/metsHdr/agent[1]@ID;;
 """CREATOR""";mets/metsHdr/agent[1]@ROLE;;
 """ORGANIZATION""";mets/metsHdr/agent[1]@TYPE;;
-"""Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek""";mets/metsHdr/agent[1]/name;;mets
+"""Det Kongelige Bibliotek, Nationalbibliotek og KÃ¸benhavns Universitetsbibliotek""";mets/metsHdr/agent[1]/name;;mets
 ;mets/metsHdr/agent[2];;mets
 """kbDkYggdrasil""";mets/metsHdr/agent[2]@ID;;
 """CREATOR""";mets/metsHdr/agent[2]@ROLE;;
@@ -53,7 +53,7 @@ descMetadata/fields/lastname;mets/dmdSec/mdWrap/xmlData/mods/name/namePartt[2];;
 """MODS""";mets/amdSec/rightsMD/mdWrap@MDTYPE;;
 ;mets/amdSec/rightsMD/mdWrap/xmlData;;mets
 ;mets/amdSec/rightsMD/mdWrap/xmlData/mods;;mods
-"""Det Kongelige Bibliotek""";mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods
+"""Det Kongelige Bibliotek, Nationalbibliotek og KÃ¸benhavns Universitetsbibliotek""";mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods
 ;mets/amdSec/digiprovMD[1];;mets
 """Premis1""";mets/amdSec/digiprovMD[1]@ID;;
 [DATE-NOW];mets/amdSec/digiprovMD[1]@CREATED;;

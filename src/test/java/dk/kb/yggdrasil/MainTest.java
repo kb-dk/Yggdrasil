@@ -26,9 +26,6 @@ public class MainTest {
             return;
         }
         System.setProperty(Main.CONFIGURATION_DIRECTORY_PROPERTY, goodConfigDir.getAbsolutePath());
-        //RabbitMqSettings mqSettings = new RabbitMqSettings(new File(goodConfigDir, Main.RABBITMQ_CONF_FILENAME));
-        //MQ mq = MQ.getInstance(mqSettings);
-        //mq.publishOnQueue(mqSettings.getPreservationDestination(), "hello".getBytes());
         Config c = new Config(new File(goodConfigDir, Main.YGGDRASIL_CONF_FILENAME));
         FileUtils.deleteDirectory(c.getDatabaseDir());
         Main.main(new String[]{"test"});

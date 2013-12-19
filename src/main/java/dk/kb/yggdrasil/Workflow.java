@@ -18,6 +18,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.FileUtils;
 import org.jwat.common.ContentType;
 import org.jwat.common.Uri;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ import dk.kb.yggdrasil.json.Preservation;
 import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.warc.WarcWriterWrapper;
+import dk.kb.yggdrasil.xslt.Models;
 import dk.kb.yggdrasil.xslt.XmlValidationResult;
 import dk.kb.yggdrasil.xslt.XmlValidator;
 import dk.kb.yggdrasil.xslt.XslErrorListener;
@@ -59,6 +61,10 @@ public class Workflow {
     /** The general settings used by Yggdrasil. */
     private Config config;
     
+    /** The class reading the mapping between models and xslt scripts used for 
+     * the metadata transformation.
+     */
+    private Models metadataModel;
     /** Size of pushback buffer for determining the encoding of the json message. */ 
     private static int PUSHBACKBUFFERSIZE = 4;
     
@@ -67,19 +73,24 @@ public class Workflow {
 
     /**
      * Constructor for the Workflow class.
-     * @param rabbitconnector
-     * @param states
-     * @param bitrepository
+     * @param rabbitconnector The rabbitmq connector object
+     * @param states the StateDatabase
+     * @param bitrepository the interface with bitrepository
+     * @param config general configuration
+     * @param models metadatamodelMapper
      */
-    public Workflow(MQ rabbitconnector, StateDatabase states, Bitrepository bitrepository, Config config) {
+    public Workflow(MQ rabbitconnector, StateDatabase states, Bitrepository bitrepository, Config config,
+            Models models) {
         ArgumentCheck.checkNotNull(rabbitconnector, "MQ rabbitconnector");
         ArgumentCheck.checkNotNull(states, "StateDatabase states");
         ArgumentCheck.checkNotNull(bitrepository, "Bitrepository bitrepository");
         ArgumentCheck.checkNotNull(config, "Config config");
+        ArgumentCheck.checkNotNull(models, "Models models");
         this.mq = rabbitconnector;
         this.sd = states;
         this.bitrepository = bitrepository;
         this.config = config;
+        this.metadataModel = models;
     }
     
     /**
@@ -210,13 +221,21 @@ public class Workflow {
      * @param prs 
      * @param currentUUID 
      * @throws YggdrasilException 
+     * 
      */
     private void transformMetadata(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
         String theMetadata = prs.getRequest().metadata;
-        String transformerScriptToUse = prs.getRequest().Model.toLowerCase();
-        String scriptSuffix = ".xsl";
+        String modelToUse = prs.getRequest().Model.toLowerCase();
+        
+        if (!metadataModel.getMapper().containsKey(modelToUse)) {
+            final String errMsg = "The given metadata-model'" + modelToUse 
+                    + "' is unknown";
+            updateRemotePreservationStateToFailState(prs, errMsg);
+            throw new YggdrasilException(errMsg);
+        }
+        
         URL url = this.getClass().getClassLoader().getResource("xslt/" 
-                + transformerScriptToUse + scriptSuffix);
+                + metadataModel.getMapper().get(modelToUse));
         File xslFile = new File(url.getFile());
         InputStream metadataInputStream = null;
         File outputFile = null;
@@ -236,16 +255,29 @@ public class Workflow {
                     errorHandler);
             if (!r.bValidate) {
                 updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
+                String errMsg = "The output metadata is invalid: ";
+                try {
+                    errMsg += FileUtils.readFileToString(xmlFile); 
+                } catch (IOException e) {
+                    logger.warn("Exception while reading output file:", e);
+                }
+                throw new YggdrasilException(errMsg);
             } else {
                 prs.setMetadataPayload(outputFile);
                 updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
         } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
+            final String errMsg = "Error occurred during transformation of metadata for uuid '"
+                    + currentUUID + "'";
+            logger.error(errMsg, e);
             updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
+            throw new YggdrasilException(errMsg);
         } catch (TransformerException e) {
-            e.printStackTrace();
+            final String errMsg = "Error occurred during transformation of metadata for uuid '"
+                    + currentUUID + "'";
+            logger.error(errMsg, e);
             updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
+            throw new YggdrasilException(errMsg);
         }
     }
 
@@ -259,7 +291,7 @@ public class Workflow {
         try {
             logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");  
             fetchContent(currentUUID, prs);
-            //transformMetadata(currentUUID, prs); // FIXME ENABLE WHEN READY
+            transformMetadata(currentUUID, prs);
             writeToWarc(currentUUID, prs);
             uploadToBitrepository(currentUUID, prs);
             logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");
@@ -285,10 +317,9 @@ public class Workflow {
     private void doMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
         try {
             logger.info("Starting a metadata workflow for UUID '" + currentUUID + "'");
-            logger.warn("Implementation of metadata workflow still incomplete");
-            //transformMetadata();
-            //writeToWarc(currentUUID, prs);
-            //uploadToBitrepository(currentUUID, prs);
+            transformMetadata(currentUUID, prs);
+            writeToWarc(currentUUID, prs);
+            uploadToBitrepository(currentUUID, prs);
             logger.info("Finished the metadata workflow for UUID '" + currentUUID + "' successfully");
         } finally {
             if (sd.hasEntry(currentUUID)) {

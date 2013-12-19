@@ -114,7 +114,6 @@
               <xsl:copy-of select="descMetadata/mods:mods/mods:physicalDescription" />
               <xsl:copy-of select="descMetadata/mods:mods/mods:subject" />
               <xsl:copy-of select="descMetadata/mods:mods/mods:titleInfo" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:typeOfResource" />
               <xsl:for-each select="author">
                 <xsl:element name="mods:name">
                   <xsl:attribute name="valueURI">
@@ -164,7 +163,6 @@
                 </xsl:element>
               </xsl:for-each>
             </mods:mods>
-<!--             <xsl:copy-of select="descMetadata"/>  -->
             <!-- END MODS -->
           </xsl:element>
         </xsl:element>

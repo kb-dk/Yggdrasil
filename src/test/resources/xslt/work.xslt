@@ -14,13 +14,13 @@
   <xsl:output encoding="UTF-8" method="xml" indent="yes" />
 
   <xsl:template match="metadata">
-    <xsl:call-template name="person_mets_generator" />
+    <xsl:call-template name="work_mets_generator" />
   </xsl:template>
   
-  <xsl:template name="person_mets_generator">
+  <xsl:template name="work_mets_generator">
     <mets:mets xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version191/mets.xsd">
       <xsl:attribute name="TYPE">
-        <xsl:value-of select="'Person'" />
+        <xsl:value-of select="'Work'" />
       </xsl:attribute>
       <xsl:attribute name="OBJID">
         <xsl:value-of select="provenanceMetadata/fields/uuid" />
@@ -52,7 +52,7 @@
         
         <xsl:element name="mets:agent">
           <xsl:attribute name="ID">
-            <xsl:value-of select="'kbDkYggdrasil1.0'" />
+            <xsl:value-of select="'kbDkYggdrasil'" />
           </xsl:attribute>
           <xsl:attribute name="ROLE"> 
             <xsl:value-of select="'CREATOR'" />
@@ -85,7 +85,7 @@
             <xsl:value-of select="'DEPARTMENT'" />
           </xsl:attribute>
           <xsl:element name="mets:name">
-            <xsl:value-of select="'NSA: Nationalsamlingsafdelingen'" />
+            <xsl:value-of select="'NSA: Nationalssamlingsafdelingen'" />
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -105,34 +105,67 @@
           </xsl:attribute>
           <xsl:element name="mets:xmlData">
             <!-- START MODS -->
-            <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
-              <!-- START name -->
-              <xsl:element name="mods:name">
-                <xsl:attribute name="lang">
-                  <xsl:value-of select="'da'"/>
-                </xsl:attribute>
-                <xsl:element name="mods:namePart">
-                  <xsl:attribute name="type">
-                    <xsl:value-of select="'given'"/>
+            <mods:mods xmlns:xlink="http://www.w3.org.1999/xlink" version="3.4" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+              <xsl:copy-of select="descMetadata/mods:mods/mods:genre" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:identifier[@type='isbn']" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:locator" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:language" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:originInfo" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:physicalDescription" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:subject" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:titleInfo" />
+              <xsl:copy-of select="descMetadata/mods:mods/mods:typeOfResource" />
+              <xsl:for-each select="author">
+                <xsl:element name="mods:name">
+                  <xsl:attribute name="valueURI">
+                    <xsl:value-of select="concat('urn:uuid:', uuid)" />
                   </xsl:attribute>
-                  <xsl:value-of select="descMetadata/fields/firstname" /> 
+                  <xsl:element name="mods:namePart">
+                    <xsl:value-of select="name" />
+                  </xsl:element>
+                  <xsl:element name="mods:role">
+                    <xsl:element name="mods:roleTerm">
+                      <xsl:attribute name="type">
+                        <xsl:value-of select="'text'" />
+                      </xsl:attribute>
+                      <xsl:attribute name="authority">
+                        <xsl:value-of select="'marcrelator'" />
+                      </xsl:attribute>
+                      <xsl:value-of select="'author'" />
+                    </xsl:element>
+                    <xsl:element name="mods:roleTerm">
+                      <xsl:attribute name="type">
+                        <xsl:value-of select="'code'" />
+                      </xsl:attribute>
+                      <xsl:attribute name="authority">
+                        <xsl:value-of select="'marcrelator'" />
+                      </xsl:attribute>
+                      <xsl:value-of select="'aut'" />
+                    </xsl:element>
+                  </xsl:element>
                 </xsl:element>
-                <xsl:element name="mods:namePart">
-                  <xsl:attribute name="type">
-                    <xsl:value-of select="'family'"/>
+              </xsl:for-each>
+              <xsl:for-each select="related_person">
+                <xsl:element name="mods:name">
+                  <xsl:attribute name="valueURI">
+                    <xsl:value-of select="concat('urn:uuid:', uuid)" />
                   </xsl:attribute>
-                  <xsl:value-of select="descMetadata/fields/lastname" /> 
+                  <xsl:element name="mods:namePart">
+                    <xsl:value-of select="name" />
+                  </xsl:element>
+                  <xsl:element name="mods:role">
+                    <xsl:element name="mods:roleTerm">
+                      <xsl:attribute name="type">
+                        <xsl:value-of select="'text'" />
+                      </xsl:attribute>
+                      <xsl:value-of select="'related person'" />
+                    </xsl:element>
+                  </xsl:element>
                 </xsl:element>
-                <xsl:element name="mods:namePart">
-                  <xsl:attribute name="type">
-                    <xsl:value-of select="'date'"/>
-                  </xsl:attribute>
-                  <xsl:value-of select="concat(descMetadata/fields/date_of_birth, '-', descMetadata/fields/date_of_death)"/>
-                </xsl:element>
-              </xsl:element>
-              <!-- END name -->
+              </xsl:for-each>
             </mods:mods>
-            <!-- END MODS -->              
+<!--             <xsl:copy-of select="descMetadata"/>  -->
+            <!-- END MODS -->
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -153,13 +186,11 @@
               <xsl:value-of select="'MODS'" />
             </xsl:attribute>
             <xsl:element name="mets:xmlData">
-              <!-- START MODS -->
               <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
                 <xsl:element name="mods:accessCondition">
-                  <xsl:value-of select="'Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek'" />
+                  <xsl:value-of select="'Det Kongelige Bibliotek'" />
                 </xsl:element>
               </mods:mods>
-              <!-- END MODS -->  
             </xsl:element>
           </xsl:element>
         </xsl:element>
@@ -253,6 +284,7 @@
         <xsl:attribute name="TYPE">
           <xsl:value-of select="'logical'" />
         </xsl:attribute>
+        
         <xsl:element name="mets:div">
           <xsl:attribute name="DMDID">
             <xsl:value-of select="'Mods1'" />
@@ -260,6 +292,21 @@
           <xsl:attribute name="ADMID">
             <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1'" />
           </xsl:attribute>
+          <xsl:for-each select="representation">
+            <xsl:element name="mets:div">
+              <xsl:attribute name="LABEL">
+                <xsl:value-of select="name" />
+              </xsl:attribute>
+              <xsl:element name="mets:mptr">
+                <xsl:attribute name="LOCTYPE">
+                  <xsl:value-of select="'URN'" />
+                </xsl:attribute>
+                <xsl:attribute name="xlink:href">
+                  <xsl:value-of select="concat('urn:uuid:', uuid)" />
+                </xsl:attribute>
+              </xsl:element>
+            </xsl:element>
+          </xsl:for-each>
         </xsl:element>
       </xsl:element>
       <!-- END structMap -->

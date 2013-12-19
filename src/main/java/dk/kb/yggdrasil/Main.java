@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.xslt.Models;
 
 /**
  * Main class of the Yggdrasil Preservation service.
@@ -22,12 +23,13 @@ public class Main {
     public static final String YGGDRASIL_CONF_FILENAME = "yggdrasil.yml";
     public static final String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
     public static final String BITMAG_CONF_FILENAME = "bitmag.yml";
+    public static final String MODELS_CONF_FILENAME = "models.yml";
     
     /**
      * The list of configuration files that should be present in the configuration directory.
      */
     public static final String[] REQUIRED_SETTINGS_FILES = new String[] {
-        RABBITMQ_CONF_FILENAME, BITMAG_CONF_FILENAME};
+        RABBITMQ_CONF_FILENAME, BITMAG_CONF_FILENAME, MODELS_CONF_FILENAME};
     /** Java Property to define Yggdrasil configuration directory. */
     public static final String CONFIGURATION_DIRECTORY_PROPERTY = "YGGDRASIL_CONF_DIR";
 
@@ -96,6 +98,7 @@ public class Main {
         Bitrepository bitrepository = null;
         StateDatabase sd = null;
         Config generalConfig = null;
+        Models modelsConfig = null;
         try {
             File rabbitmqConfigFile = new File(configdir, RABBITMQ_CONF_FILENAME);
             RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
@@ -108,6 +111,9 @@ public class Main {
             File yggrasilConfigFile = new File(configdir, YGGDRASIL_CONF_FILENAME);
             generalConfig = new Config(yggrasilConfigFile);
             
+            File modelsConfigFile = new File(configdir, MODELS_CONF_FILENAME);
+            modelsConfig = new Models(modelsConfigFile);
+            
         } catch (FileNotFoundException e) {
             String errMsg = "Configuration file(s) missing!"; 
             logger.error(errMsg, e);
@@ -119,7 +125,7 @@ public class Main {
         Main main = new Main(sd, mq, bitrepository);
         if (!isUnittestmode) {
             logger.info("Starting main workflow of Yggdrasil program");
-            Workflow wf = new Workflow(mq, sd, bitrepository, generalConfig);
+            Workflow wf = new Workflow(mq, sd, bitrepository, generalConfig, modelsConfig);
             wf.run();
         }   
         logger.info("Shutting down the Yggdrasil Main program");
