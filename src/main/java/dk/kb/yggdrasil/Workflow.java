@@ -33,6 +33,8 @@ import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.Preservation;
 import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.json.PreservationResponse;
+import dk.kb.yggdrasil.messaging.MQ;
+import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.warc.WarcWriterWrapper;
 import dk.kb.yggdrasil.xslt.Models;
 import dk.kb.yggdrasil.xslt.XmlErrorHandler;
@@ -98,7 +100,8 @@ public class Workflow {
      * @throws YggdrasilException
      */
     public void run() throws YggdrasilException {
-        while (true) {
+        boolean shutdown = false;
+        while (!shutdown) {
             String currentUUID = null;
             PreservationRequest request = null;
             try {
@@ -107,6 +110,14 @@ public class Workflow {
                 logger.error("Caught exception while retrieving message from rabbitmq. Skipping message", e);
                 continue;
             }
+            
+            if (request == null) {
+                logger.info("Received shutdown message. Shutting down. ");
+                shutdown = true;
+                continue;
+            }
+            
+            
             logger.info("Preservation request received.");
             PreservationRequestState prs = null;
             /* Validate message content. */
@@ -122,7 +133,8 @@ public class Workflow {
                     String errMsg = "The given preservation profile '" + preservationProfile  
                             + "' does not match a known collection ID. "; 
                     logger.error(errMsg);
-                    updateRemotePreservationStateToFailState(prs, errMsg);
+                    updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
+                            errMsg);
                 } else {
                     currentUUID = request.UUID;
                     updateRemotePreservationState(prs, State.PRESERVATION_REQUEST_RECEIVED);
@@ -218,7 +230,7 @@ public class Workflow {
 
     /**
      * Transform the metadata included with the request to the proper METS preservation format.
-     * @param prs 
+     * @param prs The current request
      * @param currentUUID 
      * @throws YggdrasilException 
      * 
@@ -230,7 +242,8 @@ public class Workflow {
         if (!metadataModel.getMapper().containsKey(modelToUse)) {
             final String errMsg = "The given metadata-model'" + modelToUse 
                     + "' is unknown";
-            updateRemotePreservationStateToFailState(prs, errMsg);
+            updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
+                    errMsg);
             throw new YggdrasilException(errMsg);
         }
         
@@ -261,6 +274,8 @@ public class Workflow {
                 } catch (IOException e) {
                     logger.warn("Exception while reading output file:", e);
                 }
+                updateRemotePreservationStateToFailState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
+                        errMsg);
                 throw new YggdrasilException(errMsg);
             } else {
                 prs.setMetadataPayload(outputFile);
@@ -270,7 +285,8 @@ public class Workflow {
             final String errMsg = "Error occurred during transformation of metadata for uuid '"
                     + currentUUID + "'";
             logger.error(errMsg, e);
-            updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
+            updateRemotePreservationStateToFailState(
+                    prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg);
             throw new YggdrasilException(errMsg);
         } catch (TransformerException e) {
             final String errMsg = "Error occurred during transformation of metadata for uuid '"
@@ -355,7 +371,7 @@ public class Workflow {
                 tmpFile = payload.writeToFile();
             } catch (IOException e) {
                 String reason = "Unable to write content to local file: " + e;
-                updateRemotePreservationStateToFailState(prs, reason);
+                updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED, reason);
                 throw new YggdrasilException(reason, e);
             }
             prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
@@ -370,20 +386,21 @@ public class Workflow {
     }
     
     /**
-     * Set remote preservation state to PRESERVATION_REQUEST_FAILED with a given reason.      
+     * Set remote preservation state to a failstate with a given reason.      
      * @param prs a given preservationrequeststate
+     * @param failState The given failstate.
      * @param reason The reason for failing this request
      * @throws YggdrasilException
      */
     private void updateRemotePreservationStateToFailState(
-            PreservationRequestState prs, String reason) throws YggdrasilException {
+            PreservationRequestState prs, State failState, String reason) throws YggdrasilException {
         PreservationResponse response = new PreservationResponse();
         response.preservation = new Preservation();
-        response.preservation.preservation_state = State.PRESERVATION_REQUEST_FAILED.name();
+        response.preservation.preservation_state = failState.name();
         response.preservation.preservation_details = reason;
         byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
         HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
-        logger.info("Preservation status updated to '" + State.PRESERVATION_REQUEST_FAILED.name() 
+        logger.info("Preservation status updated to '" + failState.name() 
                 +  "' using the updateURI.");
     }
     
@@ -412,16 +429,28 @@ public class Workflow {
     
     /**
      * Wait until the next request arrives on the queue, and then return the request.
-     * @return the next request from the queue
-     * @throws YggdrasilException
+     * @return the next request from the queue (returns null, if shutdown message)
+     * @throws YggdrasilException If bad messagetype
      */
     private PreservationRequest getNextRequest() throws YggdrasilException {
         // TODO Should there be a timeout here?
-        byte[] requestBytes = mq.receiveMessageFromQueue(
+        MqResponse requestContent = mq.receiveMessageFromQueue(
                 mq.getSettings().getPreservationDestination());
-        PreservationRequest request = JSONMessaging.getPreservationRequest(
-                new PushbackInputStream(new ByteArrayInputStream(requestBytes), PUSHBACKBUFFERSIZE));
-        return request;
+        final String messageType = requestContent.getMessageType();
+        if (messageType == null) {
+            throw new YggdrasilException("'null' messagetype is not handled. message ignored ");
+        } else if (messageType.equalsIgnoreCase(MQ.SHUTDOWN_MESSAGE_TYPE)) {
+            // Shutdown message received
+            return null;
+        } else if (messageType.equalsIgnoreCase(MQ.PRESERVATIONREQUEST_MESSAGE_TYPE)) {
+            PreservationRequest request = JSONMessaging.getPreservationRequest(
+                    new PushbackInputStream(new ByteArrayInputStream(requestContent.getPayload())
+                            , PUSHBACKBUFFERSIZE));
+            return request;
+        } else {
+            throw new YggdrasilException("The message type '" 
+                    + messageType + "' is not handled by Yggdrasil.");
+        }   
     }
     
 }
