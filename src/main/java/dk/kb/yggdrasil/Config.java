@@ -19,7 +19,8 @@ public class Config {
     private final String TEMPORARY_DIR_PROPERTY = "temporary_dir";
     /** The temporary directory. (created if it doesn't exist. )*/
     private File tmpDir;
-    
+    /** The configDir where the yggdrasilConfigFile was located. */
+    private File configdir;
     /**
      * Constructor for class reading the general Yggdrasil config file.
      * @param yggrasilConfigFile the config file.
@@ -27,6 +28,7 @@ public class Config {
      */
     public Config(File yggrasilConfigFile) throws YggdrasilException {
        ArgumentCheck.checkExistsNormalFile(yggrasilConfigFile, "File yggrasilConfigFile");
+       configdir = configdir.getParentFile();
        Map<String, LinkedHashMap> settings = YamlTools.loadYamlSettings(yggrasilConfigFile);
        Map<String, Object> valuesMap = settings.get(RunningMode.getMode().toString());
        String databaseDirAsString = (String) valuesMap.get(DATABASE_DIR_PROPERTY);
@@ -72,5 +74,12 @@ public class Config {
     public File getTemporaryDir() {
         return tmpDir;
     }  
+    
+    /** 
+     * @return the config directory
+     */
+    public File getConfigDir() {
+        return configdir;
+    }
     
 }

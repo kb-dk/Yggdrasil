@@ -246,10 +246,23 @@ public class Workflow {
                     errMsg);
             throw new YggdrasilException(errMsg);
         }
-        
-        URL url = this.getClass().getClassLoader().getResource("xslt/" 
-                + metadataModel.getMapper().get(modelToUse));
-        File xslFile = new File(url.getFile());
+        File xsltDir = new File(config.getConfigDir(), "xslt");
+        if (!xsltDir.isDirectory()) {
+            final String errMsg = "The xslt directory '" + xsltDir.getAbsolutePath()
+                    + "' does not exist!";
+            updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
+                    errMsg);
+            throw new YggdrasilException(errMsg);
+        }
+        File xslFile = new File(xsltDir, metadataModel.getMapper().get(modelToUse));
+        if (!xslFile.isFile()) {
+            final String errMsg = "The needed xslt-script '" + xslFile.getAbsolutePath()
+                    + "' does not exist!";
+            updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
+                    errMsg);
+            throw new YggdrasilException(errMsg);
+        }
+
         InputStream metadataInputStream = null;
         File outputFile = null;
         try {
