@@ -13,8 +13,10 @@ import dk.kb.yggdrasil.messaging.MQ;
 public class Shutdown {
 
     /**
-     * @param args
-     * @throws YggdrasilException 
+     * This program takes no arguments. Supposed to be called from the shutdown.sh
+     * so it knows where the config files are.
+     * @param args Not used 
+     * @throws YggdrasilException If we couldn't find the file {Main.RABBITMQ_CONF_FILENAME}
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException, YggdrasilException {

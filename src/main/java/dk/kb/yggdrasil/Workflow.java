@@ -231,7 +231,7 @@ public class Workflow {
     /**
      * Transform the metadata included with the request to the proper METS preservation format.
      * @param prs The current request
-     * @param currentUUID 
+     * @param currentUUID The UUID of the current request
      * @throws YggdrasilException 
      * 
      */
@@ -246,10 +246,23 @@ public class Workflow {
                     errMsg);
             throw new YggdrasilException(errMsg);
         }
-        
-        URL url = this.getClass().getClassLoader().getResource("xslt/" 
-                + metadataModel.getMapper().get(modelToUse));
-        File xslFile = new File(url.getFile());
+        File xsltDir = new File(config.getConfigDir(), "xslt");
+        if (!xsltDir.isDirectory()) {
+            final String errMsg = "The xslt directory '" + xsltDir.getAbsolutePath()
+                    + "' does not exist!";
+            updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
+                    errMsg);
+            throw new YggdrasilException(errMsg);
+        }
+        File xslFile = new File(xsltDir, metadataModel.getMapper().get(modelToUse));
+        if (!xslFile.isFile()) {
+            final String errMsg = "The needed xslt-script '" + xslFile.getAbsolutePath()
+                    + "' does not exist!";
+            updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
+                    errMsg);
+            throw new YggdrasilException(errMsg);
+        }
+
         InputStream metadataInputStream = null;
         File outputFile = null;
         try {
@@ -273,6 +286,28 @@ public class Workflow {
                     errMsg += FileUtils.readFileToString(xmlFile); 
                 } catch (IOException e) {
                     logger.warn("Exception while reading output file:", e);
+                }
+                // Add errors/warnings to errmsg, so Valhal gets to see them.
+                if (errorHandler.hasErrors()) {
+                    if (!errorHandler.errors.isEmpty()) {
+                        errMsg += "Errors: \n";
+                        for (String error: errorHandler.errors) {
+                            errMsg += error + "\n";
+                        }
+                        errMsg += "\n";
+                    }
+                    if (!errorHandler.fatalErrors.isEmpty()) {
+                        errMsg += "Fatal errors: \n";
+                        for (String fatalerror: errorHandler.fatalErrors) {
+                            errMsg += fatalerror + "\n";
+                        }
+                    }
+                    if (!errorHandler.warnings.isEmpty()) {
+                        errMsg += "Warnings: \n";
+                        for (String warning: errorHandler.warnings) {
+                            errMsg += warning + "\n";
+                        }
+                    }
                 }
                 updateRemotePreservationStateToFailState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
                         errMsg);
