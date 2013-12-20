@@ -144,13 +144,13 @@
                     <xsl:value-of select="'RandomUUID'" />
                   </xsl:element>
                 </xsl:element>
-                <!-- BEGIN SignificantProperties -->
+                <!-- BEGIN significantProperties -->
                 <xsl:element name="premis:significantProperties">
                   <xsl:element name="premis:significantPropertiesExtension">
                     <xsl:copy-of select="fitsMetadata"/> 
                   </xsl:element>
                 </xsl:element>
-                <!-- END SignificantProperties -->
+                <!-- END significantProperties -->
                 <!-- BEGIN objectCharacteristics -->
                 <xsl:element name="premis:objectCharacteristics">
                   <!--Mandatory for a PREMIS File object, set to 0 (zero - the default value) here as no information is received from the repository.-->
@@ -180,7 +180,7 @@
                     </xsl:element>
                   </xsl:element>
                 </xsl:element>
-                <!-- END SignificantProperties -->
+                <!-- END objectCharacteristics -->
                 <xsl:element name="premis:linkingIntellectualEntityIdentifier">
                   <xsl:element name="premis:linkingIntellectualEntityIdentifierType">
                     <xsl:value-of select="'UUID'" />
