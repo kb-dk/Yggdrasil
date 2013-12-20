@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
@@ -204,10 +203,25 @@ public class Workflow {
             Uri metadataId = null;
             File writeDirectory = config.getTemporaryDir(); 
             WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(writeDirectory, packageId.toString());
-            // FIXME Write some WARC fields. 
+            // FIXME Write some WARC fields. Should be similar to the warc-info produced by gatekeeper  
             w3.writeWarcinfoRecord(new byte[0], null);
+/*  Sample warc-info header produced by gatekeeper:          
+             * 
+            WARC/1.0
+            WARC-Type: warcinfo
+            WARC-Date: 2013-05-27T16:34:07Z
+            WARC-Record-ID: <urn:uuid:7c9cb0b0-c6da-11e2-aa30-005056887b70>
+            Content-Type: application/warc-fields
+            Content-Length: 85
+
+            description: http://id.kb.dk/authorities/agents/kbDkDomsBmIngest.html
+            revision: 2079
+*/
+
             File resource = prs.getContentPayload();
             File metadata = prs.getMetadataPayload();
+            // FIXME add SHA-1 block-digest to the records. (look at gateekeeper/NAS implementation
+            // for inspiration
             InputStream in;
             if (resource != null) {
                 in = new FileInputStream(resource);
@@ -216,7 +230,7 @@ public class Workflow {
             }
             if (metadata != null) {
                 in = new FileInputStream(metadata);
-                metadataId = w3.writeMetadataRecord(in, metadata.length(), ContentType.parseContentType("application/json"), resourceId, null);
+                metadataId = w3.writeMetadataRecord(in, metadata.length(), ContentType.parseContentType("text/xml"), resourceId, null);
                 in.close();
             }
             w3.close();
