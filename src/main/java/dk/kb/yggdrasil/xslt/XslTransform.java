@@ -9,6 +9,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
 
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
+
 /**
  * Small command line utility to transform an XML file.
  */
@@ -67,6 +69,8 @@ public class XslTransform {
             } catch (TransformerException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (YggdrasilException e) {
                 e.printStackTrace();
             }
         }

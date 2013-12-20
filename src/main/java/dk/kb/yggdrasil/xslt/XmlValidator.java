@@ -18,8 +18,11 @@ import org.w3c.dom.DocumentType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 /**
  * Implements an XML validator for well-formed-ness and against DTD/XSD if they are defined.
@@ -71,7 +74,7 @@ public class XmlValidator {
      * @param errorHandler error handler or null
      * @return XML validation result
      */
-    public XmlValidationResult validate(File xmlFile, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler) {
+    public XmlValidationResult validate(File xmlFile, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler) throws YggdrasilException {
         ArgumentCheck.checkExistsNormalFile(xmlFile, "xmlFile");
         XmlValidationResult result = new XmlValidationResult();
         if (errorHandler == null) {
@@ -135,6 +138,18 @@ public class XmlValidator {
             }
         } catch (Throwable t) {
             logger.error("Exception validating XML stream!", t.toString(), t);
+            try {
+                String publicId = "";
+                String systemId = "";
+                int lineNumber = -1;
+                int columnNumber = -1;
+                Exception sillyApiException = new Exception("XML validation exception!", t);
+                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, sillyApiException));
+            } catch (SAXException e) {
+                throw new YggdrasilException("Failed to add error to ErrorHandler!", e);
+            }
+            result.bWellformed = false;
+            result.bValid = false;
         } finally {
             if (in != null) {
                 try {
@@ -150,12 +165,14 @@ public class XmlValidator {
 
     /**
      * Test XML document for well-formed-ness and look for DTD/XSD references.
+     * Closes the input stream before returning.
      * @param in XML input stream
      * @param entityResolver XML entity resolver or null
      * @param errorHandler error handler or null
      * @param result validation results
+     * @return result of testing, true if the document is well-formed
      */
-    public boolean testStructuralValidity(InputStream in, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) {
+    public boolean testStructuralValidity(InputStream in, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(result, "result");
         if (errorHandler == null) {
@@ -172,7 +189,6 @@ public class XmlValidator {
             result.document = builderParsing.parse(in);
             in.close();
             in = null;
-            result.bWellformed = !errorHandler.hasErrors();
             /*
              * Look for references to DTD or XSD.
              */
@@ -204,6 +220,16 @@ public class XmlValidator {
             }
         } catch (Throwable t) {
             logger.error("Exception validating XML stream!", t.toString(), t);
+            try {
+                String publicId = "";
+                String systemId = "";
+                int lineNumber = -1;
+                int columnNumber = -1;
+                Exception sillyApiException = new Exception("XML validation exception!", t);
+                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, sillyApiException));
+            } catch (SAXException e) {
+                throw new YggdrasilException("Failed to add error to ErrorHandler!", e);
+            }
         } finally {
             if (in != null) {
                 try {
@@ -214,17 +240,19 @@ public class XmlValidator {
                 in = null;
             }
         }
-        return !errorHandler.hasErrors();
+        result.bWellformed = !errorHandler.hasErrors();
+        return result.bWellformed;
     }
 
     /**
-     * Validate XML document against any DTD/XSD found.
+     * Validate XML document against any DTD/XSD found. Closes the input stream before returning.
      * @param in XML input stream
      * @param entityResolver XML entity resolver or null
      * @param errorHandler error handler or null
      * @param result validation results
+     * @return result of testing, true if the document was validated against DTD/XSD(s).
      */
-    public boolean testDefinedValidity(InputStream in, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) {
+    public boolean testDefinedValidity(InputStream in, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(result, "result");
         if (errorHandler == null) {
@@ -240,12 +268,18 @@ public class XmlValidator {
             result.document = builderValidating.parse(in);
             in.close();
             in = null;
-            result.bValid = !errorHandler.hasErrors();
-            if (result.bValid) {
-                result.bWellformed = true;
-            }
         } catch (Throwable t) {
             logger.error("Exception validating XML stream!", t.toString(), t);
+            try {
+                String publicId = "";
+                String systemId = "";
+                int lineNumber = -1;
+                int columnNumber = -1;
+                Exception sillyApiException = new Exception("XML validation exception!", t);
+                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, sillyApiException));
+            } catch (SAXException e) {
+                throw new YggdrasilException("Failed to add error to ErrorHandler!", e);
+            }
         } finally {
             if (in != null) {
                 try {
@@ -256,7 +290,11 @@ public class XmlValidator {
                 in = null;
             }
         }
-        return !errorHandler.hasErrors();
+        result.bValid = !errorHandler.hasErrors();
+        if (result.bValid) {
+            result.bWellformed = true;
+        }
+        return result.bValid;
     }
 
 }

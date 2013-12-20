@@ -247,7 +247,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:eventIdentifierValue">
-                    <xsl:value-of select="'RandomUUID'" />
+                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
                   </xsl:element>
                 </xsl:element>
                 <xsl:element name="premis:eventType">
@@ -261,7 +261,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingAgentIdentifierValue">
-                    <xsl:value-of select="'RandomUUID'" />
+                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
                   </xsl:element>
                 </xsl:element>
                 <xsl:element name="premis:linkingObjectIdentifier">
