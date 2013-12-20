@@ -22,10 +22,10 @@ public class XmlValidationResult {
     /** Schemas referred to in the XML document. */
     public List<String> schemas = new LinkedList<String>();
 
-    /** Does the document referrer to a DTD. */
+    /** Does the document refer to a DTD. */
     public boolean bDtdUsed = false;
 
-    /** Does the document referrer to any XSD. */
+    /** Does the document refer to any XSD. */
     public boolean bXsdUsed = false;
 
     /** Is the document wellformed. */

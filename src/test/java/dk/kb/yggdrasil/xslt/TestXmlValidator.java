@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
+
 @RunWith(JUnit4.class)
 public class TestXmlValidator {
 
@@ -32,42 +34,42 @@ public class TestXmlValidator {
             Assert.fail("Could not make entity_cache directory!");
         }
 
-        url = this.getClass().getClassLoader().getResource("xml/Carrebye.xml");
-        file = new File(url.getFile());
-
-        XmlValidator xmlValidator = new XmlValidator();
-        XmlValidationResult result;
-
-        XmlEntityResolver entityResolver = new XmlEntityResolver(cacheDir);
-        XmlErrorHandler errorHandler = new XmlErrorHandler();
-
-        result = xmlValidator.validate(file, entityResolver, errorHandler);
-
-        //Assert.assertTrue(result.bValidate);
-        Assert.assertNull(result.systemId);
-        Assert.assertEquals(1, result.xsiNamespaces.size());
-        Assert.assertEquals(9, result.schemas.size());
-
-        Assert.assertEquals(0, errorHandler.numberOfErrors);
-        Assert.assertEquals(0, errorHandler.numberOfFatalErrors);
-        Assert.assertEquals(0, errorHandler.numberOfWarnings);
-
-        url = this.getClass().getClassLoader().getResource("xml/Car_S-9092.tif.raw.xml");
-        file = new File(url.getFile());
-
-        result = xmlValidator.validate(file, entityResolver, errorHandler);
-
-        //Assert.assertFalse(result.bValidate);
-        Assert.assertNull(result.systemId);
-        Assert.assertEquals(0, result.xsiNamespaces.size());
-        Assert.assertEquals(0, result.schemas.size());
-
-        Assert.assertEquals(0, errorHandler.numberOfErrors);
-        Assert.assertEquals(0, errorHandler.numberOfFatalErrors);
-        Assert.assertEquals(0, errorHandler.numberOfWarnings);
-
+        boolean bool;
         try {
-            boolean bool;
+            url = this.getClass().getClassLoader().getResource("xml/Carrebye.xml");
+            file = new File(url.getFile());
+
+            XmlValidator xmlValidator = new XmlValidator();
+            XmlValidationResult result;
+
+            XmlEntityResolver entityResolver = new XmlEntityResolver(cacheDir);
+            XmlErrorHandler errorHandler = new XmlErrorHandler();
+
+            result = xmlValidator.validate(file, entityResolver, errorHandler);
+
+            //Assert.assertTrue(result.bValidate);
+            Assert.assertNull(result.systemId);
+            Assert.assertEquals(1, result.xsiNamespaces.size());
+            Assert.assertEquals(9, result.schemas.size());
+
+            Assert.assertEquals(0, errorHandler.numberOfErrors);
+            Assert.assertEquals(0, errorHandler.numberOfFatalErrors);
+            Assert.assertEquals(0, errorHandler.numberOfWarnings);
+
+            url = this.getClass().getClassLoader().getResource("xml/Car_S-9092.tif.raw.xml");
+            file = new File(url.getFile());
+
+            result = xmlValidator.validate(file, entityResolver, errorHandler);
+
+            //Assert.assertFalse(result.bValidate);
+            Assert.assertNull(result.systemId);
+            Assert.assertEquals(0, result.xsiNamespaces.size());
+            Assert.assertEquals(0, result.schemas.size());
+
+            Assert.assertEquals(0, errorHandler.numberOfErrors);
+            Assert.assertEquals(0, errorHandler.numberOfFatalErrors);
+            Assert.assertEquals(0, errorHandler.numberOfWarnings);
+
             for (int i=0; i<xmlFiles.length; ++i) {
                 int expectedNamespaces = (Integer)xmlFiles[i][0];
                 int expectedSchemas = (Integer)xmlFiles[i][1];
@@ -218,6 +220,9 @@ public class TestXmlValidator {
                 Assert.assertFalse(result.bValid);
             }
         } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected exception!");
+        } catch (YggdrasilException e) {
             e.printStackTrace();
             Assert.fail("Unexpected exception!");
         }

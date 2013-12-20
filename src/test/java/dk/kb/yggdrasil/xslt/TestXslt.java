@@ -19,6 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
+
 @RunWith(JUnit4.class)
 public class TestXslt {
 
@@ -127,6 +129,9 @@ public class TestXslt {
             e.printStackTrace();
             Assert.fail("Unexpected exception!");
         } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected exception!");
+        } catch (YggdrasilException e) {
             e.printStackTrace();
             Assert.fail("Unexpected exception!");
         }
@@ -251,6 +256,9 @@ public class TestXslt {
                 e.printStackTrace();
                 Assert.fail("Unexpected exception!");
             } catch (TransformerException e) {
+                e.printStackTrace();
+                Assert.fail("Unexpected exception!");
+            } catch (YggdrasilException e) {
                 e.printStackTrace();
                 Assert.fail("Unexpected exception!");
             }
