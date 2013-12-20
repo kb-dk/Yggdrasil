@@ -436,7 +436,7 @@ public class Workflow {
         byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
         HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
         logger.info("Preservation status updated to '" + failState.name() 
-                +  "' using the updateURI.");
+                +  "' using the updateURI. Reason: " + reason );
     }
     
     /**
