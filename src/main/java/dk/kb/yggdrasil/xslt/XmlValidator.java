@@ -197,7 +197,6 @@ public class XmlValidator {
                     }
                     node = nodes.item(i).getAttributes().getNamedItem("xsi:schemaLocation");
                     if (node != null) {
-                        // debug
                         result.schemas.add(node.getNodeValue());
                         result.bXsdUsed = true;
                     }

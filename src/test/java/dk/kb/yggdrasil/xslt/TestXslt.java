@@ -107,8 +107,9 @@ public class TestXslt {
                 file.deleteOnExit();
             }
 
-            //Assert.assertTrue(result.bValidate);
             Assert.assertNull(result.systemId);
+            Assert.assertFalse(result.bDtdUsed);
+            Assert.assertTrue(result.bXsdUsed);
             // xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" os missing
             Assert.assertEquals(1, result.xsiNamespaces.size());
             Assert.assertEquals(9, result.schemas.size());
@@ -116,6 +117,9 @@ public class TestXslt {
             Assert.assertEquals(0, errorHandler.numberOfErrors);
             Assert.assertEquals(0, errorHandler.numberOfFatalErrors);
             Assert.assertEquals(0, errorHandler.numberOfWarnings);
+
+            Assert.assertTrue(result.bWellformed);
+            Assert.assertTrue(result.bValid);
         } catch (TransformerConfigurationException e) {
             e.printStackTrace();
             Assert.fail("Unexpected exception!");
