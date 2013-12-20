@@ -147,7 +147,7 @@
                 <!-- BEGIN significantProperties -->
                 <xsl:element name="premis:significantProperties">
                   <xsl:element name="premis:significantPropertiesExtension">
-                    <xsl:copy-of select="fitsMetadata"/> 
+                    <xsl:copy-of select="fitsMetadata1"/> 
                   </xsl:element>
                 </xsl:element>
                 <!-- END significantProperties -->
