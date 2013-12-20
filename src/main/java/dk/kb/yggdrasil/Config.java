@@ -28,7 +28,7 @@ public class Config {
      */
     public Config(File yggrasilConfigFile) throws YggdrasilException {
        ArgumentCheck.checkExistsNormalFile(yggrasilConfigFile, "File yggrasilConfigFile");
-       configdir = configdir.getParentFile();
+       configdir = yggrasilConfigFile.getParentFile();
        Map<String, LinkedHashMap> settings = YamlTools.loadYamlSettings(yggrasilConfigFile);
        Map<String, Object> valuesMap = settings.get(RunningMode.getMode().toString());
        String databaseDirAsString = (String) valuesMap.get(DATABASE_DIR_PROPERTY);
