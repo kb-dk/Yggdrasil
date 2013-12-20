@@ -231,7 +231,7 @@ public class Workflow {
     /**
      * Transform the metadata included with the request to the proper METS preservation format.
      * @param prs The current request
-     * @param currentUUID 
+     * @param currentUUID The UUID of the current request
      * @throws YggdrasilException 
      * 
      */
@@ -273,6 +273,28 @@ public class Workflow {
                     errMsg += FileUtils.readFileToString(xmlFile); 
                 } catch (IOException e) {
                     logger.warn("Exception while reading output file:", e);
+                }
+                // Add errors/warnings to errmsg, so Valhal gets to see them.
+                if (errorHandler.hasErrors()) {
+                    if (!errorHandler.errors.isEmpty()) {
+                        errMsg += "Errors: \n";
+                        for (String error: errorHandler.errors) {
+                            errMsg += error + "\n";
+                        }
+                        errMsg += "\n";
+                    }
+                    if (!errorHandler.fatalErrors.isEmpty()) {
+                        errMsg += "Fatal errors: \n";
+                        for (String fatalerror: errorHandler.fatalErrors) {
+                            errMsg += fatalerror + "\n";
+                        }
+                    }
+                    if (!errorHandler.warnings.isEmpty()) {
+                        errMsg += "Warnings: \n";
+                        for (String warning: errorHandler.warnings) {
+                            errMsg += warning + "\n";
+                        }
+                    }
                 }
                 updateRemotePreservationStateToFailState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
                         errMsg);
