@@ -51,6 +51,15 @@
 			</includes>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/main/resources/xslt</directory>
+			<includes>
+				<include>*.xslt</include>
+				<include>*.xsl</include>
+			</includes>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<outputDirectory>/config/xslt/</outputDirectory>
+		</fileSet>
 		<!-- Add the javadoc -->
 <!--
 		<fileSet>
