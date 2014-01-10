@@ -8,19 +8,19 @@ provenanceMetadata/fields/uuid;mets@OBJID;;
 """Book""";mets@TYPE;;
 [profile_uri];mets@PROFILE;;
 ;mets/metsHdr;;mets
-[TIME_NOW];mets/metsHdr@CREATEDATE;;
+[TIME-NOW];mets/metsHdr@CREATEDATE;;
 ;mets/metsHdr/agent[1];;mets
 """kbDk""";mets/metsHdr/agent[1]@ID;;
 """CREATOR""";mets/metsHdr/agent[1]@ROLE;;
 """ORGANIZATION""";mets/metsHdr/agent[1]@TYPE;;
 """Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek""";mets/metsHdr/agent[1]/name;;mets
 ;mets/metsHdr/agent[2];;mets
-"""kbDkYggdrasil""";mets/metsHdr/agent[2]@ID;;
+[Yggdrasil-api-id];mets/metsHdr/agent[2]@ID;;
 """CREATOR""";mets/metsHdr/agent[2]@ROLE;;
 """OTHER""";mets/metsHdr/agent[2]@TYPE;;
 """API""";mets/metsHdr/agent[2]@OTHERTYPE;;
-[Yggdrasil-version];mets/metsHdr/agent[2]/name;;mets
-"""dk.kb.yggdrasil.MetsGenerator (??)""";mets/metsHdr/agent[2]/note;;mets
+[Yggdrasil-api-name];mets/metsHdr/agent[2]/name;;mets
+[Yggdrasil-api-note];mets/metsHdr/agent[2]/note;;mets
 ;mets/metsHdr/agent[3];;mets
 """kbDkNsa""";mets/metsHdr/agent[3]@ID;;
 """EDITOR""";mets/metsHdr/agent[3]@ROLE;;
@@ -34,15 +34,15 @@ provenanceMetadata/fields/uuid;mets@OBJID;;
 """MODS""";mets/dmdSec/mdWrap@MDTYPE;;
 ;mets/dmdSec/mdWrap/xmlData;;mets
 ;mets/dmdSec/mdWrap/xmlData/mods;;mods
-[copy-of] descMetadata/mods/genre;mets/dmdSec/mdWrap/xmlData/mods/genre;;mods
-[copy-of] descMetadata/mods/identifier[@type='isbn];mets/dmdSec/mdWrap/xmlData/mods/identifier[@type='isbn];;mods
-[copy-of] descMetadata/mods/locator;mets/dmdSec/mdWrap/xmlData/mods/locator;;mods
-[copy-of] descMetadata/mods/language;mets/dmdSec/mdWrap/xmlData/mods/language;;mods
-[copy-of] descMetadata/mods/originInfo;mets/dmdSec/mdWrap/xmlData/mods/originInfo;;mods
-[copy-of] descMetadata/mods/physicalDescription;mets/dmdSec/mdWrap/xmlData/mods/physicalDescription;;mods
-[copy-of] descMetadata/mods/subject;mets/dmdSec/mdWrap/xmlData/mods/subject;;mods
-[copy-of] descMetadata/mods/titleInfo;mets/dmdSec/mdWrap/xmlData/mods/titleInfo;;mods
-[copy-of] descMetadata/mods/typeOfResource;mets/dmdSec/mdWrap/xmlData/mods/typeOfResource;;mods
+descMetadata/mods:mods/mods:genre;mets/dmdSec/mdWrap/xmlData/mods/genre;[copy-of];mods
+descMetadata/mods:mods/mods:identifier[@type='isbn];mets/dmdSec/mdWrap/xmlData/mods/identifier;[copy-of];mods
+descMetadata/mods:mods/mods:locator;mets/dmdSec/mdWrap/xmlData/mods/locator;[copy-of];mods
+descMetadata/mods:mods/mods:language;mets/dmdSec/mdWrap/xmlData/mods/language;[copy-of];mods
+descMetadata/mods:mods/mods:originInfo;mets/dmdSec/mdWrap/xmlData/mods/originInfo;[copy-of];mods
+descMetadata/mods:mods/mods:physicalDescription;mets/dmdSec/mdWrap/xmlData/mods/physicalDescription;[copy-of];mods
+descMetadata/mods:mods/mods:subject;mets/dmdSec/mdWrap/xmlData/mods/subject;[copy-of];mods
+descMetadata/mods:mods/mods:titleInfo;mets/dmdSec/mdWrap/xmlData/mods/titleInfo;[copy-of];mods
+descMetadata/mods:mods/mods:typeOfResource;mets/dmdSec/mdWrap/xmlData/mods/typeOfResource;[copy-of];mods
 ;mets/dmdSec/mdWrap/xmlData/mods/name[x];each author-> author[x];mods
 """urn:uuid:"" + author[x]/uuid";mets/dmdSec/mdWrap/xmlData/mods/name[x]@valueURI;;
 author[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
@@ -53,13 +53,13 @@ author[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
 """aut""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2];;mods
 """code""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2]@type;;
 """marcrelator""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm[2]@authority;;
-;mets/dmdSec/mdWrap/xmlData/mods/name[x];each related_person -> per[x];mods
-"""urn:uuid:"" + per[x]/uuid";mets/dmdSec/mdWrap/xmlData/mods/name[x]@valueURI;;
-per[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
-;mets/dmdSec/mdWrap/xmlData/mods/name[x]/role;;mods
-"""related person""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm;;mods
-"""text""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm@type;;
-"""marcrelator""";mets/dmdSec/mdWrap/xmlData/mods/name[x]/role/roleTerm@authority;;
+;mets/dmdSec/mdWrap/xmlData/mods/name[y];each related_person -> per[x];mods
+"""urn:uuid:"" + per[x]/uuid";mets/dmdSec/mdWrap/xmlData/mods/name[y]@valueURI;;
+per[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[y]/namePart;;mods
+;mets/dmdSec/mdWrap/xmlData/mods/name[y]/role;;mods
+"""related person""";mets/dmdSec/mdWrap/xmlData/mods/name[y]/role/roleTerm;;mods
+"""text""";mets/dmdSec/mdWrap/xmlData/mods/name[y]/role/roleTerm@type;;
+"""marcrelator""";mets/dmdSec/mdWrap/xmlData/mods/name[y]/role/roleTerm@authority;;
 ;mets/amdSec;;mets
 ;mets/amdSec/rightsMD;;mets
 [DATE-NOW];mets/amdSec/rightsMD@CREATED;;
@@ -68,7 +68,7 @@ per[x]/name;mets/dmdSec/mdWrap/xmlData/mods/name[x]/namePart;;mods
 """MODS""";mets/amdSec/rightsMD/mdWrap@MDTYPE;;
 ;mets/amdSec/rightsMD/mdWrap/xmlData;;mets
 ;mets/amdSec/rightsMD/mdWrap/xmlData/mods;;mods
-"""Det Kongelige Bibliotek""";mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods
+[MODS-ACCESS];mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods
 ;mets/amdSec/digiprovMD[1];;mets
 [DATE-NOW];mets/amdSec/digiprovMD[1]@CREATED;;
 """Premis1""";mets/amdSec/digiprovMD[1]@ID;;
