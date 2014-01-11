@@ -19,7 +19,7 @@ public class XslTransform {
     /**
      * Run method.
      */
-    public static void main(String[] args) {
+    public static void main(String ... args) {
         if (args.length < 3) {
             System.out.println("Usage: transform <input.xml> <transformer.xsl> <output.xml>");
         } else {

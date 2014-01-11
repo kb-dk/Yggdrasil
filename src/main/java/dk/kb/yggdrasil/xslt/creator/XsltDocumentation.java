@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,24 +29,34 @@ public class XsltDocumentation {
 		for(int i = 1; i < rows.size(); i++) {
 			root.addChild(new DocTree(rows.get(i)));
 		}
-		
+	}
+	
+	/**
+	 * Prints the resulting XSLT to the print stream. 
+	 * @param ps The print stream to put the resulting XSLT.
+	 */
+	public void printXslt(PrintStream ps) {
 		StringBuilder sb = new StringBuilder();
 		root.printXslt(sb);
-		System.out.println(sb.toString());
+		ps.append(sb.toString());
 	}
 	
-	public void print() {
-		for(DocRow e : rows) {
-			System.out.println("Element: " + e.origin + " ; " + e.toPath + " ; " + e.condition + " ; " + e.namespace + " ; " + e.commentary + " -> " + e.validate());
-		}
-	}
-	
-	private void initializeRows(File f) {
-		List<DocRow> elements = retrieveElements(f);
+	/**
+	 * Initializes the documentation rows in the file.
+	 * Has to ignore the first description rows.
+	 * @param docFile The documentation file.
+	 */
+	private void initializeRows(File docFile) {
+		List<DocRow> elements = retrieveFullDocumentationList(docFile);
 		int index = findFirstRow(elements);
 		rows = elements.subList(index, elements.size());
 	}
 	
+	/**
+	 * 
+	 * @param elements
+	 * @return
+	 */
 	private int findFirstRow(List<DocRow> elements) {
 		for(int i = 0; i < elements.size(); i++) {
 			if(elements.get(i).isEmpty()) {
@@ -55,7 +66,13 @@ public class XsltDocumentation {
 		return 1;
 	}
 	
-	private List<DocRow> retrieveElements(File f) {
+	/**
+	 * Retrieves all the rows in the file, even the description ones prior to the actual transformation rows.
+	 * 
+	 * @param f The file with the transformation documentation.
+	 * @return The complete list of rows in the transformation.
+	 */
+	private List<DocRow> retrieveFullDocumentationList(File f) {
 		List<DocRow> res = new ArrayList<DocRow>();
 		
 		InputStream in = null;
