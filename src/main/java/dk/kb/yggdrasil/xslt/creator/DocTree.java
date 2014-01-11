@@ -1,6 +1,7 @@
 package dk.kb.yggdrasil.xslt.creator;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
@@ -26,7 +27,7 @@ public class DocTree {
 	public DocTree(DocRow row) {
 		this.node = row;
 		this.path = row.toPath;
-		this.children = new HashMap<String, DocTree>();
+		this.children = new LinkedHashMap<String, DocTree>();
 		
 		String[] subPaths = row.toPath.split("[@/]");
 		this.nodeName = row.toPath.substring(Math.max(0, row.toPath.length() - subPaths[subPaths.length-1].length()-1));
@@ -150,7 +151,7 @@ public class DocTree {
 		addIndentation(sb, level);
 		sb.append("<xsl:element name=\"" + getNameWithNamespace() + "\">\n");
 		
-		addValue(sb, level + 1);
+		printValue(sb, level + 1);
 		printChildren(sb, level);
 		
 		// add element declaration end
@@ -167,7 +168,7 @@ public class DocTree {
 		addIndentation(sb, level);
 		sb.append("<xsl:attribute name=\"" + getNameWithNamespace() + "\">\n");
 		
-		addValue(sb, level + 1);
+		printValue(sb, level + 1);
 		
 		// add element declaration end
 		addIndentation(sb, level);
@@ -175,12 +176,12 @@ public class DocTree {
 	}
 	
 	/**
-	 * Adds the value regarding the origin part of the documentation row.
+	 * Prints the value regarding the origin part of the documentation row.
 	 * This handles functions, constants and XPaths.
 	 * @param sb The stringbuilder where the indentation is added.
 	 * @param level The number of spaces to print.
 	 */
-	private void addValue(StringBuilder sb, int level) {
+	private void printValue(StringBuilder sb, int level) {
 		if(node.origin == null || node.origin.isEmpty()) {
 			return;
 		}
@@ -190,9 +191,7 @@ public class DocTree {
 		if(value.startsWith("[")) {
 			value = DocFunctionUtils.findFunction(value);
 		} else if(value.startsWith("\"")) {
-			// Make documentation constant into XSLT constant. Changes from " to ' 
-			// (Excel makes 3 x ", and we only need 1 of ', so regex for changing any number of concurrent " into 1 ').
-			value = value.replaceAll("\"+", "'");
+			value = DocFunctionUtils.formatConstant(value);
 		}
 		sb.append("<xsl:value-of select=\"" + value + "\" />\n");
 	}

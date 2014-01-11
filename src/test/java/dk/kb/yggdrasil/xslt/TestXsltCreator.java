@@ -19,6 +19,6 @@ public class TestXsltCreator {
         File file = new File(url.getFile());
         
         XsltDocumentation xsltDoc = new XsltDocumentation(file);
-//        xsltDoc.print();
+        xsltDoc.printXslt(System.out);
     }
 }

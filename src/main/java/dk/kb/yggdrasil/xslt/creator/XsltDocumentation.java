@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Format for documentation files:
+ * Format for documentation files :
  * 
- * Comment*
- * Empty line
- * Initials
- * origin;toPath;condition;namespace;commentary
+ * Introduction (one or many)
+ * Empty line (only if introduction)
+ * Explanation (only one row)
+ * origin;toPath;condition;namespace;commentary*
  */
 public class XsltDocumentation {
 
@@ -48,18 +48,21 @@ public class XsltDocumentation {
 	 */
 	private void initializeRows(File docFile) {
 		List<DocRow> elements = retrieveFullDocumentationList(docFile);
-		int index = findFirstRow(elements);
+		int index = findFirstTransformationRow(elements);
 		rows = elements.subList(index, elements.size());
 	}
 	
 	/**
+	 * Finds the first row with XSLT transformation.
+	 * There might be some introduction lines to the actual transformation, which are separated by an empty row. 
+	 * The actual transformation starts with a row explaining the different columns. This row is ignored.
 	 * 
-	 * @param elements
-	 * @return
+	 * @param rows The list of all the rows, including introduction and explanation rows.
+	 * @return The index for the first actual transformation row.
 	 */
-	private int findFirstRow(List<DocRow> elements) {
-		for(int i = 0; i < elements.size(); i++) {
-			if(elements.get(i).isEmpty()) {
+	private int findFirstTransformationRow(List<DocRow> rows) {
+		for(int i = 0; i < rows.size(); i++) {
+			if(rows.get(i).isEmpty()) {
 				return i + 2;
 			}
 		}

@@ -3,6 +3,8 @@ package dk.kb.yggdrasil.xslt.creator;
 import java.util.HashMap;
 import java.util.Map;
 
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+
 public class DocFunctionUtils {
 	
 	/**
@@ -28,10 +30,6 @@ public class DocFunctionUtils {
 				+ " <xsl:output encoding=\"UTF-8\" method=\"xml\" indent=\"yes\" />\n"
 				+ "\n"
 				+ " <xsl:template match=\"metadata\">\n";
-//				+ "  <xsl:call-template name=\"mets_generator\" />\n"
-//				+ " </xsl:template>\n"
-//				+ "\n"
-//				+ " <xsl:template name=\"mets_generator\">\n";
 	}
 	
 	/**
@@ -67,9 +65,31 @@ public class DocFunctionUtils {
 			return javaFunctionMap.get(function);
 		}
 
-		return "CODE: " + function;
-		//throw new ArgumentCheck("Could not find a corresponding function to: '" + function + "'.");
+		if(function.startsWith("[CONCAT]")) {
+			String[] split = function.split(" ");
+			ArgumentCheck.checkTrue(split.length >= 3, "A concatination function requires at least two arguments, "
+					+ "and must be in format: [CONCAT] first second ...\nBut this function was: '" + function + "'");
+			
+			String res = "concat(" + formatConstant(split[1]);
+			for(int i = 2; i < split.length; i++) {
+				res += ", " + formatConstant(split[i]);
+			}
+			res += ")";
+			return res;
+		}
+		//return "CODE: " + function;
+		throw new ArgumentCheck("Could not find a corresponding function to: '" + function + "'.");
 	}
 	
-	
+	/**
+	 * Extracts the constant in the right format.
+	 * Make documentation constant into XSLT constant. Changes from " to '.
+	 * (Excel makes 3 x ", and we only need 1 of ', so regex for changing any number of concurrent " into 1 ').
+	 *  
+	 * @param value The value for the constant in documentation format.
+	 * @return The constant formatted for XSLT.
+	 */
+	public static String formatConstant(String value) {
+		return value.replaceAll("\"+", "'");
+	}
 }

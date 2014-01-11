@@ -47,7 +47,7 @@ public class XsltCreator {
 		XsltDocumentation doc = new XsltDocumentation(docFile);
 		
 		File xsltFile = new File(docFile.getAbsolutePath() + ".xslt");
-		ArgumentCheck.checkTrue(xsltFile.exists(), "The output xslt file must not already exist.");
+		ArgumentCheck.checkTrue(!xsltFile.exists(), "The output xslt file must not already exist.");
 		
 		PrintStream ps = null;
 		try {
