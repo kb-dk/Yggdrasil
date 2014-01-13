@@ -5,6 +5,10 @@ import java.util.Map;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 
+/**
+ * Utility functions for dealing with the transformation function values.
+ * This includes the values which should be replaced by java functions or XSLT functions.
+ */
 public class DocFunctionUtils {
 	
 	/**
@@ -42,6 +46,9 @@ public class DocFunctionUtils {
 				+ "</xsl:transform>\n";
 	}
 	
+	/**
+	 * Creating all the relations between the function names and their java functions.
+	 */
 	private static Map<String, String> javaFunctionMap = new HashMap<String, String>();
 	static {
 		javaFunctionMap.put("[DATE-NOW]", "java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()");
@@ -52,6 +59,8 @@ public class DocFunctionUtils {
 		javaFunctionMap.put("[Yggdrasil-api-id]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getAPIID()");
 		javaFunctionMap.put("[Yggdrasil-api-name]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getAPIName()");
 		javaFunctionMap.put("[Yggdrasil-api-note]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getAPINote()");
+		javaFunctionMap.put("[Organization-ID]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganizationID()");
+		javaFunctionMap.put("[Organization-Name]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganizationName()");
 	}
 	
 	/**
@@ -77,7 +86,7 @@ public class DocFunctionUtils {
 			res += ")";
 			return res;
 		}
-		//return "CODE: " + function;
+		
 		throw new ArgumentCheck("Could not find a corresponding function to: '" + function + "'.");
 	}
 	

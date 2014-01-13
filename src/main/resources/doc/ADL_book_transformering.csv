@@ -10,10 +10,10 @@ provenanceMetadata/fields/uuid;mets@OBJID;;
 ;mets/metsHdr;;mets
 [TIME-NOW];mets/metsHdr@CREATEDATE;;
 ;mets/metsHdr/agent[1];;mets
-"""kbDk""";mets/metsHdr/agent[1]@ID;;
+[Organization-ID];mets/metsHdr/agent[1]@ID;;
 """CREATOR""";mets/metsHdr/agent[1]@ROLE;;
 """ORGANIZATION""";mets/metsHdr/agent[1]@TYPE;;
-"""Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek""";mets/metsHdr/agent[1]/name;;mets
+[Organization-Name];mets/metsHdr/agent[1]/name;;mets
 ;mets/metsHdr/agent[2];;mets
 [Yggdrasil-api-id];mets/metsHdr/agent[2]@ID;;
 """CREATOR""";mets/metsHdr/agent[2]@ROLE;;

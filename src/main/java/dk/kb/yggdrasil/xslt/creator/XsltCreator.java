@@ -5,11 +5,17 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.xslt.XmlEntityResolver;
+import dk.kb.yggdrasil.xslt.XmlErrorHandler;
+import dk.kb.yggdrasil.xslt.XmlValidate;
+import dk.kb.yggdrasil.xslt.XmlValidationResult;
+import dk.kb.yggdrasil.xslt.XmlValidator;
 import dk.kb.yggdrasil.xslt.XslTransform;
 
 public class XsltCreator {
 
-	public static void main(String ... args) throws IOException {
+	public static void main(String ... args) throws IOException, YggdrasilException {
 		if(args.length < 2) {
 			System.out.println("Usage: [DocFile.csv] [metadata.xml]\n"
 					+ "Or usage: [DocFile.csv] [metadata.xml] [output.xml]");
@@ -32,6 +38,11 @@ public class XsltCreator {
 		ArgumentCheck.checkExistsNormalFile(metadataFile, metadataFile.getAbsolutePath());
 		
 		File xsltFile = createXsltFile(docFile);
+		
+        XmlValidator xmlValidator = new XmlValidator();
+        XmlErrorHandler errorHandler = new XmlErrorHandler();
+        XmlValidationResult result = xmlValidator.validate(xsltFile, null, errorHandler);
+        ArgumentCheck.checkTrue(result.bValid, "The resulting XSLT file must be valid, but apparently is not.");
 		
 		XslTransform.main(metadataFile.getAbsolutePath(), xsltFile.getAbsolutePath(), "");
 	}
