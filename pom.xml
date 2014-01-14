@@ -25,6 +25,8 @@
     <assembly.home.env.name.ref>${YGGDRASIL_HOME}</assembly.home.env.name.ref>
     <assembly.config.env.name>YGGDRASIL_CONF_DIR</assembly.config.env.name>
     <assembly.config.env.name.ref>${YGGDRASIL_CONF_DIR}</assembly.config.env.name.ref>
+    <assembly.runningmode.env.name>dk.kb.yggdrasil.runningmode</assembly.runningmode.env.name>
+    <assembly.runningmode.env.name.ref>${YGGDRASIL_RUNNING_MODE}</assembly.runningmode.env.name.ref>
     <assembly.main.class.name>dk.kb.yggdrasil.Main</assembly.main.class.name>
   </properties>
 

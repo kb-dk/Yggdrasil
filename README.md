@@ -73,3 +73,22 @@ Making the Yggdrasil package without running the unittests
 
 mvn clean -Dmaven.test.skip=true package
 
+
+Deploying the Yggdrasil program
+-------------------------------
+
+$ unzip Yggdrasil-$VERSION.zip 
+
+$ cd Yggdrasil-$VERSION
+
+Define the correct runningmode (development, test, production) 
+
+export YGGDRASIL_RUNNING_MODE=test
+
+bash run.sh
+
+
+Note: the logs are written to logs/yggdrasil.log 
+
+
+
