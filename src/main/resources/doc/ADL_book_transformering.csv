@@ -22,11 +22,11 @@ provenanceMetadata/fields/uuid;mets@OBJID;;
 [Yggdrasil-api-name];mets/metsHdr/agent[2]/name;;mets
 [Yggdrasil-api-note];mets/metsHdr/agent[2]/note;;mets
 ;mets/metsHdr/agent[3];;mets
-"""kbDkNsa""";mets/metsHdr/agent[3]@ID;;
+[Department-ID];mets/metsHdr/agent[3]@ID;;
 """EDITOR""";mets/metsHdr/agent[3]@ROLE;;
 """OTHER""";mets/metsHdr/agent[3]@TYPE;;
 """DEPARTMENT""";mets/metsHdr/agent[3]@OTHERTYPE;;
-"""NSA: Nationalsamlingsafdelingen""";mets/metsHdr/agent[3]/name;;mets
+[Department-Name];mets/metsHdr/agent[3]/name;;mets
 ;mets/dmdSec;;mets
 [DATE-NOW];mets/dmdSec@CREATED;;
 """Mods1""";mets/dmdSec@ID;;

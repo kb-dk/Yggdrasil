@@ -61,6 +61,9 @@ public class DocFunctionUtils {
 		javaFunctionMap.put("[Yggdrasil-api-note]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getAPINote()");
 		javaFunctionMap.put("[Organization-ID]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganizationID()");
 		javaFunctionMap.put("[Organization-Name]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getOrganizationName()");
+		javaFunctionMap.put("[Department-ID]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentID()");
+		javaFunctionMap.put("[Department-Name]", "java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentName()");
+		
 	}
 	
 	/**
