@@ -8,4 +8,4 @@ fi
 
 cd ${assembly.home.env.name.ref}
 
-"${JAVA}" ${JAVA_OPTS} -D${assembly.home.env.name}="${assembly.home.env.name.ref}" -D${assembly.config.env.name}="${assembly.config.env.name.ref}" -D${assembly.runningmode.env.name}="${assembly.runningmode.env.name.ref}" -cp "$CP" ${assembly.main.class.name} "$@"
+"${JAVA}" ${JAVA_OPTS} -D${assembly.home.env.name}="${assembly.home.env.name.ref}" -D${assembly.config.env.name}="${assembly.config.env.name.ref}" -D${assembly.runningmode.env.name}="${assembly.runningmode.env.name.ref}" -cp "$CP" ${assembly.main.class.name} "$@" &
