@@ -159,7 +159,18 @@ public class MqTest {
         assertEquals(dissDest, settingsCopy.getDisseminationDestination());
     }
 
- 
+    /**
+     * Unit test for testing a preservation response message can be sent to a queue successfully
+     * @throws YggdrasilException
+     * @throws FileNotFoundException
+     */
+    @Test
+    public void sendPreservationResponseMsgToValhal() throws YggdrasilException, FileNotFoundException {
+        File f = new File(RABBITMQ_CONF_FILE);
+        RabbitMqSettings settings = new RabbitMqSettings(f);
+        String brokerUri = settings.getBrokerUri();
+
+    }
     
     
     private RabbitMqSettings fetchMqSettings() throws FileNotFoundException, YggdrasilException {

@@ -102,6 +102,17 @@ public class Main {
             
             File modelsConfigFile = new File(configdir, MODELS_CONF_FILENAME);
             modelsConfig = new Models(modelsConfigFile);
+
+            // Initiate call of StateDatabase
+            sd = new StateDatabase(generalConfig.getDatabaseDir());
+            Main main = new Main(sd, mq, bitrepository);
+            if (!isUnittestmode) {
+                logger.info("Starting main workflow of Yggdrasil program");
+                Workflow wf = new Workflow(mq, sd, bitrepository, generalConfig, modelsConfig);
+                wf.run();
+            }
+            logger.info("Shutting down the Yggdrasil Main program");
+            main.cleanup();
             
         } catch (FileNotFoundException e) {
             String errMsg = "Configuration file(s) missing!"; 
@@ -109,16 +120,6 @@ public class Main {
             throw new RuntimeException(errMsg, e);
         }
         
-        // Initiate call of StateDatabase
-        sd = new StateDatabase(generalConfig.getDatabaseDir());
-        Main main = new Main(sd, mq, bitrepository);
-        if (!isUnittestmode) {
-            logger.info("Starting main workflow of Yggdrasil program");
-            Workflow wf = new Workflow(mq, sd, bitrepository, generalConfig, modelsConfig);
-            wf.run();
-        }   
-        logger.info("Shutting down the Yggdrasil Main program");
-        main.cleanup();
   }
 
     private void cleanup() {
