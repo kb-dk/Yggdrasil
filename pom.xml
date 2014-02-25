@@ -164,7 +164,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.10</version>
         <configuration>
-          <systemProperties>
+          <systemPropertyVariables>
             <property>
               <name>RABBITMQ_HOSTNAME</name>
               <value>${yggdrasil.rabbitmq.hostname}</value>
@@ -173,7 +173,7 @@
               <name>RABBITMQ_PORT</name>
               <value>${yggdrasil.rabbitmq.port}</value>
             </property>
-          </systemProperties>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
