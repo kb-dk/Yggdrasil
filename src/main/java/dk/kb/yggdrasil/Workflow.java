@@ -470,8 +470,8 @@ public class Workflow {
                                                                                   FileNotFoundException {
 
         PreservationResponse response = new PreservationResponse();
-        response.id = managementRepoObjectIdPrefix + prs.getUUID();
-        response.model = managementRepoObjectIdPrefix + prs.getUUID();
+        response.id = managementRepoObjectIdPrefix + prs.getRequest().Update_URI;
+        response.model = managementRepoObjectIdPrefix + prs.getRequest().Model;
         response.preservation = new Preservation();
         response.preservation.preservation_state = newPreservationstate.name();
         response.preservation.preservation_details = newPreservationstate.getDescription();
