@@ -229,5 +229,4 @@ public class WarcWriterWrapper {
             throw new YggdrasilException("Exception closing WarcWriterWrapper!", e);
         }
     }
-
 }

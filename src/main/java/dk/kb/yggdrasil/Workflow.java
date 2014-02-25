@@ -20,6 +20,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.FileUtils;
 import org.jwat.common.ContentType;
 import org.jwat.common.Uri;
+import org.jwat.warc.WarcDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -34,6 +35,7 @@ import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MqResponse;
+import dk.kb.yggdrasil.warc.Digest;
 import dk.kb.yggdrasil.warc.WarcWriterWrapper;
 import dk.kb.yggdrasil.xslt.Models;
 import dk.kb.yggdrasil.xslt.XmlErrorHandler;
@@ -201,36 +203,29 @@ public class Workflow {
             UUID packageId = UUID.randomUUID();
             Uri resourceId = null;
             Uri metadataId = null;
+            Digest digestor = new Digest("SHA-1");
             File writeDirectory = config.getTemporaryDir(); 
             WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(writeDirectory, packageId.toString());
-            // FIXME Write some WARC fields. Should be similar to the warc-info produced by gatekeeper  
-            w3.writeWarcinfoRecord(new byte[0], null);
-/*  Sample warc-info header produced by gatekeeper:          
-             * 
-            WARC/1.0
-            WARC-Type: warcinfo
-            WARC-Date: 2013-05-27T16:34:07Z
-            WARC-Record-ID: <urn:uuid:7c9cb0b0-c6da-11e2-aa30-005056887b70>
-            Content-Type: application/warc-fields
-            Content-Length: 85
-
-            description: http://id.kb.dk/authorities/agents/kbDkDomsBmIngest.html
-            revision: 2079
-*/
-
+            String warcInfoPayload = getWarcInfoPayload();
+            byte[] warcInfoPayloadBytes = warcInfoPayload.getBytes("UTF-8");
+            w3.writeWarcinfoRecord(warcInfoPayloadBytes, 
+                    digestor.getDigestOfBytes(warcInfoPayloadBytes));
+           
             File resource = prs.getContentPayload();
             File metadata = prs.getMetadataPayload();
-            // FIXME add SHA-1 block-digest to the records. (look at gateekeeper/NAS implementation
-            // for inspiration
             InputStream in;
             if (resource != null) {
                 in = new FileInputStream(resource);
-                resourceId = w3.writeResourceRecord(in, resource.length(), ContentType.parseContentType("application/binary"), null);
+                WarcDigest blockDigest = digestor.getDigestOfFile(resource);
+                resourceId = w3.writeResourceRecord(in, resource.length(), 
+                        ContentType.parseContentType("application/binary"), blockDigest);
                 in.close();
             }
             if (metadata != null) {
                 in = new FileInputStream(metadata);
-                metadataId = w3.writeMetadataRecord(in, metadata.length(), ContentType.parseContentType("text/xml"), resourceId, null);
+                WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
+                metadataId = w3.writeMetadataRecord(in, metadata.length(), 
+                        ContentType.parseContentType("text/xml"), resourceId, blockDigest);
                 in.close();
             }
             w3.close();
@@ -500,6 +495,47 @@ public class Workflow {
             throw new YggdrasilException("The message type '" 
                     + messageType + "' is not handled by Yggdrasil.");
         }   
+    }
+    
+    /**
+     * Generate the WarcInfoPayload that Yggdrasil inserts into the warcfiles being
+     * produced.
+     * The WARC-info should be similar to the one produced by the KBDOMS gatekeeper:
+     *            
+        WARC/1.0
+        WARC-Type: warcinfo
+        WARC-Date: 2013-05-27T16:34:07Z
+        WARC-Record-ID: <urn:uuid:7c9cb0b0-c6da-11e2-aa30-005056887b70>
+        Content-Type: application/warc-fields
+        Content-Length: 85
+
+        description: http://id.kb.dk/authorities/agents/kbDkDomsBmIngest.html
+        revision: 2079
+     * 
+     * @return the WarcInfoPayload that Yggdrasil inserts into the warcfiles being
+     * produced
+     */
+    public String getWarcInfoPayload() {
+        // make Warc-metadata record (WARC-INFO RECORD) containing 
+        // link to program description, and  archiverRevision
+        // 
+        final String LF = "\n";
+        final String COLON = ":";
+        final String SPACE = " ";
+        //FIXME The description is wrong
+
+        // 1. description: http://id.kb.dk/authorities/agents/kbDk????Ingest.html
+        String descriptionKey = "description";
+        String descriptionValue = "http://id.kb.dk/authorities/agents/kbDk????BmIngest.html";
+        // 2. archiverRevision:
+        String revisionKey = "revision";
+        String revisionValue = "1.0.0";
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(descriptionKey + COLON + SPACE + descriptionValue + LF);
+        sb.append(revisionKey + COLON + SPACE + revisionValue + LF);
+  
+        return sb.toString();
     }
     
 }
