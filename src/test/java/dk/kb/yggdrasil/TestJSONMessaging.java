@@ -49,7 +49,7 @@ public class TestJSONMessaging {
         PreservationRequest request = new PreservationRequest();
         request.Preservation_profile = "simple";
         request.UUID = "uuid";
-        request.Update_URI = "uuuri";
+        request.Valhal_ID = "Valhal:1";
         request.File_UUID = "fuuid";
         request.Content_URI = "curi";
         request.metadata = "Some metadata";
@@ -75,7 +75,7 @@ public class TestJSONMessaging {
             Assert.assertNotNull(request);
             Assert.assertEquals("simple", request.Preservation_profile);
             Assert.assertEquals("uuid", request.UUID);
-            Assert.assertEquals("uuuri", request.Update_URI);
+            Assert.assertEquals("Valhal:1", request.Valhal_ID);
             Assert.assertEquals("fuuid", request.File_UUID);
             Assert.assertEquals("curi", request.Content_URI);
             Assert.assertEquals("work", request.Model);
@@ -90,6 +90,8 @@ public class TestJSONMessaging {
             PreservationResponse response = new PreservationResponse();
             Preservation preservation = new Preservation();
             response.preservation = preservation;
+            response.id = "Valhal:1";
+            response.model = "work";
             preservation.preservation_state = "state";
             preservation.preservation_details = "hello";
             preservation.warc_id = "WAHRC!";
@@ -109,6 +111,8 @@ public class TestJSONMessaging {
             Assert.assertEquals("state", response.preservation.preservation_state);
             Assert.assertEquals("hello", response.preservation.preservation_details);
             Assert.assertEquals("WAHRC!", response.preservation.warc_id);
+            Assert.assertEquals(request.Valhal_ID, response.id);
+            Assert.assertEquals(request.Model, response.model);
         } catch (YggdrasilException e) {
             e.printStackTrace();
             Assert.fail("Unexpected exception!");

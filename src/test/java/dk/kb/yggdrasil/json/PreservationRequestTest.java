@@ -17,10 +17,10 @@ public class PreservationRequestTest {
         PreservationRequest pr = new PreservationRequest();
         pr.UUID = UUID.randomUUID().toString();
         pr.Preservation_profile = "simple";
-        pr.Update_URI = "http://localhost/update";
+        pr.Valhal_ID = "Valhal:1";
         pr.Model = "Work";
         assertTrue(pr.isMessageValid());
-        pr.Update_URI = null;
+        pr.Valhal_ID = null;
         assertFalse(pr.isMessageValid());
     }
 

@@ -149,7 +149,6 @@ public class MQ {
    /**
     * Publish a message on the given queue.
     * @param queueName A given MQ queue.
-    * @param ch An already created channel to the MQ broker.
     * @param message The message to be published on the queue.
     * @param messageType The Type of the message
     * @throws YggdrasilException If Unable to publish message to the queue.

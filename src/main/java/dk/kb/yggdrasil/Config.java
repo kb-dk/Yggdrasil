@@ -17,6 +17,9 @@ public class Config {
     private File databaseDir;
     /** The temporary directory property.  */
     private final String TEMPORARY_DIR_PROPERTY = "temporary_dir";
+    /** The prefix for object ids in the management repository (Valhal) **/
+    private final String MANAGEMENT_REPO_OBJECT_ID_PREFIX_PROPERTY = "management_repo_object_id_prefix";
+
     /** The temporary directory. (created if it doesn't exist. )*/
     private File tmpDir;
     /** The configDir where the yggdrasilConfigFile was located. */
@@ -59,6 +62,7 @@ public class Config {
                        + tmpDir.getAbsolutePath() + "'");
            }
        }
+
     }
     
     /** 
@@ -81,5 +85,5 @@ public class Config {
     public File getConfigDir() {
         return configdir;
     }
-    
+
 }

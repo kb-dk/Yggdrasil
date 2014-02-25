@@ -49,31 +49,32 @@ import dk.kb.yggdrasil.xslt.XslUriResolver;
  * The class handling the workflow, and the updates being sent back to Valhal.
  * We have currently two kind of workflows envisioned.
  *  - A content and metadata workflow, where we package metadata and content into one warcfile.
- *  - A metadata workflow, where the metadata is the only content. 
+ *  - A metadata workflow, where the metadata is the only content.
  */
 public class Workflow {
     /** The RabbitMQ connection used by this workflow. */
     private MQ mq;
-    
+
     /** The StateDatase instance used by this workflow. */
     private StateDatabase sd;
-    
+
     /** The Bitrepository connection used by this workflow. */
     private Bitrepository bitrepository;
-    
+
     /** The general settings used by Yggdrasil. */
     private Config config;
-    
-    /** The class reading the mapping between models and xslt scripts used for 
+
+    /** The class reading the mapping between models and xslt scripts used for
      * the metadata transformation.
      */
     private Models metadataModel;
-    /** Size of pushback buffer for determining the encoding of the json message. */ 
+    /** Size of pushback buffer for determining the encoding of the json message. */
     private static int PUSHBACKBUFFERSIZE = 4;
-    
+
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Workflow.class.getName());
 
+    public static String RABBITMQ_CONF_FILE = "./config/rabbitmq.yml";
     /**
      * Constructor for the Workflow class.
      * @param rabbitconnector The rabbitmq connector object
@@ -95,12 +96,12 @@ public class Workflow {
         this.config = config;
         this.metadataModel = models;
     }
-    
+
     /**
      * Run this method infinitely.
      * @throws YggdrasilException
      */
-    public void run() throws YggdrasilException {
+    public void run() throws YggdrasilException, FileNotFoundException {
         boolean shutdown = false;
         while (!shutdown) {
             String currentUUID = null;
@@ -111,28 +112,28 @@ public class Workflow {
                 logger.error("Caught exception while retrieving message from rabbitmq. Skipping message", e);
                 continue;
             }
-            
+
             if (request == null) {
                 logger.info("Received shutdown message. Shutting down. ");
                 shutdown = true;
                 continue;
             }
-            
-            
+
+
             logger.info("Preservation request received.");
             PreservationRequestState prs = null;
             /* Validate message content. */
             if (!request.isMessageValid()) {
                 logger.error("Skipping invalid message");
             } else {
-                prs = new PreservationRequestState(request, 
+                prs = new PreservationRequestState(request,
                         State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
                 // Add check about whether profle is a known collectionID or not known
                 String preservationProfile = prs.getRequest().Preservation_profile;
                 List<String> possibleCollections = bitrepository.getKnownCollections();
                 if (!possibleCollections.contains(preservationProfile)) {
-                    String errMsg = "The given preservation profile '" + preservationProfile  
-                            + "' does not match a known collection ID. "; 
+                    String errMsg = "The given preservation profile '" + preservationProfile
+                            + "' does not match a known collection ID. ";
                     logger.error(errMsg);
                     updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
                             errMsg);
@@ -163,12 +164,12 @@ public class Workflow {
     }
 
     /**
-     * Attempt to upload the packageFile to the bitrepository. 
+     * Attempt to upload the packageFile to the bitrepository.
      * @param currentUUID the currentUUID
      * @param prs The preservationRequest being processed.
      * @throws YggdrasilException
      */
-    private void uploadToBitrepository(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
+    private void uploadToBitrepository(String currentUUID, PreservationRequestState prs) throws YggdrasilException, FileNotFoundException {
         PreservationRequest pr = prs.getRequest();
         File packageFile = prs.getUploadPackage();
         String collectionID = pr.Preservation_profile;
@@ -177,7 +178,7 @@ public class Workflow {
             prs.setState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS);
             updateRemotePreservationState(prs, State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS);
             sd.put(currentUUID, prs);
-            logger.info("Upload to bitrepository for UUID '" + currentUUID 
+            logger.info("Upload to bitrepository for UUID '" + currentUUID
                     + "' of package '" + packageFile.getName() + "' was successful.");
         } else {
             prs.setState(State.PRESERVATION_PACKAGE_UPLOAD_FAILURE);
@@ -187,15 +188,15 @@ public class Workflow {
             prs.resetUploadPackage(); // reset warcId to null
             updateRemotePreservationState(prs, State.PRESERVATION_PACKAGE_UPLOAD_FAILURE);
             sd.put(currentUUID, prs);
-            logger.warn("Upload to bitrepository for UUID '" + currentUUID 
+            logger.warn("Upload to bitrepository for UUID '" + currentUUID
                     + "' of package '" + packageFile.getName() + "' failed.");
         }
     }
 
     /**
      * Write the contentPaylod and transformed metadata to a warc-file.
-     * The produced warc-file is attached to the current request. 
-     * @param currentUUID The UUID of the current request 
+     * The produced warc-file is attached to the current request.
+     * @param currentUUID The UUID of the current request
      * @param prs The current request
      */
     private void writeToWarc(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
@@ -204,27 +205,27 @@ public class Workflow {
             Uri resourceId = null;
             Uri metadataId = null;
             Digest digestor = new Digest("SHA-1");
-            File writeDirectory = config.getTemporaryDir(); 
+            File writeDirectory = config.getTemporaryDir();
             WarcWriterWrapper w3 = WarcWriterWrapper.getWriter(writeDirectory, packageId.toString());
             String warcInfoPayload = getWarcInfoPayload();
             byte[] warcInfoPayloadBytes = warcInfoPayload.getBytes("UTF-8");
-            w3.writeWarcinfoRecord(warcInfoPayloadBytes, 
+            w3.writeWarcinfoRecord(warcInfoPayloadBytes,
                     digestor.getDigestOfBytes(warcInfoPayloadBytes));
-           
+
             File resource = prs.getContentPayload();
             File metadata = prs.getMetadataPayload();
             InputStream in;
             if (resource != null) {
                 in = new FileInputStream(resource);
                 WarcDigest blockDigest = digestor.getDigestOfFile(resource);
-                resourceId = w3.writeResourceRecord(in, resource.length(), 
+                resourceId = w3.writeResourceRecord(in, resource.length(),
                         ContentType.parseContentType("application/binary"), blockDigest);
                 in.close();
             }
             if (metadata != null) {
                 in = new FileInputStream(metadata);
                 WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
-                metadataId = w3.writeMetadataRecord(in, metadata.length(), 
+                metadataId = w3.writeMetadataRecord(in, metadata.length(),
                         ContentType.parseContentType("text/xml"), resourceId, blockDigest);
                 in.close();
             }
@@ -241,15 +242,15 @@ public class Workflow {
      * Transform the metadata included with the request to the proper METS preservation format.
      * @param prs The current request
      * @param currentUUID The UUID of the current request
-     * @throws YggdrasilException 
-     * 
+     * @throws YggdrasilException
+     *
      */
-    private void transformMetadata(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
+    private void transformMetadata(String currentUUID, PreservationRequestState prs) throws YggdrasilException, FileNotFoundException {
         String theMetadata = prs.getRequest().metadata;
         String modelToUse = prs.getRequest().Model.toLowerCase();
-        
+
         if (!metadataModel.getMapper().containsKey(modelToUse)) {
-            final String errMsg = "The given metadata-model'" + modelToUse 
+            final String errMsg = "The given metadata-model'" + modelToUse
                     + "' is unknown";
             updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
                     errMsg);
@@ -292,7 +293,7 @@ public class Workflow {
                 updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
                 String errMsg = "The output metadata is invalid: ";
                 try {
-                    errMsg += FileUtils.readFileToString(xmlFile); 
+                    errMsg += FileUtils.readFileToString(xmlFile);
                 } catch (IOException e) {
                     logger.warn("Exception while reading output file:", e);
                 }
@@ -318,7 +319,7 @@ public class Workflow {
                         }
                     }
                 }
-                updateRemotePreservationStateToFailState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
+                updateRemotePreservationStateToFailState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE,
                         errMsg);
                 throw new YggdrasilException(errMsg);
             } else {
@@ -349,20 +350,20 @@ public class Workflow {
 
     /**
      * Performs the Content and Metadata workflow.
-     * @param currentUUID The UUID of the current request  
+     * @param currentUUID The UUID of the current request
      * @param prs The current request
      * @throws YggdrasilException
      */
-    private void doContentAndMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
+    private void doContentAndMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException, FileNotFoundException {
         try {
-            logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");  
+            logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");
             fetchContent(currentUUID, prs);
             transformMetadata(currentUUID, prs);
             writeToWarc(currentUUID, prs);
             uploadToBitrepository(currentUUID, prs);
             logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");
         } catch (YggdrasilException e) {
-            logger.error("An exception occurred during the workflow for UUID: " 
+            logger.error("An exception occurred during the workflow for UUID: "
                     + currentUUID, e);
         } finally {
            if (sd.hasEntry(currentUUID)) {
@@ -371,16 +372,16 @@ public class Workflow {
            // Cleanup
            prs.cleanup();
         }
-        
+
     }
-    
+
     /**
      * Performs the Metadata workflow. This is currently a method stub.
-     * @param currentUUID The UUID of the element  
+     * @param currentUUID The UUID of the element
      * @param prs The current request
      * @throws YggdrasilException
      */
-    private void doMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
+    private void doMetadataWorkflow(String currentUUID, PreservationRequestState prs) throws YggdrasilException, FileNotFoundException {
         try {
             logger.info("Starting a metadata workflow for UUID '" + currentUUID + "'");
             transformMetadata(currentUUID, prs);
@@ -395,19 +396,19 @@ public class Workflow {
             prs.cleanup();
         }
     }
-    
-    
+
+
     /**
      * Try and download the content using the Content_URI.
      * @param currentUUID The UUID of the current request
      * @param prs The current request
      * @throws YggdrasilException
      */
-    private void fetchContent(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
-        // Try to download ressource from Content_URI
+    private void fetchContent(String currentUUID, PreservationRequestState prs) throws YggdrasilException, FileNotFoundException {
+        // Try to download resource from Content_URI
         File tmpFile = null;
         PreservationRequest pr = prs.getRequest();
-        logger.info("Attempting to download resource from '" 
+        logger.info("Attempting to download resource from '"
                 + pr.Content_URI + "'");
         HttpPayload payload = HttpCommunication.get(pr.Content_URI);
         if (payload != null) {
@@ -426,28 +427,34 @@ public class Workflow {
             prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE);
             updateRemotePreservationState(prs, State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE);
             sd.put(currentUUID, prs);
-        }   
+        }
     }
-    
+
     /**
-     * Set remote preservation state to a failstate with a given reason.      
+     * Set remote preservation state to a failstate with a given reason.
      * @param prs a given preservationrequeststate
      * @param failState The given failstate.
      * @param reason The reason for failing this request
      * @throws YggdrasilException
      */
-    private void updateRemotePreservationStateToFailState(
-            PreservationRequestState prs, State failState, String reason) throws YggdrasilException {
+    private void updateRemotePreservationStateToFailState(PreservationRequestState prs,
+                                                          State failState,
+                                                          String reason) throws YggdrasilException,
+                                                                                FileNotFoundException {
+
         PreservationResponse response = new PreservationResponse();
+        response.id = prs.getRequest().Valhal_ID;
+        response.model = prs.getRequest().Model;
         response.preservation = new Preservation();
         response.preservation.preservation_state = failState.name();
         response.preservation.preservation_details = reason;
         byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
-        HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
-        logger.info("Preservation status updated to '" + failState.name() 
+        //HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
+        sendToMQ(responseBytes, failState);
+        logger.info("Preservation status updated to '" + failState.name()
                 +  "' using the updateURI. Reason: " + reason );
     }
-    
+
     /**
      * Update the remote preservationState corresponding with this current request
      * using the Update_URI field.
@@ -456,8 +463,12 @@ public class Workflow {
      * @throws YggdrasilException
      */
     private void updateRemotePreservationState(PreservationRequestState prs,
-            State newPreservationstate) throws YggdrasilException {
+                                               State newPreservationstate) throws YggdrasilException,
+                                                                                  FileNotFoundException {
+
         PreservationResponse response = new PreservationResponse();
+        response.id = prs.getRequest().Valhal_ID;
+        response.model = prs.getRequest().Model;
         response.preservation = new Preservation();
         response.preservation.preservation_state = newPreservationstate.name();
         response.preservation.preservation_details = newPreservationstate.getDescription();
@@ -465,12 +476,20 @@ public class Workflow {
             response.preservation.warc_id = prs.getUploadPackage().getName();
         }
         byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
-        HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
-        logger.info("Preservation status updated to '" + newPreservationstate.name() 
+
+        /* send to RabbitMQ */
+        sendToMQ(responseBytes, newPreservationstate);
+
+        //HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
+        logger.info("Preservation status updated to '" + newPreservationstate.name()
                 +  "' using the updateURI.");
     }
-    
-    
+
+    private void sendToMQ(byte[] responseBytes, State state) throws YggdrasilException, FileNotFoundException {
+        mq.publishOnQueue(mq.getSettings().getPreservationResponseDestination(), responseBytes, state.getDescription());
+    }
+
+
     /**
      * Wait until the next request arrives on the queue, and then return the request.
      * @return the next request from the queue (returns null, if shutdown message)
@@ -492,16 +511,16 @@ public class Workflow {
                             , PUSHBACKBUFFERSIZE));
             return request;
         } else {
-            throw new YggdrasilException("The message type '" 
+            throw new YggdrasilException("The message type '"
                     + messageType + "' is not handled by Yggdrasil.");
-        }   
+        }
     }
-    
+
     /**
      * Generate the WarcInfoPayload that Yggdrasil inserts into the warcfiles being
      * produced.
      * The WARC-info should be similar to the one produced by the KBDOMS gatekeeper:
-     *            
+     *
         WARC/1.0
         WARC-Type: warcinfo
         WARC-Date: 2013-05-27T16:34:07Z
@@ -511,14 +530,14 @@ public class Workflow {
 
         description: http://id.kb.dk/authorities/agents/kbDkDomsBmIngest.html
         revision: 2079
-     * 
+     *
      * @return the WarcInfoPayload that Yggdrasil inserts into the warcfiles being
      * produced
      */
     public String getWarcInfoPayload() {
-        // make Warc-metadata record (WARC-INFO RECORD) containing 
+        // make Warc-metadata record (WARC-INFO RECORD) containing
         // link to program description, and  archiverRevision
-        // 
+        //
         final String LF = "\n";
         final String COLON = ":";
         final String SPACE = " ";
@@ -530,12 +549,12 @@ public class Workflow {
         // 2. archiverRevision:
         String revisionKey = "revision";
         String revisionValue = "1.0.0";
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append(descriptionKey + COLON + SPACE + descriptionValue + LF);
         sb.append(revisionKey + COLON + SPACE + revisionValue + LF);
-  
+
         return sb.toString();
     }
-    
+
 }
