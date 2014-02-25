@@ -71,8 +71,6 @@ public class Workflow {
     /** Size of pushback buffer for determining the encoding of the json message. */
     private static int PUSHBACKBUFFERSIZE = 4;
 
-    private String managementRepoObjectIdPrefix;
-
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Workflow.class.getName());
 
@@ -96,7 +94,6 @@ public class Workflow {
         this.sd = states;
         this.bitrepository = bitrepository;
         this.config = config;
-        managementRepoObjectIdPrefix = config.getManagementRepoObjectIDPrefix();
         this.metadataModel = models;
     }
 
@@ -446,8 +443,8 @@ public class Workflow {
                                                                                 FileNotFoundException {
 
         PreservationResponse response = new PreservationResponse();
-        response.id = managementRepoObjectIdPrefix + prs.getUUID();
-        response.model = managementRepoObjectIdPrefix + prs.getUUID();
+        response.id = prs.getRequest().Update_URI;
+        response.model = prs.getRequest().Model;
         response.preservation = new Preservation();
         response.preservation.preservation_state = failState.name();
         response.preservation.preservation_details = reason;
@@ -470,8 +467,8 @@ public class Workflow {
                                                                                   FileNotFoundException {
 
         PreservationResponse response = new PreservationResponse();
-        response.id = managementRepoObjectIdPrefix + prs.getRequest().Update_URI;
-        response.model = managementRepoObjectIdPrefix + prs.getRequest().Model;
+        response.id = prs.getRequest().Update_URI;
+        response.model = prs.getRequest().Model;
         response.preservation = new Preservation();
         response.preservation.preservation_state = newPreservationstate.name();
         response.preservation.preservation_details = newPreservationstate.getDescription();
@@ -489,7 +486,7 @@ public class Workflow {
     }
 
     private void sendToMQ(byte[] responseBytes, State state) throws YggdrasilException, FileNotFoundException {
-        mq.publishOnQueue("preservation-dev-response-queue", responseBytes, state.getDescription());
+        mq.publishOnQueue(mq.getSettings().getPreservationResponseDestination(), responseBytes, state.getDescription());
     }
 
 

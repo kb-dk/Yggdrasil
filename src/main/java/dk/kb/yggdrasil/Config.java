@@ -24,9 +24,6 @@ public class Config {
     private File tmpDir;
     /** The configDir where the yggdrasilConfigFile was located. */
     private File configdir;
-    /** The prefix for object ids in the management repo eg: valhal:n or sifd:n, everything to the left of n is the prefix **/
-    private String managementRepoObjectIDPrefix;
-
     /**
      * Constructor for class reading the general Yggdrasil config file.
      * @param yggrasilConfigFile the config file.
@@ -66,7 +63,6 @@ public class Config {
            }
        }
 
-       managementRepoObjectIDPrefix = (String) valuesMap.get(MANAGEMENT_REPO_OBJECT_ID_PREFIX_PROPERTY);
     }
     
     /** 
@@ -90,8 +86,4 @@ public class Config {
         return configdir;
     }
 
-    public String getManagementRepoObjectIDPrefix() {
-        return managementRepoObjectIDPrefix;
-    }
-    
 }

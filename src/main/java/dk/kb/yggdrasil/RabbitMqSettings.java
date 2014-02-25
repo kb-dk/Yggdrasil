@@ -24,6 +24,8 @@ public final class RabbitMqSettings {
     public static final String RABBIT_MQ_URI_PROPERTY  = "mq_uri";
     /** The property for the rabbitmq preservation setting in our rabbitmq.yml */
     public static final String RABBIT_MQ_PRESERVATION_PROPERTY  = "preservation";
+    /** The property for the rabbitmq preservation response queue name **/
+    public static final String RABBIT_MQ_PRESERVATION_RESPONSE_PROPERTY = "response";
     /** The property for the rabbitmq dissemination setting in our rabbitmq.yml */
     public static final String RABBIT_MQ_DISSEMINATION_PROPERTY  = "dissemination";
     /** The property for the destination subsetting in our rabbitmq.yml */
@@ -41,6 +43,9 @@ public final class RabbitMqSettings {
     private String brokerUri;
     /** The name of the preservation queue. */
     private String preservationDestination;
+
+    /** The name of the preservation response queue. **/
+    private String preservationResponseDestination;
 
     /** The name of the dissemination queue. */
     private String disseminationDestination;
@@ -69,6 +74,7 @@ public final class RabbitMqSettings {
             preservationDestination = (String) preservationMap.get(RABBIT_MQ_DESTINATION_PROPERTY);
             Map disseminationMap = (Map) settings.get(RABBIT_MQ_DISSEMINATION_PROPERTY);
             disseminationDestination = (String) disseminationMap.get(RABBIT_MQ_DESTINATION_PROPERTY);
+            preservationResponseDestination = (String) preservationMap.get(RABBIT_MQ_PRESERVATION_RESPONSE_PROPERTY);
         } else {
             throw new YggdrasilException("Missing some or all of the required properties in the settings file");
         }
@@ -110,6 +116,14 @@ public final class RabbitMqSettings {
      */
     public String getPreservationDestination() {
         return preservationDestination;
+    }
+
+    /**
+     *
+     * @return the preservation response destination
+     */
+    public String getPreservationResponseDestination() {
+        return preservationResponseDestination;
     }
 
     /**

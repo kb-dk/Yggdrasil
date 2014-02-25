@@ -49,6 +49,8 @@ public class WorkflowTest {
     public void correctlyFormattedPreservationResponse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         PreservationRequest preservationRequest = new PreservationRequest();
+        preservationRequest.Model = "Book";
+        preservationRequest.File_UUID = "ertret345645645er456456rty";
         State newPreservationState = State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS;
         PreservationRequestState prs = new PreservationRequestState(preservationRequest, newPreservationState, UUID.randomUUID().toString());
 
