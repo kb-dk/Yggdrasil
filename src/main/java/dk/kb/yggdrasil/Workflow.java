@@ -443,7 +443,7 @@ public class Workflow {
                                                                                 FileNotFoundException {
 
         PreservationResponse response = new PreservationResponse();
-        response.id = prs.getRequest().Update_URI;
+        response.id = prs.getRequest().Valhal_ID;
         response.model = prs.getRequest().Model;
         response.preservation = new Preservation();
         response.preservation.preservation_state = failState.name();
@@ -467,7 +467,7 @@ public class Workflow {
                                                                                   FileNotFoundException {
 
         PreservationResponse response = new PreservationResponse();
-        response.id = prs.getRequest().Update_URI;
+        response.id = prs.getRequest().Valhal_ID;
         response.model = prs.getRequest().Model;
         response.preservation = new Preservation();
         response.preservation.preservation_state = newPreservationstate.name();

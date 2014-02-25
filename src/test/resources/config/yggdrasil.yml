@@ -1,15 +1,12 @@
 development:
   database_dir: src/test/resources/databasedir
   temporary_dir: src/test/resources/tmpdir
-  management_repo_object_id_prefix: valhal:
 
 test:
   database_dir: databasehome
   temporary_dir: temporarydir		
-  management_repo_object_id_prefix: valhal:
 
 production: 
   database_dir: databasehome
   temporary_dir: temporarydir
-  management_repo_object_id_prefix: valhal:
 

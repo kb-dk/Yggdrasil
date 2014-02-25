@@ -21,8 +21,8 @@ public class PreservationRequest implements Serializable {
     /** Preservation profile. */
     public String Preservation_profile;
 
-    /** Preservation state update URI. */
-    public String Update_URI;
+    /** ID for the element on Valhal. */
+    public String Valhal_ID;
    
     /** Optional content UUID. */
     @JSONNullable
@@ -46,7 +46,7 @@ public class PreservationRequest implements Serializable {
         if (Preservation_profile == null || Preservation_profile.isEmpty()) {
             missingContent.append("Mandatory field 'Preservation_profile' is undefined");
         }
-        if (Update_URI == null || Update_URI.isEmpty()) {
+        if (Valhal_ID == null || Valhal_ID.isEmpty()) {
             missingContent.append("Mandatory field 'Update_URI' is undefined");
         }
         

@@ -33,7 +33,8 @@ public class YamlTools {
                     + loadedSettings.getClass().getName() + " instead");
             }
         } catch (IOException e) {
-            throw new YggdrasilException("Internal error. Unable to read settings. Reason:  ", e);
+            throw new YggdrasilException("Internal error. Unable to read settings from file '" + ymlFile.getAbsolutePath() 
+            		+ "'. Reason:  ", e);
         } finally {
             IOUtils.closeQuietly(input);
         }
