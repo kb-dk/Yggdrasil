@@ -13,7 +13,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -23,6 +22,7 @@ import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 
 import dk.kb.yggdrasil.RabbitMqSettings;
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 /**
@@ -52,8 +52,11 @@ public class MQ {
     /** exchange type direct means a message sent to only one recipient. */
     private String exchangeType = "direct";
     
-    /** The only valid message type, currently. */ 
+    /** The only valid message type currently received. */ 
     public static final String PRESERVATIONREQUEST_MESSAGE_TYPE = "PreservationRequest";
+    
+    /** The message type for responding to preservation requests. */
+    public static final String PRESERVATIONRESPONSE_MESSAGE_TYPE = "PreservationResponse";
     
     /** The only valid message type, currently. */ 
     public static final String SHUTDOWN_MESSAGE_TYPE = "Shutdown";
@@ -118,7 +121,7 @@ public class MQ {
      */
     public static AMQP.BasicProperties getMQProperties() {
         AMQP.BasicProperties.Builder builder = new AMQP.BasicProperties.Builder();
-        AMQP.BasicProperties persistentTextXml = builder.deliveryMode(2).contentType("text/xml").build();
+        AMQP.BasicProperties persistentTextXml = builder.deliveryMode(2).contentType("text/json").build();
         return persistentTextXml;
     }
 
@@ -160,6 +163,7 @@ public class MQ {
            AMQP.BasicProperties messageProps = MQ.getMQProperties();
            messageProps.setType(messageType);
            messageProps.setTimestamp(new Date());
+           logger.debug("Publishing message on queue: " + queueName + "\n" + new String(message));
            theChannel.basicPublish(exchangeName, routingKey, messageProps, message);
        } catch (IOException e) {
            throw new YggdrasilException("Unable to publish message to queue '"
@@ -175,6 +179,7 @@ public class MQ {
     * @throws YggdrasilException
     */
    public MqResponse receiveMessageFromQueue(String queueName) throws YggdrasilException {
+	   ArgumentCheck.checkNotNullOrEmpty(queueName, "String queueName");
        QueueingConsumer consumer = null;
        String consumerTag = null;
        if (existingConsumers.containsKey(queueName)) {

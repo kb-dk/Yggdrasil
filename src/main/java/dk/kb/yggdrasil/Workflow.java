@@ -104,7 +104,6 @@ public class Workflow {
     public void run() throws YggdrasilException, FileNotFoundException {
         boolean shutdown = false;
         while (!shutdown) {
-            String currentUUID = null;
             PreservationRequest request = null;
             try {
                 request = getNextRequest();
@@ -118,49 +117,60 @@ public class Workflow {
                 shutdown = true;
                 continue;
             }
+            
+            handleRequest(request);
+        } 
+    }
+    
+    /**
+     * Handles the PreservationRequest.
+     * @param request The preservation request to handle.
+     * @throws YggdrasilException if anything goes wrong.
+     * @throws FileNotFoundException If the data cannot be retrieved or handled (e.g. not enough space left on device).
+     */
+    private void handleRequest(PreservationRequest request) throws YggdrasilException, FileNotFoundException {
+    	String currentUUID = null;
 
-
-            logger.info("Preservation request received.");
-            PreservationRequestState prs = null;
-            /* Validate message content. */
-            if (!request.isMessageValid()) {
-                logger.error("Skipping invalid message");
+        logger.info("Preservation request received.");
+        PreservationRequestState prs = null;
+        /* Validate message content. */
+        if (!request.isMessageValid()) {
+            logger.error("Skipping invalid message");
+        } else {
+            prs = new PreservationRequestState(request,
+                    State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+            // Add check about whether profle is a known collectionID or not known
+            String preservationProfile = prs.getRequest().Preservation_profile;
+            List<String> possibleCollections = bitrepository.getKnownCollections();
+            if (!possibleCollections.contains(preservationProfile)) {
+                String errMsg = "The given preservation profile '" + preservationProfile
+                        + "' does not match a known collection ID. ";
+                logger.error(errMsg);
+                updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
+                        errMsg);
             } else {
-                prs = new PreservationRequestState(request,
-                        State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-                // Add check about whether profle is a known collectionID or not known
-                String preservationProfile = prs.getRequest().Preservation_profile;
-                List<String> possibleCollections = bitrepository.getKnownCollections();
-                if (!possibleCollections.contains(preservationProfile)) {
-                    String errMsg = "The given preservation profile '" + preservationProfile
-                            + "' does not match a known collection ID. ";
-                    logger.error(errMsg);
-                    updateRemotePreservationStateToFailState(prs, State.PRESERVATION_REQUEST_FAILED,
-                            errMsg);
-                } else {
-                    currentUUID = request.UUID;
-                    updateRemotePreservationState(prs, State.PRESERVATION_REQUEST_RECEIVED);
-                    sd.put(currentUUID, prs);
-                }
+                currentUUID = request.UUID;
+                updateRemotePreservationState(prs, State.PRESERVATION_REQUEST_RECEIVED);
+                sd.put(currentUUID, prs);
             }
+        }
 
-            if (currentUUID != null) { // Message received is valid. proceed with workflow
-                if (prs.getRequest().Content_URI != null) {
-                    try {
-                        doContentAndMetadataWorkflow(currentUUID, prs);
-                    } catch (YggdrasilException e) {
-                        currentUUID = null;
-                    }
-                } else {
-                    try {
-                        doMetadataWorkflow(currentUUID, prs);
-                    } catch (YggdrasilException e) {
-                        currentUUID = null;
-                    }
+        if (currentUUID != null) { // Message received is valid. proceed with workflow
+            if (prs.getRequest().Content_URI != null) {
+                try {
+                    doContentAndMetadataWorkflow(currentUUID, prs);
+                } catch (YggdrasilException e) {
+                    currentUUID = null;
+                }
+            } else {
+                try {
+                    doMetadataWorkflow(currentUUID, prs);
+                } catch (YggdrasilException e) {
+                    currentUUID = null;
                 }
             }
-            logger.info("Finished processing the preservation request");
-        } // end while loop
+        }
+        logger.info("Finished processing the preservation request");
     }
 
     /**
@@ -397,7 +407,6 @@ public class Workflow {
         }
     }
 
-
     /**
      * Try and download the content using the Content_URI.
      * @param currentUUID The UUID of the current request
@@ -439,9 +448,7 @@ public class Workflow {
      */
     private void updateRemotePreservationStateToFailState(PreservationRequestState prs,
                                                           State failState,
-                                                          String reason) throws YggdrasilException,
-                                                                                FileNotFoundException {
-
+                                                          String reason) throws YggdrasilException {
         PreservationResponse response = new PreservationResponse();
         response.id = prs.getRequest().Valhal_ID;
         response.model = prs.getRequest().Model;
@@ -450,7 +457,7 @@ public class Workflow {
         response.preservation.preservation_details = reason;
         byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
         //HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
-        sendToMQ(responseBytes, failState);
+        sendPreservationResponseToMQ(responseBytes);
         logger.info("Preservation status updated to '" + failState.name()
                 +  "' using the updateURI. Reason: " + reason );
     }
@@ -463,9 +470,7 @@ public class Workflow {
      * @throws YggdrasilException
      */
     private void updateRemotePreservationState(PreservationRequestState prs,
-                                               State newPreservationstate) throws YggdrasilException,
-                                                                                  FileNotFoundException {
-
+                                               State newPreservationstate) throws YggdrasilException {
         PreservationResponse response = new PreservationResponse();
         response.id = prs.getRequest().Valhal_ID;
         response.model = prs.getRequest().Model;
@@ -478,17 +483,21 @@ public class Workflow {
         byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
 
         /* send to RabbitMQ */
-        sendToMQ(responseBytes, newPreservationstate);
+        sendPreservationResponseToMQ(responseBytes);
 
         //HttpCommunication.post(prs.getRequest().Update_URI, responseBytes, "application/json");
         logger.info("Preservation status updated to '" + newPreservationstate.name()
                 +  "' using the updateURI.");
     }
 
-    private void sendToMQ(byte[] responseBytes, State state) throws YggdrasilException, FileNotFoundException {
-        mq.publishOnQueue(mq.getSettings().getPreservationResponseDestination(), responseBytes, state.getDescription());
+    /**
+     * Sends a PreservationResponse message on the MessageQueue. 
+     * @param responseBytes The bytes of the message to send.
+     * @throws YggdrasilException If issue with connecting to MQ or sending the message. 
+     */
+    private void sendPreservationResponseToMQ(byte[] responseBytes) throws YggdrasilException {
+        mq.publishOnQueue(mq.getSettings().getPreservationResponseDestination(), responseBytes, MQ.PRESERVATIONRESPONSE_MESSAGE_TYPE);
     }
-
 
     /**
      * Wait until the next request arrives on the queue, and then return the request.
