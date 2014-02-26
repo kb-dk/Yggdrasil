@@ -163,7 +163,7 @@ public class MQ {
            AMQP.BasicProperties messageProps = MQ.getMQProperties();
            messageProps.setType(messageType);
            messageProps.setTimestamp(new Date());
-           logger.debug("Publishing message on queue: " + queueName + "\n" + new String(message));
+           logger.debug("Publishing message on a queue: {} \n {}", queueName, new String(message));
            theChannel.basicPublish(exchangeName, routingKey, messageProps, message);
        } catch (IOException e) {
            throw new YggdrasilException("Unable to publish message to queue '"
