@@ -174,7 +174,7 @@
         <!-- ADD MODS (rights) -->
         <xsl:element name="mets:rightsMD">
           <xsl:attribute name="CREATED">
-            <xsl:value-of select="java:dk.kb.metadata.utils.CalendarUtils.getCurrentDate()" />
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
           </xsl:attribute>
           <xsl:attribute name="ID">
             <xsl:value-of select="'ModsRights1'" />
