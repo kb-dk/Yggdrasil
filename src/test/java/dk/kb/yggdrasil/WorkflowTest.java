@@ -35,6 +35,7 @@ public class WorkflowTest {
 
     @BeforeClass
     public static void beforeClass() throws YggdrasilException, IOException {
+    	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
 
         Config config = new Config(generalConfigFile);
         FileUtils.deleteDirectory(config.getDatabaseDir());
@@ -86,6 +87,7 @@ public class WorkflowTest {
     	mq.publishOnQueue(settings.getPreservationDestination(), 
     			message.getBytes(), 
     			MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
+    	
     	PreservationRequest req = (PreservationRequest) getNextRequest.invoke(workflow);
     	Assert.assertNotNull(req);
     	Assert.assertEquals(req.UUID, UUID);

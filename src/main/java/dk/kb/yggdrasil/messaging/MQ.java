@@ -37,20 +37,20 @@ public class MQ {
     /** List of existing consumers in use by this class.
      * The key is the queueName.
      */
-    private Map<String, QueueingConsumer> existingConsumers;
+	protected Map<String, QueueingConsumer> existingConsumers;
 
     /** List of existing consumers in use by this class identified by consumertags. */
-    private Set<String> existingConsumerTags;
+    protected Set<String> existingConsumerTags;
 
     /** channel to the broker. Is one channel enough? */
-    private Channel theChannel;
+    protected Channel theChannel;
     /** The settings used to create the broker configurations. */
-    private RabbitMqSettings settings;
+    protected RabbitMqSettings settings;
     
     /** Default exchangename to be used by all queues. */
-    private String exchangeName = "exchange"; //TODO should this be a parameter in the settings?
+    protected String exchangeName = "exchange"; //TODO should this be a parameter in the settings?
     /** exchange type direct means a message sent to only one recipient. */
-    private String exchangeType = "direct";
+    protected String exchangeType = "direct";
     
     /** The only valid message type currently received. */ 
     public static final String PRESERVATIONREQUEST_MESSAGE_TYPE = "PreservationRequest";
