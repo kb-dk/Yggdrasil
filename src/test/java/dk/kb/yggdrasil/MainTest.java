@@ -3,13 +3,16 @@ package dk.kb.yggdrasil;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.TravisUtils;
 
 /**
@@ -19,6 +22,11 @@ import dk.kb.yggdrasil.utils.TravisUtils;
 public class MainTest {
 
     File goodConfigDir = new File("src/test/resources/config");
+
+    @BeforeClass
+    public static void beforeClass() throws YggdrasilException, IOException {
+    	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
+    }
     
     @Test
     public void testMainMethodWithGoodConfigDir() throws Exception {
@@ -30,7 +38,6 @@ public class MainTest {
         FileUtils.deleteDirectory(c.getDatabaseDir());
         Main.main(new String[]{"test"});
     }
-
     
     @Test
     public void testMainMethodWithBadConfigDir() {
