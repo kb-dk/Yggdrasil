@@ -3,8 +3,8 @@ development:
   keyfile:  ./config/bitmag-development-settings/client-16.pem    
 
 test:
-  settings_dir: ./config/bitmag-staging-settings
-  keyfile:  ./config/bitmag-staging-settings/client-16.pem    
+  settings_dir: ./src/test/resources/config/bitmag-test-settings
+  keyfile: ./src/test/resources/config/bitmag-test-settings/client.pem    
 
 production:
   settings_dir: ./config/bitmag-prod-settings
