@@ -27,13 +27,13 @@ public class JSONMessaging {
     private static Logger logger = LoggerFactory.getLogger(JSONMessaging.class.getName());
 
     /** JSON encoding encoder/decoder dispatcher. */
-    private static JSONEncoding json_encoding = JSONEncoding.getJSONEncoding();
+    protected static JSONEncoding json_encoding = JSONEncoding.getJSONEncoding();
 
     /** JSON object mapping worker. */
-    private  static JSONObjectMappings json_om = new JSONObjectMappings();
+    protected static JSONObjectMappings json_om = new JSONObjectMappings();
 
     /** JSON decoder/encoder. */
-    private static JSONText json_text;
+    protected static JSONText json_text;
 
     /**
      * Initialize JSON marshaller.

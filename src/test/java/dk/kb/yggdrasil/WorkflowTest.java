@@ -1,7 +1,9 @@
 package dk.kb.yggdrasil;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PushbackInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -17,7 +19,9 @@ import org.mockito.Mockito;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.json.JSONMessagingTestUtils;
 import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.xslt.Models;
@@ -70,6 +74,11 @@ public class WorkflowTest {
                 mq.getSettings().getPreservationResponseDestination());
         Assert.assertNotNull(requestContent);
 
+        PreservationResponse response = JSONMessagingTestUtils.getPreservationResponse(new PushbackInputStream(new ByteArrayInputStream(requestContent.getPayload()), 4));
+        Assert.assertNotNull(response);
+        Assert.assertEquals(response.id, preservationRequest.Valhal_ID);
+        Assert.assertEquals(response.model, preservationRequest.Model);
+        Assert.assertEquals(response.preservation.preservation_state, newPreservationState.name());
     }
     
     @Test
