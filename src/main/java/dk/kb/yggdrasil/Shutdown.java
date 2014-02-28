@@ -29,7 +29,6 @@ public class Shutdown {
       }
       RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
       MQ mq = new MQ(rabbitMqSettings);
-      mq.configureDefaultChannel();
       String message = "Shutdown Yggdrasil, please";
       mq.publishOnQueue(rabbitMqSettings.getPreservationDestination(), 
               message.getBytes(), MQ.SHUTDOWN_MESSAGE_TYPE);

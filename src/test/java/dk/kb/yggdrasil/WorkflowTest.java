@@ -19,6 +19,7 @@ import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.messaging.MQ;
+import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.xslt.Models;
 
 /**
@@ -55,7 +56,7 @@ public class WorkflowTest {
         PreservationRequest preservationRequest = new PreservationRequest();
         preservationRequest.Model = "Book";
         preservationRequest.Valhal_ID = "Valhal:1";
-        preservationRequest.File_UUID = "ertret345645645er456456rty";
+        preservationRequest.File_UUID = UUID.randomUUID().toString();
         State newPreservationState = State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS;
         PreservationRequestState prs = new PreservationRequestState(preservationRequest, newPreservationState, UUID.randomUUID().toString());
 
@@ -65,7 +66,10 @@ public class WorkflowTest {
         updateRemotePreservationState.invoke(workflow, prs, newPreservationState);
 
         //now read message from queue and check content is correct for this use case
-        
+        MqResponse requestContent = mq.receiveMessageFromQueue(
+                mq.getSettings().getPreservationResponseDestination());
+        Assert.assertNotNull(requestContent);
+
     }
     
     @Test
@@ -73,11 +77,11 @@ public class WorkflowTest {
     	Method getNextRequest = Workflow.class.getDeclaredMethod("getNextRequest");
     	getNextRequest.setAccessible(true);
     	
-    	String UUID = "444cd730-3f15-0131-5772-0050562881f4";
+    	String uuid = UUID.randomUUID().toString();
     	String profile = "simple";
     	String ValhalId = "valhal:1";
     	String model = "Book";
-    	String message = "{\"UUID\":\"" + UUID + "\","
+    	String message = "{\"UUID\":\"" + uuid + "\","
     			+ "\"Preservation_profile\":\"" + profile + "\","
     			+ "\"Valhal_ID\":\"" + ValhalId + "\","
     			+ "\"Model\":\"" + model + "\","
@@ -90,7 +94,7 @@ public class WorkflowTest {
     	
     	PreservationRequest req = (PreservationRequest) getNextRequest.invoke(workflow);
     	Assert.assertNotNull(req);
-    	Assert.assertEquals(req.UUID, UUID);
+    	Assert.assertEquals(req.UUID, uuid);
     	Assert.assertEquals(req.Preservation_profile, profile);
     	Assert.assertEquals(req.Valhal_ID, ValhalId);
     	Assert.assertEquals(req.Model, model);
