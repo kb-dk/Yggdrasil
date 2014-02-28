@@ -92,7 +92,6 @@ public class Main {
             File rabbitmqConfigFile = new File(configdir, RABBITMQ_CONF_FILENAME);
             RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
             mq = new MQ(rabbitMqSettings);
-            mq.configureDefaultChannel();
             
             File bitmagConfigFile = new File(configdir, BITMAG_CONF_FILENAME);
             bitrepository = new Bitrepository(bitmagConfigFile);

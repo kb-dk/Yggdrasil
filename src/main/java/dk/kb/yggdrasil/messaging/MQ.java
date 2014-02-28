@@ -79,7 +79,8 @@ public class MQ {
             factory.setUri(settings.getBrokerUri());
             conn = factory.newConnection();
             theChannel = conn.createChannel();
-            configureDefaultChannel();
+            configureChannel(settings.getPreservationDestination());
+            configureChannel(settings.getPreservationResponseDestination());
         } catch (KeyManagementException e1) {
             throw new YggdrasilException("Error connecting to Broker at '"
                     + settings.getBrokerUri() + "' : ", e1);
@@ -126,24 +127,24 @@ public class MQ {
     }
 
     /**
-     * Configure default channel configuration.
+     * Configure a channel with the default configuration.
+     * @param destination The destination to configure,
      * @throws YggdrasilException When problem with configuring the channel.
      */
-    public void configureDefaultChannel() throws YggdrasilException {
-        Channel ch = this.theChannel;
+    protected void configureChannel(String destination) throws YggdrasilException {
         try {
-            String queueName = settings.getPreservationDestination();
-            String routingKey = settings.getPreservationDestination();
+            String queueName = destination;
+            String routingKey = destination;
             // These next 3 lines are not necessarily all needed
             boolean durableExchange = true; // Exchanges will survive a rabbitmq server crash.
-            ch.exchangeDeclare(exchangeName, exchangeType, durableExchange);
+            theChannel.exchangeDeclare(exchangeName, exchangeType, durableExchange);
             boolean durable = true;
             boolean exclusive = false; // meaning restricted to this connection
             boolean autodelete = false; //meaning delete when no longer used
             Map<String, Object> arguments = null;
-            ch.queueDeclare(queueName, durable, exclusive, autodelete, arguments);
+            theChannel.queueDeclare(queueName, durable, exclusive, autodelete, arguments);
             // Bind a queue to a given exchange
-            ch.queueBind(queueName, exchangeName, routingKey);
+            theChannel.queueBind(queueName, exchangeName, routingKey);
         } catch (IOException e) {
             throw new YggdrasilException("Problems configuring the broker", e);
         }
@@ -163,7 +164,7 @@ public class MQ {
            AMQP.BasicProperties messageProps = MQ.getMQProperties();
            messageProps.setType(messageType);
            messageProps.setTimestamp(new Date());
-           logger.debug("Publishing message on a queue: {} \n {}", queueName, new String(message));
+           logger.debug("Publishing message on a queue: {} at {}\n {}", queueName, settings.getBrokerUri(), new String(message));
            theChannel.basicPublish(exchangeName, routingKey, messageProps, message);
        } catch (IOException e) {
            throw new YggdrasilException("Unable to publish message to queue '"
