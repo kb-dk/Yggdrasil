@@ -11,6 +11,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +47,12 @@ public class MqTest {
 
     public static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
 
+    @BeforeClass
+    public static void beforeClass() {
+    	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
+    }
+    
+    @Ignore
     @Test
     public void finalTest() throws YggdrasilException, IOException {
         RabbitMqSettings settings = fetchMqSettings();

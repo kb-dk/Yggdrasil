@@ -34,10 +34,11 @@ public class TestXsltCreator {
         	ps.close();
         }
         
-        Assert.assertTrue(xsltFile.exists() && xsltFile.isFile() && xsltFile.canRead());
+        Assert.assertTrue(outputFile.exists() && outputFile.isFile() && outputFile.canRead());
         XmlValidator xmlValidator = new XmlValidator();
         XmlErrorHandler errorHandler = new XmlErrorHandler();
-        XmlValidationResult result = xmlValidator.validate(xsltFile, null, errorHandler);
+        XmlValidationResult result = xmlValidator.validate(outputFile, null, errorHandler);
+        
         //Assert.assertTrue("The resulting XSLT file must be valid, but apparently is not.", result.bValid);
     }
 }
