@@ -1,9 +1,10 @@
 ADL Book transformering til METS;;;
-"Forklaring af værdier i først kolonne: XXX = felt, ""XXX"" = konstant værdi, [XXX] = funktion";;;
-Forklaring af værdier i anden kolonne: XXX = element navn, '/' = adskillelse mellem under-element, '@' = attribut, [x] = udgave af element;;;
+"Forklaring af vï¿½rdier i fï¿½rst kolonne: XXX = felt, ""XXX"" = konstant vï¿½rdi, [XXX] = funktion";;;
+Forklaring af vï¿½rdier i anden kolonne: XXX = element navn, '/' = adskillelse mellem under-element, '@' = attribut, [x] = udgave af element;;;
 ;;;
 ADL;METS;CONDITION;namespace
 ;mets;;mets
+"http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version191/mets.xsd";mets@xsi:schemaLocation;;
 provenanceMetadata/fields/uuid;mets@OBJID;;
 """Book""";mets@TYPE;;
 [profile_uri];mets@PROFILE;;
@@ -34,6 +35,9 @@ provenanceMetadata/fields/uuid;mets@OBJID;;
 """MODS""";mets/dmdSec/mdWrap@MDTYPE;;
 ;mets/dmdSec/mdWrap/xmlData;;mets
 ;mets/dmdSec/mdWrap/xmlData/mods;;mods
+"http://www.w3.org.1999/xlink";mets/dmdSec/mdWrap/xmlData/mods@xmlns:xlink;;
+"3.4";mets/dmdSec/mdWrap/xmlData/mods@version;;
+"http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd";mets/dmdSec/mdWrap/xmlData/mods@xsi:schemaLocation;;
 descMetadata/mods:mods/mods:genre;mets/dmdSec/mdWrap/xmlData/mods/genre;[copy-of];mods
 descMetadata/mods:mods/mods:identifier[@type='isbn'];mets/dmdSec/mdWrap/xmlData/mods/identifier;[copy-of];mods
 descMetadata/mods:mods/mods:locator;mets/dmdSec/mdWrap/xmlData/mods/locator;[copy-of];mods
@@ -68,6 +72,9 @@ name;mets/dmdSec/mdWrap/xmlData/mods/name[y]/namePart;;mods
 """MODS""";mets/amdSec/rightsMD/mdWrap@MDTYPE;;
 ;mets/amdSec/rightsMD/mdWrap/xmlData;;mets
 ;mets/amdSec/rightsMD/mdWrap/xmlData/mods;;mods
+"http://www.w3.org.1999/xlink";mets/amdSec/rightsMD/mdWrap/xmlData/mods@xmlns:xlink;;
+"3.4";mets/amdSec/rightsMD/mdWrap/xmlData/mods@version;;
+"http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd";mets/amdSec/rightsMD/mdWrap/xmlData/mods@xsi:schemaLocation;;l
 [MODS-ACCESS];mets/amdSec/rightsMD/mdWrap/xmlData/mods/accessCondition;;mods
 ;mets/amdSec/digiprovMD[1];;mets
 [DATE-NOW];mets/amdSec/digiprovMD[1]@CREATED;;
@@ -103,7 +110,7 @@ provenanceMetadata/fields/uuid;mets/amdSec/digiprovMD[2]/mdWrap/xmlData/event/li
 """logical""";mets/structMap@TYPE;;
 ;mets/structMap/div;;mets
 """Mods1""";mets/structMap/div@DMDID;;
-"""ModsRights1 Premis1 PremisEvent1""";mets/structMap/div@AMDID;;
+"""ModsRights1 Premis1 PremisEvent1""";mets/structMap/div@ADMID;;
 ;mets/structMap/div/div[x];each representation;mets
 name;mets/structMap/div/div[x]@LABEL;;
 ;mets/structMap/div/div[x]/mptr;;mets
