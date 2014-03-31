@@ -226,17 +226,18 @@ public class Workflow {
             File metadata = prs.getMetadataPayload();
             InputStream in;
             if (resource != null) {
-                in = new FileInputStream(resource);
+            	in = new FileInputStream(resource);
                 WarcDigest blockDigest = digestor.getDigestOfFile(resource);
                 resourceId = w3.writeResourceRecord(in, resource.length(),
-                        ContentType.parseContentType("application/binary"), blockDigest);
+                        ContentType.parseContentType("application/binary"), blockDigest, prs.getRequest().File_UUID);
                 in.close();
             }
             if (metadata != null) {
                 in = new FileInputStream(metadata);
                 WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
                 metadataId = w3.writeMetadataRecord(in, metadata.length(),
-                        ContentType.parseContentType("text/xml"), resourceId, blockDigest);
+                        ContentType.parseContentType("text/xml"), resourceId, blockDigest,
+                        prs.getRequest().UUID);
                 in.close();
             }
             w3.close();
