@@ -116,7 +116,7 @@ public class TestHttpCommunication {
 
         @Override
         protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            System.out.println("servlet req");
+        	//System.out.println("servlet req");
             String pathInfo = req.getPathInfo();
             String method = req.getMethod();
             if ("/get".equals(pathInfo) && "GET".equals(method)) {

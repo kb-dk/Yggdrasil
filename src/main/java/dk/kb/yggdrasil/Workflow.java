@@ -513,6 +513,7 @@ public class Workflow {
         if (messageType == null) {
             throw new YggdrasilException("'null' messagetype is not handled. message ignored ");
         } else if (messageType.equalsIgnoreCase(MQ.SHUTDOWN_MESSAGE_TYPE)) {
+        	logger.warn("Shutdown message received");
             // Shutdown message received
             return null;
         } else if (messageType.equalsIgnoreCase(MQ.PRESERVATIONREQUEST_MESSAGE_TYPE)) {

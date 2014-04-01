@@ -18,7 +18,7 @@ public class TestDigest {
     @Test
     public void testDigestBytesMD5() throws YggdrasilException {
     	String testString = "Yggdrasil\n";
-    	String expectedResult = "c1d6d0fbe801dbe092ee1987ae16fb74";
+    	String expectedChecksum = "c1d6d0fbe801dbe092ee1987ae16fb74";
     	
     	Digest digest = new Digest("MD5");
     	
@@ -26,14 +26,14 @@ public class TestDigest {
     	
     	Assert.assertNotNull(res);
     	Assert.assertEquals("md5", res.algorithm);
-    	Assert.assertEquals(expectedResult, res.digestString);
+    	Assert.assertEquals(expectedChecksum, res.digestString);
     }
 
     @Test
     public void testDigestFileMD5() throws YggdrasilException, IOException {
     	File file = File.createTempFile("Digest", "test");
 		String testString = "Yggdrasil\n";
-		String expectedResult = "c1d6d0fbe801dbe092ee1987ae16fb74";
+		String expectedChecksum = "c1d6d0fbe801dbe092ee1987ae16fb74";
 
 		try {
     		FileOutputStream fos = new FileOutputStream(file);
@@ -47,7 +47,7 @@ public class TestDigest {
 
     		Assert.assertNotNull(res);
     		Assert.assertEquals("md5", res.algorithm);
-    		Assert.assertEquals(expectedResult, res.digestString);
+    		Assert.assertEquals(expectedChecksum, res.digestString);
     	} finally {
     		file.delete();
     	}
@@ -56,7 +56,7 @@ public class TestDigest {
     @Test
     public void testDigestBytesSHA1() throws YggdrasilException {
     	String testString = "Yggdrasil\n";
-    	String expectedResult = "e46d62fd8ed195a644ce7151c55ebbf37e5e17d2";
+    	String expectedChecksum = "e46d62fd8ed195a644ce7151c55ebbf37e5e17d2";
     	
     	Digest digest = new Digest("SHA1");
     	
@@ -64,14 +64,14 @@ public class TestDigest {
     	
     	Assert.assertNotNull(res);
     	Assert.assertEquals("sha1", res.algorithm);
-    	Assert.assertEquals(expectedResult, res.digestString);
+    	Assert.assertEquals(expectedChecksum, res.digestString);
     }
 
     @Test
     public void testDigestFileSHA1() throws YggdrasilException, IOException {
     	File file = File.createTempFile("Digest", "test");
 		String testString = "Yggdrasil\n";
-		String expectedResult = "e46d62fd8ed195a644ce7151c55ebbf37e5e17d2";
+		String expectedChecksum = "e46d62fd8ed195a644ce7151c55ebbf37e5e17d2";
 
 		try {
     		FileOutputStream fos = new FileOutputStream(file);
@@ -85,7 +85,7 @@ public class TestDigest {
 
     		Assert.assertNotNull(res);
     		Assert.assertEquals("sha1", res.algorithm);
-    		Assert.assertEquals(expectedResult, res.digestString);
+    		Assert.assertEquals(expectedChecksum, res.digestString);
     	} finally {
     		file.delete();
     	}

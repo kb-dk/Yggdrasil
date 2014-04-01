@@ -11,6 +11,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,24 +46,29 @@ import dk.kb.yggdrasil.messaging.MqResponse;
 public class MqTest {
 
     public static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
+    
+    @BeforeClass
+    public static void initialize() {
+    	System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, RunningMode.TEST.name());
+    }
 
     @Test
+    @Ignore
     public void finalTest() throws YggdrasilException, IOException {
         RabbitMqSettings settings = fetchMqSettings();
-        System.out.println("using brokerUri: " + settings.getBrokerUri());
         MQ mq = new MQ(settings);
         assertTrue(settings.equals(mq.getSettings()));
         String message = "Hello world";
         String queueName = settings.getPreservationDestination();
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         MqResponse messageReceived = mq.receiveMessageFromQueue(queueName); 
-
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
+        
         message = "Hello X";
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         messageReceived = mq.receiveMessageFromQueue(queueName);
-
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
+
         mq.cleanup();
     }
 
@@ -70,7 +76,6 @@ public class MqTest {
     @Ignore
     public void sendShutdown() throws YggdrasilException, IOException {
         RabbitMqSettings settings = fetchMqSettings();
-        System.out.println("using brokerUri: " + settings.getBrokerUri());
         MQ mq = new MQ(settings);
         String queueName = settings.getPreservationDestination();
         String message = "Shutdown Message";
@@ -80,7 +85,7 @@ public class MqTest {
         assertTrue(messageReceived.getPayload().equals(message.getBytes()));
     }
     
-    
+    @Ignore
     @Test
     public void testReceived() throws KeyManagementException,
     NoSuchAlgorithmException, URISyntaxException, IOException, YggdrasilException {
@@ -127,7 +132,6 @@ public class MqTest {
             }
         });
 
-
         // .userId("bob")
         channel.basicPublish(exchangeName, routingKey,
                 new AMQP.BasicProperties.Builder().contentType("text/plain").deliveryMode(2).priority(1)
@@ -171,7 +175,6 @@ public class MqTest {
         String brokerUri = settings.getBrokerUri();
 
     }
-    
     
     private RabbitMqSettings fetchMqSettings() throws FileNotFoundException, YggdrasilException {
         File f = new File(RABBITMQ_CONF_FILE);

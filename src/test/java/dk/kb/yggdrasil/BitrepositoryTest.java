@@ -187,7 +187,7 @@ public class BitrepositoryTest {
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         Bitrepository br = new Bitrepository(okConfigFile);
         List<String> knownCols = br.getKnownCollections();
-        System.out.println("Known cols = " + knownCols.size());
+        //System.out.println("Known cols = " + knownCols.size());
         assertEquals(knownCols.size(), 5);
     }
     
