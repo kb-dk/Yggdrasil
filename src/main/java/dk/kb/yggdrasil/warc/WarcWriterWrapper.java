@@ -139,16 +139,18 @@ public class WarcWriterWrapper {
      * @param len payload length
      * @param contentType payload content-type
      * @param blockDigest optional block digest
+     * @param uuid The UUID for the record.
      * @return WarcRecordId of newly created record
      * @throws YggdrasilException if an exception occurs while writing record
      */
-    public Uri writeResourceRecord(InputStream in, long len, ContentType contentType, WarcDigest blockDigest) throws YggdrasilException {
+    public Uri writeResourceRecord(InputStream in, long len, ContentType contentType, WarcDigest blockDigest, String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(len, "len");
         ArgumentCheck.checkNotNull(contentType, "contentType");
+        ArgumentCheck.checkNotNull(uuid, "uuid");
         Uri warcRecordIdUri = null;
         try {
-            warcRecordIdUri = new Uri("urn:uuid:" + UUID.randomUUID());
+            warcRecordIdUri = new Uri("urn:uuid:" + uuid);
             WarcRecord record = WarcRecord.createRecord(writer);
             WarcHeader header = record.header;
             header.warcTypeIdx = WarcConstants.RT_IDX_RESOURCE;
@@ -176,16 +178,18 @@ public class WarcWriterWrapper {
      * @param len payload length
      * @param contentType payload content-type
      * @param blockDigest optional block digest
+     * @param uuid The UUID for the record.
      * @return WarcRecordId of newly created record
      * @throws YggdrasilException if an exception occurs while writing record
      */
-    public Uri writeMetadataRecord(InputStream in, long len, ContentType contentType, Uri refersTo, WarcDigest blockDigest) throws YggdrasilException {
+    public Uri writeMetadataRecord(InputStream in, long len, ContentType contentType, Uri refersTo, WarcDigest blockDigest, String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(len, "len");
         ArgumentCheck.checkNotNull(contentType, "contentType");
+        ArgumentCheck.checkNotNull(uuid, "uuid");
         Uri warcRecordIdUri = null;
         try {
-            warcRecordIdUri = new Uri("urn:uuid:" + UUID.randomUUID());
+            warcRecordIdUri = new Uri("urn:uuid:" + uuid);
             WarcRecord record = WarcRecord.createRecord(writer);
             WarcHeader header = record.header;
             header.warcTypeIdx = WarcConstants.RT_IDX_METADATA;

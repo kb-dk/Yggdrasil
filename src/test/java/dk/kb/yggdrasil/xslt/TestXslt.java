@@ -72,15 +72,6 @@ public class TestXslt {
             source = new StreamSource(file);
             byte[] bytes = transformer.transform(source, uriResolver, errorListener);
 
-            /*
-            try {
-                System.out.println(new String(bytes, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                Assert.fail("Unexpected exception!");
-            }
-            */
-
             Assert.assertNotNull(bytes);
             Assert.assertThat(bytes.length, is(greaterThan(0)));
 

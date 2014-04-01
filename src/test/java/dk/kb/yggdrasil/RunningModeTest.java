@@ -1,6 +1,5 @@
 package dk.kb.yggdrasil;
 
-import static org.junit.Assert.fail;
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -15,13 +14,11 @@ public class RunningModeTest extends TestCase {
     @Override
     public void setUp() {
         savedRunningModeProperty = System.getProperty(RunningMode.RUNNINGMODE_PROPERTY);
-        System.out.println("mode: " + savedRunningModeProperty);
     }
 
     @Override
     public void tearDown() {
         System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, savedRunningModeProperty);
-        System.out.println("mode: " + RunningMode.getMode());
     }
 
     @Test
@@ -29,5 +26,4 @@ public class RunningModeTest extends TestCase {
         System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, "");
         assertTrue(RunningMode.getMode() == RunningMode.DEVELOPMENT);
     }
-
 }

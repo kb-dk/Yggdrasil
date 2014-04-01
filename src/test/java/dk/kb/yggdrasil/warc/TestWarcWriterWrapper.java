@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -85,7 +86,8 @@ public class TestWarcWriterWrapper {
             in = new ByteArrayInputStream(dataBytes);
             contentType = ContentType.parseContentType("application/binary");
             blockDigest = WarcDigest.createWarcDigest("SHA1", digestBytes, "Base32", Base32.encodeArray(digestBytes));
-            Uri warcResourceId = w3.writeResourceRecord(in, dataBytes.length, contentType, blockDigest);
+            Uri warcResourceId = w3.writeResourceRecord(in, dataBytes.length, contentType, blockDigest, 
+            		UUID.randomUUID().toString());
 
             Assert.assertNotNull(warcResourceId);
 
@@ -96,7 +98,8 @@ public class TestWarcWriterWrapper {
             in = new ByteArrayInputStream(metadataBytes);
             contentType = ContentType.parseContentType("text/xml; charset=\"utf-8\"");
             blockDigest = WarcDigest.createWarcDigest("SHA1", digestBytes, "Base32", Base32.encodeArray(digestBytes));
-            Uri warcMetadataId = w3.writeMetadataRecord(in, metadataBytes.length, contentType, warcResourceId, blockDigest);
+            Uri warcMetadataId = w3.writeMetadataRecord(in, metadataBytes.length, contentType, warcResourceId, 
+            		blockDigest, UUID.randomUUID().toString());
 
             Assert.assertNotNull(warcMetadataId);
 
@@ -181,5 +184,4 @@ public class TestWarcWriterWrapper {
             Assert.fail("Unexpected exception!");
         }
     }
-
 }

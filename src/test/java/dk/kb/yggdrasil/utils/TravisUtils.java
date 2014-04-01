@@ -17,7 +17,8 @@ public class TravisUtils {
             //System.out.println("Is machine (" + localhostName + "): running on travis" +  onTravis); 
             return onTravis;
         } catch (UnknownHostException e) {
-            System.out.println(e);
+        	e.printStackTrace();
+        	//System.out.println(e);
         }
         return false;
     }

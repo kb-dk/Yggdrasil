@@ -45,6 +45,22 @@ public class ArgumentCheck extends RuntimeException {
     }
 
     /**
+     * Check if a byte array argument is null or empty.
+     *
+     * @param val  the value to check
+     * @param name the name and type of the value being checked
+     * @throws ArgumentCheck if test fails
+     */
+    public static void checkNotNullOrEmpty(byte[] val, String name) {
+        checkNotNull(val, name);
+
+        if (val.length == 0) {
+            throw new ArgumentCheck("The value of the variable '" + name
+                    + "' must not be string.");
+        }
+    }
+
+    /**
      * Check if an Object argument is null.
      *
      * @param val  the value to check
