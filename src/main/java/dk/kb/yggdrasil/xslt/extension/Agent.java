@@ -10,6 +10,9 @@ public class Agent {
     /** Current METS profile URL. */
     public static final String PROFILE_URL = "http://id.kb.dk/standards/mets/profiles/version_1/kbMetsProfile.xml";
 
+    /** Ingest agent URL. */
+    public static final String INGEST_AGENT_URL = "http://id.kb.dk/authorities/agents/kbDkYggdrasilIngest.xml";
+
     /** The current version of the agent. */
     public static final String VERSION = "1.0.0-SNAPSHOT";
 
@@ -116,4 +119,10 @@ public class Agent {
         return MODS_ACCESS_CONDITION;
     }
 
+    /**
+     * @return URL for the ingest agent.
+     */
+    public static String getIngestAgentURL() {
+        return INGEST_AGENT_URL;
+    }
 }

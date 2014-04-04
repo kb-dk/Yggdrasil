@@ -187,7 +187,6 @@ public class BitrepositoryTest {
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         Bitrepository br = new Bitrepository(okConfigFile);
         List<String> knownCols = br.getKnownCollections();
-        //System.out.println("Known cols = " + knownCols.size());
         assertEquals(knownCols.size(), 5);
     }
     
@@ -210,25 +209,4 @@ public class BitrepositoryTest {
 
         return fr;
     }
-
-    /*
-    public List<String> getFileIdsInCollection(String collectionID) {
-        ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
-        OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
-        output.debug("Instantiation GetFileID outputFormatter.");
-       bitMagGetFileIDsClient.
-
-        GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
-
-        long timeout = getClientTimeout(bitmagSettings);
-
-        output.debug("Instantiation GetFileID paging client.");
-        PagingGetFileIDsClient pagingClient = new PagingGetFileIDsClient(
-                bitMagGetFileIDsClient, timeout, outputFormatter, output);
-        Boolean success = pagingClient.getFileIDs(collectionID, null,
-                getCollectionPillars(collectionID));
-        return success;
-    }
-    */
-
 }

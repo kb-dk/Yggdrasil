@@ -9,7 +9,6 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Date;
-import java.util.UUID;
 
 import org.jwat.common.ContentType;
 import org.jwat.common.RandomAccessFileOutputStream;
@@ -130,6 +129,8 @@ public class WarcWriterWrapper {
         } catch (IOException e) {
             throw new YggdrasilException("Exception while writing WARC warcinfo record!", e);
         }
+        logger.debug("Written Info Record '" + uuid + "'.");
+
         return warcinfoRecordId;
     }
 
@@ -169,6 +170,8 @@ public class WarcWriterWrapper {
         } catch (IOException e) {
             throw new YggdrasilException("Exception while writing WARC resource record!", e);
         }
+        logger.debug("Written Resource Record '" + uuid + "'.");
+
         return warcRecordIdUri;
     }
 
@@ -208,6 +211,8 @@ public class WarcWriterWrapper {
         } catch (IOException e) {
             throw new YggdrasilException("Exception while writing WARC metadata record!", e);
         }
+        logger.debug("Written Metadata Record '" + uuid + "'.");
+
         return warcRecordIdUri;
     }
 

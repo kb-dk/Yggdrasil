@@ -44,6 +44,7 @@ import dk.kb.yggdrasil.xslt.XmlValidator;
 import dk.kb.yggdrasil.xslt.XslErrorListener;
 import dk.kb.yggdrasil.xslt.XslTransformer;
 import dk.kb.yggdrasil.xslt.XslUriResolver;
+import dk.kb.yggdrasil.xslt.extension.Agent;
 
 /**
  * The class handling the workflow, and the updates being sent back to Valhal.
@@ -117,11 +118,11 @@ public class Workflow {
                 shutdown = true;
                 continue;
             }
-            
+
             handleRequest(request);
         } 
     }
-    
+
     /**
      * Handles the PreservationRequest.
      * @param request The preservation request to handle.
@@ -129,7 +130,7 @@ public class Workflow {
      * @throws FileNotFoundException If the data cannot be retrieved or handled (e.g. not enough space left on device).
      */
     private void handleRequest(PreservationRequest request) throws YggdrasilException, FileNotFoundException {
-    	String currentUUID = null;
+        String currentUUID = null;
 
         logger.info("Preservation request received.");
         PreservationRequestState prs = null;
@@ -226,7 +227,7 @@ public class Workflow {
             File metadata = prs.getMetadataPayload();
             InputStream in;
             if (resource != null) {
-            	in = new FileInputStream(resource);
+                in = new FileInputStream(resource);
                 WarcDigest blockDigest = digestor.getDigestOfFile(resource);
                 resourceId = w3.writeResourceRecord(in, resource.length(),
                         ContentType.parseContentType("application/binary"), blockDigest, prs.getRequest().File_UUID);
@@ -356,7 +357,7 @@ public class Workflow {
             logger.error(errMsg, e);
             updateRemotePreservationState(prs, State.PRESERVATION_METADATA_PACKAGED_FAILURE);
             throw new YggdrasilException(errMsg);
-		}
+        }
     }
 
     /**
@@ -377,11 +378,11 @@ public class Workflow {
             logger.error("An exception occurred during the workflow for UUID: "
                     + currentUUID, e);
         } finally {
-           if (sd.hasEntry(currentUUID)) {
-               sd.delete(currentUUID);
-           }
-           // Cleanup
-           prs.cleanup();
+            if (sd.hasEntry(currentUUID)) {
+                sd.delete(currentUUID);
+            }
+            // Cleanup
+            prs.cleanup();
         }
 
     }
@@ -448,8 +449,8 @@ public class Workflow {
      * @throws YggdrasilException
      */
     private void updateRemotePreservationStateToFailState(PreservationRequestState prs,
-                                                          State failState,
-                                                          String reason) throws YggdrasilException {
+            State failState,
+            String reason) throws YggdrasilException {
         PreservationResponse response = new PreservationResponse();
         response.id = prs.getRequest().Valhal_ID;
         response.model = prs.getRequest().Model;
@@ -471,7 +472,7 @@ public class Workflow {
      * @throws YggdrasilException
      */
     private void updateRemotePreservationState(PreservationRequestState prs,
-                                               State newPreservationstate) throws YggdrasilException {
+            State newPreservationstate) throws YggdrasilException {
         PreservationResponse response = new PreservationResponse();
         response.id = prs.getRequest().Valhal_ID;
         response.model = prs.getRequest().Model;
@@ -513,13 +514,13 @@ public class Workflow {
         if (messageType == null) {
             throw new YggdrasilException("'null' messagetype is not handled. message ignored ");
         } else if (messageType.equalsIgnoreCase(MQ.SHUTDOWN_MESSAGE_TYPE)) {
-        	logger.warn("Shutdown message received");
+            logger.warn("Shutdown message received");
             // Shutdown message received
             return null;
         } else if (messageType.equalsIgnoreCase(MQ.PRESERVATIONREQUEST_MESSAGE_TYPE)) {
             PreservationRequest request = JSONMessaging.getPreservationRequest(
                     new PushbackInputStream(new ByteArrayInputStream(requestContent.getPayload())
-                            , PUSHBACKBUFFERSIZE));
+                    , PUSHBACKBUFFERSIZE));
             return request;
         } else {
             throw new YggdrasilException("The message type '"
@@ -552,11 +553,10 @@ public class Workflow {
         final String LF = "\n";
         final String COLON = ":";
         final String SPACE = " ";
-        //FIXME The description is wrong
 
-        // 1. description: http://id.kb.dk/authorities/agents/kbDk????Ingest.html
+        // 1. description: http://id.kb.dk/authorities/agents/kbDkYggdrasilIngest.html
         String descriptionKey = "description";
-        String descriptionValue = "http://id.kb.dk/authorities/agents/kbDk????BmIngest.html";
+        String descriptionValue = Agent.getIngestAgentURL();
         // 2. archiverRevision:
         String revisionKey = "revision";
         String revisionValue = "1.0.0";

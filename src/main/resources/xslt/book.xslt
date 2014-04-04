@@ -256,10 +256,13 @@
                 </xsl:element>
                 <xsl:element name="premis:linkingAgentIdentifier">
                   <xsl:element name="premis:linkingAgentIdentifierType">
-                    <xsl:value-of select="'UUID'" />
+                    <xsl:value-of select="'URL'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingAgentIdentifierValue">
-                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
+                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getIngestAgentURL()" />
+                  </xsl:element>
+                  <xsl:element name="premis:linkingAgentRole">
+                    <xsl:value-of select="'Ingest'" />
                   </xsl:element>
                 </xsl:element>
                 <xsl:element name="premis:linkingObjectIdentifier">

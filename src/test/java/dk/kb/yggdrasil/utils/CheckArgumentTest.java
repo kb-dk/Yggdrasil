@@ -184,7 +184,7 @@ public class CheckArgumentTest {
             // expected
         }
 
-      // check the values < 0 are not accepted
+        // check the values < 0 are not accepted
         try {
             ArgumentCheck.checkPositiveInt(negativeInt, "int negativeInt");
             fail("Should throw ArgumentCheck Exception, but didn't");
@@ -235,7 +235,7 @@ public class CheckArgumentTest {
             fail("Shouldn't throw ArgumentCheck Exception, but did");
         }
 
-       // check the values < 0 are not accepted
+        // check the values < 0 are not accepted
         try {
             ArgumentCheck.checkNotNegativeInt(negativeInt, "int negativeInt");
             fail("Should throw ArgumentCheck Exception, but didn't");
@@ -272,33 +272,33 @@ public class CheckArgumentTest {
 
     @Test
     public void testCheckNotNullOrEmptyCollection() {
-       Collection<Integer> nullCollection = null;
-       Collection<Integer> emptyCollection = new HashSet<Integer>();
-       Collection<Integer> nonEmptyCollection = new HashSet<Integer>();
-       nonEmptyCollection.add(new Integer(2));
+        Collection<Integer> nullCollection = null;
+        Collection<Integer> emptyCollection = new HashSet<Integer>();
+        Collection<Integer> nonEmptyCollection = new HashSet<Integer>();
+        nonEmptyCollection.add(new Integer(2));
 
-       // Test null collection
-       try {
-           ArgumentCheck.checkNotNullOrEmptyCollection(nullCollection, "Collection<Integer> nullCollection");
-           fail("Should throw ArgumentCheck Exception, but didn't");
-       } catch (ArgumentCheck e) {
-           // Expected
-       }
+        // Test null collection
+        try {
+            ArgumentCheck.checkNotNullOrEmptyCollection(nullCollection, "Collection<Integer> nullCollection");
+            fail("Should throw ArgumentCheck Exception, but didn't");
+        } catch (ArgumentCheck e) {
+            // Expected
+        }
 
-       // Test empty collection
-       try {
-           ArgumentCheck.checkNotNullOrEmptyCollection(emptyCollection, "Collection<Integer> emptyCollection");
-           fail("Should throw ArgumentCheck Exception, but didn't");
-       } catch (ArgumentCheck e) {
-           // Expected
-       }
+        // Test empty collection
+        try {
+            ArgumentCheck.checkNotNullOrEmptyCollection(emptyCollection, "Collection<Integer> emptyCollection");
+            fail("Should throw ArgumentCheck Exception, but didn't");
+        } catch (ArgumentCheck e) {
+            // Expected
+        }
 
-       // Test non-empty collection
-       try {
-           ArgumentCheck.checkNotNullOrEmptyCollection(nonEmptyCollection, "Collection<Integer> nonEmptyCollection");
-       } catch (ArgumentCheck e) {
-           fail("Shouldn't throw ArgumentCheck Exception, but did");
-       }
+        // Test non-empty collection
+        try {
+            ArgumentCheck.checkNotNullOrEmptyCollection(nonEmptyCollection, "Collection<Integer> nonEmptyCollection");
+        } catch (ArgumentCheck e) {
+            fail("Shouldn't throw ArgumentCheck Exception, but did");
+        }
     }
 
 }
