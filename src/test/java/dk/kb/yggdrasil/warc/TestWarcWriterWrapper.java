@@ -80,6 +80,7 @@ public class TestWarcWriterWrapper {
             Assert.assertNotNull(warcinfoId);
 
             String dataStr = "very interesting data!";
+            String dataUUID = UUID.randomUUID().toString();
             byte[] dataBytes = dataStr.getBytes("UTF-8");
             md.reset();
             digestBytes = md.digest(dataBytes);
@@ -87,11 +88,14 @@ public class TestWarcWriterWrapper {
             contentType = ContentType.parseContentType("application/binary");
             blockDigest = WarcDigest.createWarcDigest("SHA1", digestBytes, "Base32", Base32.encodeArray(digestBytes));
             Uri warcResourceId = w3.writeResourceRecord(in, dataBytes.length, contentType, blockDigest, 
-            		UUID.randomUUID().toString());
+                    dataUUID);
 
             Assert.assertNotNull(warcResourceId);
+            Assert.assertTrue("Resource ID '" + warcResourceId + "' should contain uuid '" + dataUUID + "'",
+                    warcResourceId.toString().contains(dataUUID));
 
             String metadataStr = "very interesting metadata!";
+            String metadataUUID = UUID.randomUUID().toString();
             byte[] metadataBytes = metadataStr.getBytes("UTF-8");
             md.reset();
             digestBytes = md.digest(metadataBytes);
@@ -99,9 +103,11 @@ public class TestWarcWriterWrapper {
             contentType = ContentType.parseContentType("text/xml; charset=\"utf-8\"");
             blockDigest = WarcDigest.createWarcDigest("SHA1", digestBytes, "Base32", Base32.encodeArray(digestBytes));
             Uri warcMetadataId = w3.writeMetadataRecord(in, metadataBytes.length, contentType, warcResourceId, 
-            		blockDigest, UUID.randomUUID().toString());
+                    blockDigest, metadataUUID);
 
             Assert.assertNotNull(warcMetadataId);
+            Assert.assertTrue("Resource ID '" + warcMetadataId + "' should contain uuid '" + metadataUUID + "'",
+                    warcMetadataId.toString().contains(metadataUUID));
 
             w3.close();
 
@@ -111,6 +117,7 @@ public class TestWarcWriterWrapper {
             WarcRecord record;
             WarcHeader header;
 
+            // WARC INFO validation
             record = reader.getNextRecord();
             Assert.assertNotNull(record);
             Assert.assertTrue(record.isCompliant());
@@ -129,6 +136,7 @@ public class TestWarcWriterWrapper {
             pbin.close();
             Assert.assertArrayEquals(warcFieldsBytes, out.toByteArray());
 
+            // WARC Resource validation
             record = reader.getNextRecord();
             Assert.assertNotNull(record);
             Assert.assertTrue(record.isCompliant());
@@ -137,6 +145,7 @@ public class TestWarcWriterWrapper {
             Assert.assertEquals(warcinfoId, header.warcWarcinfoIdUri);
             Assert.assertEquals(warcResourceId, header.warcRecordIdUri);
             Assert.assertNull(header.warcRefersToUri);
+            Assert.assertNotNull(header.warcRecordIdStr);
 
             pbin = record.getPayload().getInputStream();
             out.reset();
@@ -147,6 +156,7 @@ public class TestWarcWriterWrapper {
             pbin.close();
             Assert.assertArrayEquals(dataBytes, out.toByteArray());
 
+            // WARC Metadata validation
             record = reader.getNextRecord();
             Assert.assertNotNull(record);
             Assert.assertTrue(record.isCompliant());
