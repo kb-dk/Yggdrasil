@@ -309,7 +309,7 @@
         <xsl:element name="mets:fileGrp">
           <xsl:element name="mets:file">
             <xsl:attribute name="ID">
-              <xsl:value-of select="techMetadata/fields/original_filename" />
+              <xsl:value-of select="translate(techMetadata/fields/original_filename, ' ', '%20')" />
             </xsl:attribute>
             <xsl:element name="mets:FLocat">
               <xsl:attribute name="LOCTYPE">
@@ -338,7 +338,7 @@
           </xsl:attribute>
           <xsl:element name="mets:fptr">
             <xsl:attribute name="FILEID">
-              <xsl:value-of select="techMetadata/fields/original_filename" />
+              <xsl:value-of select="translate(techMetadata/fields/original_filename, ' ', '%20')" />
             </xsl:attribute>
           </xsl:element>
         </xsl:element>
