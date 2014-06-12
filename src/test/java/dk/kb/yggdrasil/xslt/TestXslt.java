@@ -182,7 +182,7 @@ public class TestXslt {
                  * With ErrorHandler.
                  */
                 bool = xmlValidator.testStructuralValidity(new ByteArrayInputStream(bytes), entityResolver, errorHandler, result);
-                Assert.assertTrue(bool);
+                Assert.assertTrue(xmlFilename, bool);
                 Assert.assertNull(result.systemId);
                 Assert.assertFalse(result.bDtdUsed);
                 Assert.assertTrue(result.bXsdUsed);

@@ -1,96 +1,87 @@
 <metadata>
-	<descMetadata>
-		<dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-			<dcterms:extent>416 bytes</dcterms:extent>
-		</dc>
-	</descMetadata>
-	<provenanceMetadata>
-		<fields>
-			<uuid>bd3cea80-3d71-0131-2b87-0050562881f4</uuid>
-		</fields>
-	</provenanceMetadata>
-	<preservationMetadata>
-		<fields>
-			<preservation_profile>eternity</preservation_profile>
-			<preservation_state>PRESERVATION_STATE_INITIATED</preservation_state>
-			<preservation_details>The preservation button has been pushed.
-			</preservation_details>
-			<preservation_modify_date>2013-12-13T11:46:37.685+01:00
-			</preservation_modify_date>
-			<preservation_comment />
-			<preservation_bitsafety>Maximum Bitsafety (15 x copies: 10 in
-				Bitrepository with daily integrity checks, 5 on open sites on the
-				Internet, 1 on other the Moon and 1 in another galaxy)
-			</preservation_bitsafety>
-			<preservation_confidentiality>Minimum confidentiality (public
-				accessible through the Internet)</preservation_confidentiality>
-		</fields>
-	</preservationMetadata>
-	<fitsMetadata1>
-		<fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.6.2" timestamp="12/19/13 5:11 PM">
-			<identification status="CONFLICT">
-				<identity format="TIFF EXIF" mimetype="image/tiff" toolname="FITS" toolversion="0.6.2">
-					<tool toolname="Jhove" toolversion="1.5"/>
-					<version toolname="Jhove" toolversion="1.5">5.0</version>
-				</identity>
-				<identity format="Tagged Image File Format" mimetype="image/tiff" toolname="FITS" toolversion="0.6.2">
-					<tool toolname="file utility" toolversion="5.09"/>
-					<tool toolname="Exiftool" toolversion="9.06"/>
-					<tool toolname="Droid" toolversion="3.0"/>
-					<tool toolname="NLNZ Metadata Extractor" toolversion="3.4GA"/>
-					<tool toolname="ffident" toolversion="0.2"/>
-					<version toolname="Droid" toolversion="3.0" status="CONFLICT">3</version>
-					<version toolname="Droid" toolversion="3.0" status="CONFLICT">4</version>
-					<version toolname="Droid" toolversion="3.0" status="CONFLICT">5</version>
-					<version toolname="Droid" toolversion="3.0" status="CONFLICT">6</version>
-					<externalIdentifier toolname="Droid" toolversion="3.0" type="puid">fmt/7</externalIdentifier>
-					<externalIdentifier toolname="Droid" toolversion="3.0" type="puid">fmt/8</externalIdentifier>
-					<externalIdentifier toolname="Droid" toolversion="3.0" type="puid">fmt/9</externalIdentifier>
-					<externalIdentifier toolname="Droid" toolversion="3.0" type="puid">fmt/10</externalIdentifier>
-				</identity>
-			</identification>
-			<fileinfo>
-				<size toolname="Jhove" toolversion="1.5">60416</size>
-				<creatingApplicationName toolname="Jhove" toolversion="1.5">Adobe Photoshop 7.0</creatingApplicationName>
-				<lastmodified toolname="Exiftool" toolversion="9.06" status="SINGLE_RESULT">2013:12:19 17:11:35+01:00</lastmodified>
-				<filepath toolname="OIS File Information" toolversion="0.1" status="SINGLE_RESULT">/tmp/jajp8025.TIF20131219-23728-1m6ypo5.TIF</filepath>
-				<filename toolname="OIS File Information" toolversion="0.1" status="SINGLE_RESULT">/tmp/jajp8025.TIF20131219-23728-1m6ypo5.TIF</filename>
-				<md5checksum toolname="OIS File Information" toolversion="0.1" status="SINGLE_RESULT">c07f4e7d127a839be112bd3f82e79135</md5checksum>
-				<fslastmodified toolname="OIS File Information" toolversion="0.1" status="SINGLE_RESULT">1387469495000</fslastmodified>
-			</fileinfo>
-			<filestatus>
-				<well-formed toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">true</well-formed>
-				<valid toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">true</valid>
-			</filestatus>
-			<metadata>
-				<image>
-					<byteOrder toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">little endian</byteOrder>
-					<compressionScheme toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">LZW</compressionScheme>
-					<imageWidth toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">3090</imageWidth>
-					<imageHeight toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">5150</imageHeight>
-					<colorSpace toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">WhiteIsZero</colorSpace>
-					<orientation toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">normal*</orientation>
-					<samplingFrequencyUnit toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">in.</samplingFrequencyUnit>
-					<xSamplingFrequency toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">600</xSamplingFrequency>
-					<ySamplingFrequency toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">600</ySamplingFrequency>
-					<bitsPerSample toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">1</bitsPerSample>
-					<samplesPerPixel toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">1</samplesPerPixel>
-					<imageProducer toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT"/>
-					<scanningSoftwareName toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">Adobe Photoshop 7.0</scanningSoftwareName>
-				</image>
-			</metadata>
-		</fits>
-	</fitsMetadata1>
-	<techMetadata>
-		<fields>
-			<created>2013-12-02 12:20:52 +0100</created>
-			<last_accessed>2013-12-02 12:20:57 +0100</last_accessed>
-			<last_modified>2013-12-02 12:20:52 +0100</last_modified>
-			<file_checksum>a48b83764e88757447cbf9e65e4d8f40</file_checksum>
-			<original_filename>arre1fm003.tif</original_filename>
-			<mime_type>image/tiff</mime_type>
-			<file_size>15851</file_size>
-			<file_uuid>bd3c8b10-3d71-0131-2b86-0050562881f4</file_uuid>
-		</fields>
-	</techMetadata>
+  <descMetadata>
+    <dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <dcterms:extent>416 bytes</dcterms:extent>
+    </dc>
+  </descMetadata>
+  <provenanceMetadata>
+    <fields>
+      <uuid>f3c98a60-b0d9-0131-875f-0050562881f4</uuid>
+    </fields>
+  </provenanceMetadata>
+  <preservationMetadata>
+    <fields>
+      <preservation_profile>eternity</preservation_profile>
+      <preservation_state>PRESERVATION_STATE_INITIATED</preservation_state>
+      <preservation_details>The preservation button has been pushed.</preservation_details>
+      <preservation_modify_date>2014-04-28T10:07:36.030+02:00</preservation_modify_date>
+      <preservation_bitsafety>Maximum Bitsafety (15 x copies: 10 in Bitrepository with daily integrity checks, 5 on open sites on the Internet, 1 on other the Moon and 1 in another galaxy)</preservation_bitsafety>
+      <preservation_confidentiality>Minimum confidentiality (public accessible through the Internet)</preservation_confidentiality>
+      <preservation_comment/>
+    </fields>
+  </preservationMetadata>
+  <techMetadata>
+    <fields>
+      <created>2014-04-28 10:06:14 +0200</created>
+      <last_accessed>2014-04-28 10:06:14 +0200</last_accessed>
+      <last_modified>2014-04-28 10:06:14 +0200</last_modified>
+      <file_checksum>b989f7830c03b065b5ec4c1a60386c87</file_checksum>
+      <original_filename>arre1fm005 &lt;&gt;¤%#!§ +_-^~/()[]{}|@£$*.tif</original_filename>
+      <mime_type>image/tiff</mime_type>
+      <file_size>58251</file_size>
+      <file_uuid>f0ec1560-b0d9-0131-875e-0050562881f4</file_uuid>
+    </fields>
+  </techMetadata>
+  <fitsMetadata1>
+    <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.6.2" timestamp="4/28/14 10:06 AM">
+      <identification>
+        <identity format="Tagged Image File Format" mimetype="image/tiff" toolname="FITS" toolversion="0.6.2">
+          <tool toolname="Jhove" toolversion="1.5"/>
+          <tool toolname="file utility" toolversion="5.04"/>
+          <tool toolname="Exiftool" toolversion="9.06"/>
+          <tool toolname="Droid" toolversion="3.0"/>
+          <tool toolname="NLNZ Metadata Extractor" toolversion="3.4GA"/>
+          <tool toolname="ffident" toolversion="0.2"/>
+          <version toolname="Jhove" toolversion="1.5" status="CONFLICT">5.0</version>
+          <version toolname="Droid" toolversion="3.0" status="CONFLICT">3</version>
+          <version toolname="Droid" toolversion="3.0" status="CONFLICT">4</version>
+          <version toolname="Droid" toolversion="3.0" status="CONFLICT">6</version>
+          <externalIdentifier toolname="Droid" toolversion="3.0" type="puid">fmt/7</externalIdentifier>
+          <externalIdentifier toolname="Droid" toolversion="3.0" type="puid">fmt/8</externalIdentifier>
+          <externalIdentifier toolname="Droid" toolversion="3.0" type="puid">fmt/9</externalIdentifier>
+          <externalIdentifier toolname="Droid" toolversion="3.0" type="puid">fmt/10</externalIdentifier>
+        </identity>
+      </identification>
+      <fileinfo>
+        <size toolname="Jhove" toolversion="1.5">58251</size>
+        <lastmodified toolname="Exiftool" toolversion="9.06" status="SINGLE_RESULT">2014:04:28 10:06:35+02:00</lastmodified>
+        <filepath toolname="OIS File Information" toolversion="0.1" status="SINGLE_RESULT">/tmp/arre1fm005.tif20140428-4192-16ughtw.tif</filepath>
+        <filename toolname="OIS File Information" toolversion="0.1" status="SINGLE_RESULT">/tmp/arre1fm005.tif20140428-4192-16ughtw.tif</filename>
+        <md5checksum toolname="OIS File Information" toolversion="0.1" status="SINGLE_RESULT">b989f7830c03b065b5ec4c1a60386c87</md5checksum>
+        <fslastmodified toolname="OIS File Information" toolversion="0.1" status="SINGLE_RESULT">1398672395000</fslastmodified>
+      </fileinfo>
+      <filestatus>
+        <well-formed toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">false</well-formed>
+        <valid toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">false</valid>
+        <message toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">Tag 269 out of sequence offset=214</message>
+      </filestatus>
+      <metadata>
+        <image>
+          <byteOrder toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT">little endian</byteOrder>
+          <compressionScheme toolname="Jhove" toolversion="1.5">T6/Group 4 Fax</compressionScheme>
+          <imageWidth toolname="Jhove" toolversion="1.5">3654</imageWidth>
+          <imageHeight toolname="Jhove" toolversion="1.5">5483</imageHeight>
+          <colorSpace toolname="Jhove" toolversion="1.5">WhiteIsZero</colorSpace>
+          <orientation toolname="Jhove" toolversion="1.5">normal*</orientation>
+          <samplingFrequencyUnit toolname="Jhove" toolversion="1.5" status="CONFLICT">in.</samplingFrequencyUnit>
+          <samplingFrequencyUnit toolname="Exiftool" toolversion="9.06" status="CONFLICT">inches</samplingFrequencyUnit>
+          <xSamplingFrequency toolname="Jhove" toolversion="1.5">600</xSamplingFrequency>
+          <ySamplingFrequency toolname="Jhove" toolversion="1.5">600</ySamplingFrequency>
+          <bitsPerSample toolname="Jhove" toolversion="1.5">1</bitsPerSample>
+          <samplesPerPixel toolname="Jhove" toolversion="1.5">1</samplesPerPixel>
+          <imageProducer toolname="Jhove" toolversion="1.5" status="SINGLE_RESULT"/>
+        </image>
+      </metadata>
+    </fits>
+  </fitsMetadata1>
 </metadata>

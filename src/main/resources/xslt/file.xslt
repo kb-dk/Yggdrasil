@@ -309,7 +309,8 @@
         <xsl:element name="mets:fileGrp">
           <xsl:element name="mets:file">
             <xsl:attribute name="ID">
-              <xsl:value-of select="techMetadata/fields/original_filename" />
+              <!-- Removing unwanted charaters from the file-name (e.g. spaces, parantheses, etc.) -->
+              <xsl:value-of select="translate(techMetadata/fields/original_filename, '()@£$¤§|^*%$#@!~&lt;&gt;,?[]{}=-+/\ ', '')" />
             </xsl:attribute>
             <xsl:element name="mets:FLocat">
               <xsl:attribute name="LOCTYPE">
@@ -338,7 +339,8 @@
           </xsl:attribute>
           <xsl:element name="mets:fptr">
             <xsl:attribute name="FILEID">
-              <xsl:value-of select="techMetadata/fields/original_filename" />
+              <!-- Removing unwanted charaters from the file-name (e.g. spaces, parantheses, etc.) -->
+              <xsl:value-of select="translate(techMetadata/fields/original_filename, '()@£$¤§|^*%$#@!~&lt;&gt;,?[]{}=-+/\ ', '')" />
             </xsl:attribute>
           </xsl:element>
         </xsl:element>
