@@ -16,10 +16,8 @@ public class TestXmlValidator {
 
     public static Object[][] xmlFiles = new Object[][] {
         {2, 1, 1, 1, "valhal/xml/basic_file.xml"},
-        {1, 1, 1, 1, "valhal/xml/book.xml"},
-        {0, 0, 0, 1, "valhal/xml/ordered_representation.xml"},
-        {0, 0, 0, 1, "valhal/xml/person.xml"},
-        {0, 0, 0, 1, "valhal/xml/single_file_representation.xml"},
+        {1, 1, 1, 1, "valhal/xml/ordered_instance.xml"},
+        {1, 1, 1, 1, "valhal/xml/single_file_instance.xml"},
         {1, 1, 1, 1, "valhal/xml/work.xml"}
     };
 

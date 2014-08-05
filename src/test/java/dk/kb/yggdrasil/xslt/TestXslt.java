@@ -129,11 +129,9 @@ public class TestXslt {
     }
 
     public static String[][] newXsltFiles = new String[][] {
-        {"valhal/xml/basic_file.xml", "xslt/file.xslt"},
-        {"valhal/xml/book.xml", "xslt/book.xslt"},
-        {"valhal/xml/ordered_representation.xml", "xslt/ordered_representation.xsl"},
-        {"valhal/xml/person.xml", "xslt/person.xslt"},
-        {"valhal/xml/single_file_representation.xml", "xslt/ordered_representation.xsl"},
+//        {"valhal/xml/basic_file.xml", "xslt/file.xslt"},
+//        {"valhal/xml/ordered_instance.xml", "xslt/instance.xsl"},
+//        {"valhal/xml/single_file_instance.xml", "xslt/instance.xsl"},
         {"valhal/xml/work.xml", "xslt/work.xslt"}
     };
 
@@ -191,6 +189,8 @@ public class TestXslt {
                 Assert.assertEquals(0, errorHandler.numberOfWarnings);
                 Assert.assertTrue(result.bWellformed);
                 Assert.assertFalse(result.bValid);
+                
+                System.out.println(new String(bytes));
 
                 bool = xmlValidator.testDefinedValidity(new ByteArrayInputStream(bytes), entityResolver, errorHandler, result);
                 Assert.assertTrue(bool);

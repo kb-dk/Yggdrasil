@@ -14,7 +14,7 @@ public class TestModels {
     public void test() throws YggdrasilException {
         Models m = new Models(new File("config/models.yml"));
         assertFalse(m.getMapper().keySet().isEmpty());
-        assertTrue(m.getMapper().keySet().size() == 6);
+        assertEquals(4, m.getMapper().keySet().size());
         //Map<String,String> m1 = m.getMapper();
         //for (Entry<String, String> entry: m1.entrySet()) {
         //    System.out.println("(model, xslt)=(" + entry.getKey()

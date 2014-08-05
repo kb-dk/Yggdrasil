@@ -106,14 +106,8 @@
             <xsl:value-of select="'MODS'" />
           </xsl:attribute>
           <xsl:element name="mets:xmlData">
-
-            <mods:mods version="3.4" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
-              <mods:titleInfo>
-                <xsl:element name="mods:title">
-                  <xsl:value-of select="provenanceMetadata/fields/label" />
-                </xsl:element>
-              </mods:titleInfo>
-            </mods:mods>
+          
+            <xsl:copy-of select="mods"></xsl:copy-of>
 
           </xsl:element>
         </xsl:element>

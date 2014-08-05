@@ -1,7 +1,5 @@
 models:
   work: work.xslt
   basicfile: file.xslt
-  book: book.xslt
-  orderedrepresentation: ordered_representation.xsl
-  singlefilerepresentation: ordered_representation.xsl
-  person: person.xslt
+  orderedinstance: instance.xsl
+  singlefileinstance: instance.xsl

@@ -105,64 +105,21 @@
           </xsl:attribute>
           <xsl:element name="mets:xmlData">
             <!-- START MODS -->
-            <mods:mods xmlns:xlink="http://www.w3.org.1999/xlink" version="3.4" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
-              <xsl:copy-of select="descMetadata/mods:mods/mods:genre" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:identifier[@type='isbn']" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:locator" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:language" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:originInfo" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:physicalDescription" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:subject" />
-              <xsl:copy-of select="descMetadata/mods:mods/mods:titleInfo" />
-              <xsl:for-each select="author">
-                <xsl:element name="mods:name">
-                  <xsl:attribute name="valueURI">
-                    <xsl:value-of select="concat('urn:uuid:', uuid)" />
-                  </xsl:attribute>
-                  <xsl:element name="mods:namePart">
-                    <xsl:value-of select="name" />
-                  </xsl:element>
-                  <xsl:element name="mods:role">
-                    <xsl:element name="mods:roleTerm">
-                      <xsl:attribute name="type">
-                        <xsl:value-of select="'text'" />
-                      </xsl:attribute>
-                      <xsl:attribute name="authority">
-                        <xsl:value-of select="'marcrelator'" />
-                      </xsl:attribute>
-                      <xsl:value-of select="'author'" />
-                    </xsl:element>
-                    <xsl:element name="mods:roleTerm">
-                      <xsl:attribute name="type">
-                        <xsl:value-of select="'code'" />
-                      </xsl:attribute>
-                      <xsl:attribute name="authority">
-                        <xsl:value-of select="'marcrelator'" />
-                      </xsl:attribute>
-                      <xsl:value-of select="'aut'" />
-                    </xsl:element>
-                  </xsl:element>
-                </xsl:element>
-              </xsl:for-each>
-              <xsl:for-each select="related_person">
-                <xsl:element name="mods:name">
-                  <xsl:attribute name="valueURI">
-                    <xsl:value-of select="concat('urn:uuid:', uuid)" />
-                  </xsl:attribute>
-                  <xsl:element name="mods:namePart">
-                    <xsl:value-of select="name" />
-                  </xsl:element>
-                  <xsl:element name="mods:role">
-                    <xsl:element name="mods:roleTerm">
-                      <xsl:attribute name="type">
-                        <xsl:value-of select="'text'" />
-                      </xsl:attribute>
-                      <xsl:value-of select="'related person'" />
-                    </xsl:element>
-                  </xsl:element>
-                </xsl:element>
-              </xsl:for-each>
-            </mods:mods>
+            <xsl:copy-of select="mods:mods"></xsl:copy-of>
+<!--             <mods:mods xmlns:xlink="http://www.w3.org.1999/xlink" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd"> -->
+<!--               <xsl:copy-of select="mods:mods/mods:genre" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:identifier" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:language" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:location" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:name" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:note" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:originInfo" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:physicalDescription" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:recordInfo" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:subject" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:titleInfo" /> -->
+<!--               <xsl:copy-of select="mods:mods/mods:typeOfResource" /> -->
+<!--             </mods:mods> -->
             <!-- END MODS -->
           </xsl:element>
         </xsl:element>
