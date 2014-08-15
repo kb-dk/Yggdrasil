@@ -14,13 +14,13 @@
   <xsl:output encoding="UTF-8" method="xml" indent="yes" />
 
   <xsl:template match="metadata">
-    <xsl:call-template name="orderedrepresentation_mets_generator" />
+    <xsl:call-template name="instance_mets_generator" />
   </xsl:template>
 
-  <xsl:template name="orderedrepresentation_mets_generator">
+  <xsl:template name="instance_mets_generator">
     <mets:mets xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version191/mets.xsd">
       <xsl:attribute name="TYPE">
-        <xsl:value-of select="'Representation'" />
+        <xsl:value-of select="'Instance'" />
       </xsl:attribute>
       <xsl:attribute name="OBJID">
         <xsl:value-of select="provenanceMetadata/fields/uuid" />

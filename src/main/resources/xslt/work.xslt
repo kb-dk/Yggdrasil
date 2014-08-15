@@ -105,21 +105,7 @@
           </xsl:attribute>
           <xsl:element name="mets:xmlData">
             <!-- START MODS -->
-            <xsl:copy-of select="mods:mods"></xsl:copy-of>
-<!--             <mods:mods xmlns:xlink="http://www.w3.org.1999/xlink" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd"> -->
-<!--               <xsl:copy-of select="mods:mods/mods:genre" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:identifier" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:language" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:location" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:name" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:note" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:originInfo" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:physicalDescription" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:recordInfo" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:subject" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:titleInfo" /> -->
-<!--               <xsl:copy-of select="mods:mods/mods:typeOfResource" /> -->
-<!--             </mods:mods> -->
+            <xsl:copy-of select="mods:mods" />
             <!-- END MODS -->
           </xsl:element>
         </xsl:element>
