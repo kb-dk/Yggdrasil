@@ -78,6 +78,7 @@ Producing a new Yggdrasil package for deployment
 ----------------------------------------------------------
 
 Update the version variable in pom.xml and in yggdrasil/xslt/extension/Agent.java
+
 Produce the new package using Maven
 
 
