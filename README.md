@@ -74,6 +74,13 @@ Making the Yggdrasil package without running the unittests
 mvn clean -Dmaven.test.skip=true package
 
 
+Producing a new Yggdrasil package for deployment
+----------------------------------------------------------
+
+Update the version variable in pom.xml and in yggdrasil/xslt/extension/Agent.java
+Produce the new package using Maven
+
+
 Deploying the Yggdrasil program
 -------------------------------
 
