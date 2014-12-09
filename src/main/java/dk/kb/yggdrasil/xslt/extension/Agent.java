@@ -14,7 +14,7 @@ public class Agent {
     public static final String INGEST_AGENT_URL = "http://id.kb.dk/authorities/agents/kbDkYggdrasilIngest.xml";
 
     /** The current version of the agent. */
-    public static final String VERSION = "1.0.0-SNAPSHOT";
+    public static final String VERSION = "1.1.0-SNAPSHOT";
 
     /** Organization ID. */
     public static final String ORGANIZATION_ID = "kbDk";
@@ -23,7 +23,7 @@ public class Agent {
     public static final String ORGANIZATION_NAME = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
 
     /** API ID. */
-    public static final String API_ID = "kbDkYggdrasil1.0";
+    public static final String API_ID = "kbDkYggdrasil1.1";
 
     /** API name. */
     public static final String API_NAME = "KB Yggdrasil v. " + VERSION;
