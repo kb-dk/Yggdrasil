@@ -155,12 +155,10 @@ public class MqTest {
         File f = new File(RABBITMQ_CONF_FILE);
         RabbitMqSettings settings = new RabbitMqSettings(f);
         String brokerUri = settings.getBrokerUri();
-        String dissDest = settings.getDisseminationDestination();
         String presDest = settings.getPreservationDestination();
-        RabbitMqSettings settingsCopy = new RabbitMqSettings(brokerUri, presDest, dissDest);
+        RabbitMqSettings settingsCopy = new RabbitMqSettings(brokerUri, presDest);
         assertEquals(brokerUri, settingsCopy.getBrokerUri());
         assertEquals(presDest, settingsCopy.getPreservationDestination());
-        assertEquals(dissDest, settingsCopy.getDisseminationDestination());
     }
 
     /**

@@ -26,8 +26,6 @@ public final class RabbitMqSettings {
     public static final String RABBIT_MQ_PRESERVATION_PROPERTY  = "preservation";
     /** The property for the rabbitmq preservation response queue name **/
     public static final String RABBIT_MQ_PRESERVATION_RESPONSE_PROPERTY = "response";
-    /** The property for the rabbitmq dissemination setting in our rabbitmq.yml */
-    public static final String RABBIT_MQ_DISSEMINATION_PROPERTY  = "dissemination";
     /** The property for the destination subsetting in our rabbitmq.yml */
     public static final String RABBIT_MQ_DESTINATION_PROPERTY  = "destination";
     /** Use these this property to override the rabbitmq hostname in the YAML file. */
@@ -47,9 +45,6 @@ public final class RabbitMqSettings {
     /** The name of the preservation response queue. **/
     private String preservationResponseDestination;
 
-    /** The name of the dissemination queue. */
-    private String disseminationDestination;
-
     /**
      * Constructor. Reads RabbitMQ settings from a YAML file.
      * @param ymlFile A YAML file containing RabbitMQ settings.
@@ -67,13 +62,10 @@ public final class RabbitMqSettings {
         settings = (Map) settings.get(mode);
 
         if (settings.containsKey(RABBIT_MQ_URI_PROPERTY)
-                && settings.containsKey(RABBIT_MQ_PRESERVATION_PROPERTY)
-                && settings.containsKey(RABBIT_MQ_DISSEMINATION_PROPERTY)) {
+                && settings.containsKey(RABBIT_MQ_PRESERVATION_PROPERTY)) {
             brokerUri = (String) settings.get(RABBIT_MQ_URI_PROPERTY);
             Map preservationMap = (Map) settings.get(RABBIT_MQ_PRESERVATION_PROPERTY);
             preservationDestination = (String) preservationMap.get(RABBIT_MQ_DESTINATION_PROPERTY);
-            Map disseminationMap = (Map) settings.get(RABBIT_MQ_DISSEMINATION_PROPERTY);
-            disseminationDestination = (String) disseminationMap.get(RABBIT_MQ_DESTINATION_PROPERTY);
             preservationResponseDestination = (String) preservationMap.get(RABBIT_MQ_PRESERVATION_RESPONSE_PROPERTY);
         } else {
             throw new YggdrasilException("Missing some or all of the required properties in the settings file");
@@ -95,13 +87,10 @@ public final class RabbitMqSettings {
      * Alternate constructor.
      * @param brokerUri The URI to connect to the broker.
      * @param preservationDestination The Queue for receiving messages from Valhal
-     * @param disseminationDestination The Queue for receiving messages from Bifrost
      */
-    public RabbitMqSettings(String brokerUri, String preservationDestination,
-            String disseminationDestination)  {
+    public RabbitMqSettings(String brokerUri, String preservationDestination)  {
         this.brokerUri = brokerUri;
         this.preservationDestination = preservationDestination;
-        this.disseminationDestination = disseminationDestination;
     }
 
     /**
@@ -124,13 +113,6 @@ public final class RabbitMqSettings {
      */
     public String getPreservationResponseDestination() {
         return preservationResponseDestination;
-    }
-
-    /**
-     * @return the dissemination destination
-     */
-    public String getDisseminationDestination() {
-        return disseminationDestination;
     }
 
     /**
