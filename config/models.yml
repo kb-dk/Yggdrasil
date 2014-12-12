@@ -1,6 +1,7 @@
 models:
+  contentfile: file.xslt
+  trykforlaeg: instance.xsl
   work: work.xslt
   basicfile: file.xslt
   orderedinstance: instance.xsl
   singlefileinstance: instance.xsl
-
