@@ -132,7 +132,9 @@ public class TestXslt {
 //        {"valhal/xml/basic_file.xml", "xslt/file.xslt"},
 //        {"valhal/xml/ordered_instance.xml", "xslt/instance.xsl"},
 //        {"valhal/xml/single_file_instance.xml", "xslt/instance.xsl"},
-        {"valhal/xml/work.xml", "xslt/work.xslt"}
+//        {"valhal/xml/work.xml", "xslt/work.xslt"},
+//        {"valhal/xml/instance_with_unordered_multiple_files.xml", "xslt/instance.xsl"},
+        {"valhal/xml/namespaceless_mods.xml", "xslt/instance.xsl"}
     };
 
     @Test
@@ -193,7 +195,7 @@ public class TestXslt {
                 System.out.println(new String(bytes));
 
                 bool = xmlValidator.testDefinedValidity(new ByteArrayInputStream(bytes), entityResolver, errorHandler, result);
-                Assert.assertTrue(bool);
+                Assert.assertTrue("Should create valid xml.", bool);
                 Assert.assertNull(result.systemId);
                 Assert.assertFalse(result.bDtdUsed);
                 Assert.assertTrue(result.bXsdUsed);

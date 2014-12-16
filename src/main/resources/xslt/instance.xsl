@@ -106,9 +106,7 @@
             <xsl:value-of select="'MODS'" />
           </xsl:attribute>
           <xsl:element name="mets:xmlData">
-          
-            <xsl:copy-of select="mods"></xsl:copy-of>
-
+            <xsl:copy-of select="mods:mods"></xsl:copy-of>
           </xsl:element>
         </xsl:element>
       </xsl:element>

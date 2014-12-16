@@ -1,0 +1,50 @@
+<metadata>
+	<provenanceMetadata>
+		<fields>
+			<uuid>00a36f50-5847-0132-8e30-000c29cc78f6</uuid>
+		</fields>
+	</provenanceMetadata>
+	<preservationMetadata>
+		<fields>
+			<preservation_profile>A</preservation_profile>
+			<preservation_state>PRESERVATION_REQUEST_SEND</preservation_state>
+			<preservation_details>The preservation button has been pushed.
+			</preservation_details>
+			<preservation_bitsafety>bitSafetyVeryHigh</preservation_bitsafety>
+			<preservation_confidentiality>confidentialityMedium
+			</preservation_confidentiality>
+			<preservation_modify_date>2014-12-16T15:09:47.720+01:00
+			</preservation_modify_date>
+			<warc_id>67603c27-e7df-4da4-9a34-7d60baf48eef</warc_id>
+		</fields>
+	</preservationMetadata>
+	<mods xmlns:xlink="http:/www.w3.org/xlink" xmlns:xsi="http:/www.w3.org/XMLSchema-instance" version=""
+		xsi:schemaLocation="http:/www.loc.gov/mods/v3 http:/www.loc.gov/standards/mods/v3/mods-3-5.xsd">  <!--We have found an instance! -->
+		<name authorityURI="http:/localhost:3000/resources/changeme:2">
+			<roleTerm>aut</roleTerm>
+		</name>
+		<titleInfo type="">
+			<title>Andeby i Gamle Dage</title>
+		</titleInfo>
+		<relatedItem type="work" displayLabel="The intellectual content , bummer">
+			<identifier type="uuid">ee825870-5846-0132-8e2d-000c29cc78f6
+			</identifier>
+		</relatedItem>
+		<originInfo>
+			<dateCreated encoding="w3cdtf">2009</dateCreated>
+		</originInfo>
+		<identifier type="isbn">9780300144246</identifier>
+		<identifier type="uuid">00a36f50-5847-0132-8e30-000c29cc78f6
+		</identifier>
+		<identifier type="uri">http://localhost:3000/resources/changeme:5
+		</identifier>
+	</mods>
+	<file>
+		<name>Lav_gode_sogninger.pdf</name>
+		<uuid>ffedd290-5846-0132-8e2f-000c29cc78f6</uuid>
+	</file>
+	<file>
+		<name>000773452_X02.xml</name>
+		<uuid>1dace680-6759-0132-942e-000c29cc78f6</uuid>
+	</file>
+</metadata>
