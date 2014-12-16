@@ -225,8 +225,8 @@
       </xsl:element>
       <!-- END amdSec -->
 
-      <!-- Produces invalid XML if no file or techMetadata is present. -->
-      <xsl:if test="file or techMetadata">
+      <!-- Produces invalid XML if no file is present. -->
+      <xsl:if test="file">
       <!-- START structMap -->
         <xsl:element name="mets:structMap">
           <xsl:attribute name="TYPE">
@@ -240,21 +240,24 @@
               <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1'" />
             </xsl:attribute>
 
-            <xsl:if test="file">
+            <xsl:for-each  select="file">
               <xsl:element name="mets:div">
                 <xsl:attribute name="LABEL">
-                  <xsl:value-of select="file/name" />
+                  <xsl:value-of select="name" />
                 </xsl:attribute>
                 <xsl:element name="mets:mptr">
                   <xsl:attribute name="LOCTYPE">
                     <xsl:value-of select="'URN'" />
                   </xsl:attribute>
                   <xsl:attribute name="xlink:href">
-                    <xsl:value-of select="concat('urn:uuid:', file/uuid)" />
+                    <xsl:value-of select="concat('urn:uuid:', uuid)" />
                   </xsl:attribute>
                 </xsl:element>
               </xsl:element>
-            </xsl:if>
+            </xsl:for-each>
+
+          <!-- The ORDER part of the transformation has temporarily been commented out
+          Remember to add the techMetadata to the test before creating the structMap.
             <xsl:if test="techMetadata">
               <xsl:for-each select="techMetadata/mets:mets/mets:structMap/mets:div">
                 <xsl:element name="mets:div">
@@ -275,6 +278,7 @@
                 </xsl:element>
               </xsl:for-each>
             </xsl:if>
+            -->
 
           </xsl:element>
         </xsl:element>
