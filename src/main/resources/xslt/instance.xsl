@@ -106,7 +106,7 @@
             <xsl:value-of select="'MODS'" />
           </xsl:attribute>
           <xsl:element name="mets:xmlData">
-            <xsl:copy-of select="mods:mods"></xsl:copy-of>
+            <xsl:apply-templates select="//mods:mods"/>
           </xsl:element>
         </xsl:element>
       </xsl:element>
@@ -284,5 +284,18 @@
       </xsl:if>
 
     </mets:mets>
+  </xsl:template>
+  
+  <xsl:template match="node()|@*">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="*">
+    <xsl:element name="mods:{name()}" namespace="http://www.loc.gov/mods/v3">
+      <xsl:copy-of select="namespace::*"/>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:element>
   </xsl:template>
 </xsl:transform>

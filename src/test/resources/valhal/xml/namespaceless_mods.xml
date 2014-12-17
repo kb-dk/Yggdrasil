@@ -22,12 +22,14 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5"
 		xsi:schemaLocation="http://www.loc.gov/mods/v3        http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">  <!--We have found an instance! -->
 		<name authorityURI="http://localhost:3000/resources/changeme:2">
+		             <role>
 			<roleTerm>aut</roleTerm>
+			</role>
 		</name>
-		<titleInfo type="">
+		<titleInfo>
 			<title>Andeby i Gamle Dage</title>
 		</titleInfo>
-		<relatedItem type="work" displayLabel="The intellectual content, bummer">
+		<relatedItem displayLabel="The intellectual content, bummer">
 			<identifier type="uuid">ee825870-5846-0132-8e2d-000c29cc78f6
 			</identifier>
 		</relatedItem>

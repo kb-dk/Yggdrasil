@@ -10,7 +10,7 @@ test:
   mq_uri: "amqp://localhost:5672"
   preservation:
     destination: "preservation-test-queue"
-    response: "preservation-dev-response-queue"
+    response: "preservation-test-response-queue"
   dissemination:
     destination: "dissemination-test-queue"
 
@@ -18,7 +18,7 @@ production:
   mq_uri: "amqp://localhost:5672"
   preservation:
     destination: "preservation-prod-queue"
-    response: "preservation-dev-response-queue"
+    response: "preservation-prod-response-queue"
   dissemination:
     destination: "dissemination-prod-queue"
 
