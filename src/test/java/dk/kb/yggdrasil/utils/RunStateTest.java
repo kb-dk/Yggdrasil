@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,11 +28,11 @@ public class RunStateTest {
     
     private static File generalConfigFile = new File("config/yggdrasil.yml");
     
+    // The guys at Travis don't like we're knocking on their port so we use @Ignore.
+    @Ignore    
     @Test
     public void testReadRunState() throws Exception {
-
-        // The guys at Travis don't like we're knocking on their ports.
-/*        
+       
         RunState runnableRunState = new RunState();
         Thread runstate = new Thread(runnableRunState);
         runstate.start();
@@ -56,5 +57,5 @@ public class RunStateTest {
         Assert.assertThat(runStateText, CoreMatchers.containsString("Yggdrasil"));
 
         rd.close();
-*/    }
+    }
 }
