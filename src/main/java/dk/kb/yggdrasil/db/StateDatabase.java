@@ -142,22 +142,27 @@ public class StateDatabase {
     }
     
     /**
-     * 
+     * Create a new PreservationRequest in the database.
      * @param uuid A given UUID representing an element in Valhal
      * @param request 
      */
     public void put(String uuid, PreservationRequestState request) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         ArgumentCheck.checkNotNull(request, "PreservationRequestState request");
-        Transaction nullTransaction = null;
+        Transaction txn = env.beginTransaction(null, null);
         DatabaseEntry theKey = new DatabaseEntry();
         DatabaseEntry theData = new DatabaseEntry(); 
         keyBinding.objectToEntry(uuid, theKey);
         objectBinding.objectToEntry(request, theData);
 
         try {
-            requestDB.put(nullTransaction, theKey, theData);
+            requestDB.put(txn, theKey, theData);
+            txn.commit();
         } catch (DatabaseException e) {
+            if (txn != null) {
+                txn.abort();
+                txn = null;
+            }
             throw new YggdrasilException("Database exception occuring during ingest", e);
         }
     }  
@@ -204,13 +209,18 @@ public class StateDatabase {
      */
     public void delete(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
-       
+        Transaction txn = env.beginTransaction(null, null);
         DatabaseEntry key = new DatabaseEntry();
         keyBinding.objectToEntry(uuid, key);
  
         try {
-            requestDB.delete(null, key);
+            requestDB.delete(txn, key);
+            txn.commit();
         } catch (DatabaseException e) {
+            if (txn != null) {
+                txn.abort();
+                txn = null;
+            }
             throw new YggdrasilException(
                     "Database exception occuring during deletion of record", e);
         }

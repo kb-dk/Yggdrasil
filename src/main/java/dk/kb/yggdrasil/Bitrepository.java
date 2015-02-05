@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.jms.JMSException;
@@ -61,6 +63,7 @@ import org.bitrepository.settings.repositorysettings.Collection;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.utils.HostName;
 import dk.kb.yggdrasil.utils.YamlTools;
 
 /**
@@ -80,7 +83,7 @@ public class Bitrepository {
     private Settings bitmagSettings = null;
 
     /** The component id. */
-    private final static String COMPONENT_ID = "YggdrasilClient";
+    private String COMPONENT_ID;
 
     /** The bitmag security manager.*/
     private SecurityManager bitMagSecurityManager;
@@ -124,6 +127,7 @@ public class Bitrepository {
      */
     public Bitrepository(File configFile) throws YggdrasilException {
         ArgumentCheck.checkExistsNormalFile(configFile, "File configFile");
+        initComponent_ID();
         readConfigFile(configFile);
         initBitmagSettings();
         initBitmagSecurityManager();
@@ -446,6 +450,23 @@ public class Bitrepository {
         return this.privateKeyFile;
     }
 
+    
+    /**
+     * Set COMPONENT_ID using host name and random UUID.
+     */
+    private void initComponent_ID() {
+        HostName hostname = new HostName();
+        String hn;
+        try {
+            hn = hostname.getHostName();
+        } catch (UnknownHostException e) {
+            logger.warning("Caught unknown host exception while setting COMPONENT_ID");
+            // Will work with a empty host name.
+            hn = "";
+        }
+        COMPONENT_ID = "YggdrasilClient-" + hn + "-" + UUID.randomUUID();
+    }
+    
     /**
      * Load BitMag settings, if not already done.
      */

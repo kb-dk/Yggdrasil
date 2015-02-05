@@ -91,35 +91,6 @@
       </xsl:element>
       <!-- END metsHdr -->
       
-      <!-- START dmdSec -->
-      <xsl:element name="mets:dmdSec">
-        <xsl:attribute name="CREATED">
-          <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
-        </xsl:attribute>    
-        <xsl:attribute name="ID">
-          <xsl:value-of select="'Mods1'" />
-        </xsl:attribute>
-        <xsl:element name="mets:mdWrap">
-          <xsl:attribute name="MDTYPE">
-            <xsl:value-of select="'MODS'" />
-          </xsl:attribute>
-          <xsl:element name="mets:xmlData">
-            <!-- START MODS -->
-            <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
-              <!-- START title -->
-              <xsl:element name="mods:titleInfo">
-                <xsl:element name="mods:title">
-                  <xsl:value-of select="techMetadata/fields/original_filename"/>
-                </xsl:element>
-              </xsl:element>
-              <!-- END title -->
-            </mods:mods>
-            <!-- END MODS -->  
-          </xsl:element>
-        </xsl:element>
-      </xsl:element>
-      <!-- END dmdSec -->
-      
       <!-- START amdSec -->
       <xsl:element name="mets:amdSec">
         <!-- ADD PREMIS:OBJECT -->
@@ -181,6 +152,11 @@
                   </xsl:element>
                 </xsl:element>
                 <!-- END objectCharacteristics -->
+                <!-- BEGIN originalName -->
+                <xsl:element name="premis:originalName">
+                  <xsl:value-of select="techMetadata/fields/original_filename"/>
+                </xsl:element>
+                <!-- END originalName -->
                 <xsl:element name="premis:linkingIntellectualEntityIdentifier">
                   <xsl:element name="premis:linkingIntellectualEntityIdentifierType">
                     <xsl:value-of select="'UUID'" />
@@ -331,9 +307,6 @@
           <xsl:value-of select="'logical'" />
         </xsl:attribute>
         <xsl:element name="mets:div">
-          <xsl:attribute name="DMDID">
-            <xsl:value-of select="'Mods1'" />
-          </xsl:attribute>
           <xsl:attribute name="ADMID">
             <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1 PremisObject1'" />
           </xsl:attribute>

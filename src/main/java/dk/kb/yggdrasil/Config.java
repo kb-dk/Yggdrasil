@@ -24,6 +24,12 @@ public class Config {
     private File tmpDir;
     /** The configDir where the yggdrasilConfigFile was located. */
     private File configdir;
+
+    /** The monitor endpoint port property. */
+    private final String MONITOR_PORT_PROPERTY = "monitor_port";
+    /** The monitor port for the RunState service endpoint */
+    private int monitorPort;
+    
     /**
      * Constructor for class reading the general Yggdrasil config file.
      * @param yggrasilConfigFile the config file.
@@ -63,6 +69,11 @@ public class Config {
            }
        }
 
+       try {
+           monitorPort = (Integer) valuesMap.get(MONITOR_PORT_PROPERTY);
+       } catch (Exception e) {
+           throw new YggdrasilException("The monitor port wasn't set correctly");
+       }
     }
     
     /** 
@@ -84,6 +95,13 @@ public class Config {
      */
     public File getConfigDir() {
         return configdir;
+    }
+
+    /** 
+     * @return the monitor port
+     */
+    public int getMonitorPort() {
+        return monitorPort;
     }
 
 }

@@ -7,9 +7,11 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
+import dk.kb.yggdrasil.utils.RunState;
 import dk.kb.yggdrasil.xslt.Models;
 
 /**
@@ -45,6 +47,9 @@ public class Main {
     private StateDatabase sd;
     private MQ mq;
     private Bitrepository bitrepository;
+    
+    /** RunChecker */
+    private static RunState runstate;
 
     public Main(StateDatabase sd, MQ mq, Bitrepository bitrepository) {
         this.sd = sd;
@@ -88,6 +93,7 @@ public class Main {
         StateDatabase sd = null;
         Config generalConfig = null;
         Models modelsConfig = null;
+
         try {
             File rabbitmqConfigFile = new File(configdir, RABBITMQ_CONF_FILENAME);
             RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
@@ -104,13 +110,21 @@ public class Main {
 
             // Initiate call of StateDatabase
             sd = new StateDatabase(generalConfig.getDatabaseDir());
+
+            RunState runnableRunState = new RunState();
+            Thread runstate = new Thread(runnableRunState);
+            runstate.start();
+
             Main main = new Main(sd, mq, bitrepository);
             if (!isUnittestmode) {
                 logger.info("Starting main workflow of Yggdrasil program");
                 Workflow wf = new Workflow(mq, sd, bitrepository, generalConfig, modelsConfig);
                 wf.run();
+            } else {
+                logger.info("isUnittestmode = " + isUnittestmode); 
             }
             logger.info("Shutting down the Yggdrasil Main program");
+            runstate.interrupt();
             main.cleanup();
             
         } catch (FileNotFoundException e) {

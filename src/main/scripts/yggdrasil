@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# chkconfig: 235 90 10
+#
+# description: Init-script to start and stop yggdrasil.
+#
+
+DUSER=yggdrasil
+CTLSCRIPT=/home/yggdrasil/Yggdrasil-current/yggdrasil_ctl.sh
+
+case "$1" in
+    start)
+        su $DUSER -c "$CTLSCRIPT start"
+        touch /var/lock/subsys/yggdrasil
+        ;;
+    stop)
+        su $DUSER -c "$CTLSCRIPT stop"
+        rm -f /var/lock/subsys/yggdrasil
+        ;;
+    restart)
+        su $DUSER -c "$CTLSCRIPT restart"
+        ;;
+    status)
+        su $DUSER -c "$CTLSCRIPT status"
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+
+exit $?
+

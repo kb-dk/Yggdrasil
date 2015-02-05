@@ -77,7 +77,7 @@ mvn clean -Dmaven.test.skip=true package
 Producing a new Yggdrasil package for deployment
 ----------------------------------------------------------
 
-Update the version variable in pom.xml and in yggdrasil/xslt/extension/Agent.java
+Update the version variable in pom.xml
 
 Produce the new package using Maven
 
