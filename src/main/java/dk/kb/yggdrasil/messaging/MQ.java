@@ -78,6 +78,7 @@ public class MQ {
         try {
             factory.setUri(settings.getBrokerUri());
             conn = factory.newConnection();
+            logger.info("Connecting to RabbitMQ on server: " + conn.getAddress().getCanonicalHostName());
             theChannel = conn.createChannel();
             configureChannel(settings.getPreservationDestination());
             configureChannel(settings.getPreservationResponseDestination());

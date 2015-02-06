@@ -71,25 +71,23 @@
           </xsl:element>
         </xsl:element>
 
-        <xsl:for-each select="field[@name='Department']">
-          <xsl:element name="mets:agent">
-            <xsl:attribute name="ID">
-              <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentID()" />
-            </xsl:attribute>
-            <xsl:attribute name="ROLE">
-              <xsl:value-of select="'EDITOR'" />
-            </xsl:attribute>
-            <xsl:attribute name="TYPE">
-              <xsl:value-of select="'OTHER'" />
-            </xsl:attribute>
-            <xsl:attribute name="OTHERTYPE">
-              <xsl:value-of select="'DEPARTMENT'" />
-            </xsl:attribute>
-            <xsl:element name="mets:name">
-              <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentName()" />
-            </xsl:element>
-          </xsl:element>
-        </xsl:for-each>
+         <xsl:element name="mets:agent">
+           <xsl:attribute name="ID">
+             <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentID()" />
+           </xsl:attribute>
+           <xsl:attribute name="ROLE">
+             <xsl:value-of select="'EDITOR'" />
+           </xsl:attribute>
+           <xsl:attribute name="TYPE">
+             <xsl:value-of select="'OTHER'" />
+           </xsl:attribute>
+           <xsl:attribute name="OTHERTYPE">
+             <xsl:value-of select="'DEPARTMENT'" />
+           </xsl:attribute>
+           <xsl:element name="mets:name">
+             <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getDepartmentName()" />
+           </xsl:element>
+         </xsl:element>
       </xsl:element>
       <!-- END metsHdr -->
 

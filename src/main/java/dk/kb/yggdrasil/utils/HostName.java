@@ -28,7 +28,7 @@ public class HostName {
             hostName = canonicalHostName;
             
             if (StringUtils.isNotEmpty(hostName)) {
-                logger.info("Hostname provided  by iAddress: " + hostName);
+                logger.info("Local hostname (provided  by iAddress): " + hostName);
                 return hostName;
             }
             
@@ -40,12 +40,12 @@ public class HostName {
         //      
         hostName = System.getenv("COMPUTERNAME");
         if (hostName != null) {
-            logger.info("Hostname provided by System.getenv COMPUTERNAME: " + hostName);
+            logger.info("Local hostname (provided by System.getenv COMPUTERNAME): " + hostName);
             return hostName;
         }
         hostName = System.getenv("HOSTNAME");
         if (hostName != null) {
-            logger.info("Hostname provided by System.getenv HOSTNAME: " + hostName);
+            logger.info("Local hostname (provided by System.getenv HOSTNAME): " + hostName);
             return hostName;
         }
         // Nothing worked, hostname undetermined.

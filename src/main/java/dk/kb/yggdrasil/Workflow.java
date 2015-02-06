@@ -531,7 +531,6 @@ public class Workflow {
     /**
      * Generate the WarcInfoPayload that Yggdrasil inserts into the warcfiles being
      * produced.
-     * The WARC-info should be similar to the one produced by the KBDOMS gatekeeper:
      *
         WARC/1.0
         WARC-Type: warcinfo
@@ -542,13 +541,14 @@ public class Workflow {
 
         description: http://id.kb.dk/authorities/agents/kbDkDomsBmIngest.html
         revision: 2079
+        conformsTo: http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf
      *
      * @return the WarcInfoPayload that Yggdrasil inserts into the warcfiles being
      * produced
      */
     public String getWarcInfoPayload() {
         // make Warc-metadata record (WARC-INFO RECORD) containing
-        // link to program description, and  archiverRevision
+        // link to program description, archiverRevision, and conformsTo "ISO"
         //
         final String LF = "\n";
         final String COLON = ":";
@@ -561,10 +561,15 @@ public class Workflow {
         String revisionKey = "revision";
         String revisionValue = "1.0.0";
 
+        // 3. conformsTo: http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf
+        String conformsToKey = "conformsTo";
+        String conformsToValue = "http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf";
+
         StringBuilder sb = new StringBuilder();
         sb.append(descriptionKey + COLON + SPACE + descriptionValue + LF);
         sb.append(revisionKey + COLON + SPACE + revisionValue + LF);
-
+        sb.append(conformsToKey + COLON + SPACE + conformsToValue + LF);
+        
         return sb.toString();
     }
 

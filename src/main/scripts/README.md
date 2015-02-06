@@ -27,7 +27,7 @@ Performs a simple startup of Yggdrasil enabling server-side debugging.
 
 run_debug_suspended
 --------------------------
-Suspend debugging. 
+Performs a simple startup of Yggdrasil enabling server-side debugging and suspends the program until a debugger is connected.
 
 
 transform
