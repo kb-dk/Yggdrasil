@@ -23,6 +23,7 @@ import com.rabbitmq.client.ShutdownSignalException;
 
 import dk.kb.yggdrasil.RabbitMqSettings;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 /**
@@ -68,8 +69,9 @@ public class MQ {
      * Constructor for the MQ object.
      * @param settings The settings used to create the broker connection.
      * @throws YggdrasilException
+     * @throws RabbitException 
      */
-    public MQ(RabbitMqSettings settings) throws YggdrasilException {
+    public MQ(RabbitMqSettings settings) throws YggdrasilException, RabbitException {
         this.existingConsumerTags = new HashSet<String>();
         this.existingConsumers = new HashMap<String, QueueingConsumer>();
         this.settings = settings;
@@ -92,7 +94,7 @@ public class MQ {
             throw new YggdrasilException("Error connecting to Broker at '"
                     + settings.getBrokerUri() + "' : ", e3);
         } catch (IOException e4) {
-            throw new YggdrasilException("Error connecting to Broker at '"
+            throw new RabbitException("Error connecting to Broker at '"
                     + settings.getBrokerUri() + "' : ", e4);
         }
     }
@@ -179,8 +181,9 @@ public class MQ {
     * @param queueName The name of the queue.
     * @return the messageType and bytes delivered in the message when a message is received.
     * @throws YggdrasilException
+    * @throws RabbitException 
     */
-   public MqResponse receiveMessageFromQueue(String queueName) throws YggdrasilException {
+   public MqResponse receiveMessageFromQueue(String queueName) throws YggdrasilException, RabbitException {
 	   ArgumentCheck.checkNotNullOrEmpty(queueName, "String queueName");
        QueueingConsumer consumer = null;
        String consumerTag = null;
@@ -213,7 +216,7 @@ public class MQ {
            throw new YggdrasilException("Unable to receive message from queue '"
                    + queueName + "'", e);
        } catch (ShutdownSignalException e) {
-           throw new YggdrasilException("Unable to receive message from queue '"
+           throw new RabbitException("Unable to receive message from queue '"
                    + queueName + "'", e);
        } catch (ConsumerCancelledException e) {
            throw new YggdrasilException("Unable to receive message from queue '"

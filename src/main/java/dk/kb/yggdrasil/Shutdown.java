@@ -3,6 +3,7 @@ package dk.kb.yggdrasil;
 import java.io.File;
 import java.io.IOException;
 
+import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
 
@@ -18,8 +19,9 @@ public class Shutdown {
      * @param args Not used 
      * @throws YggdrasilException If we couldn't find the file {Main.RABBITMQ_CONF_FILENAME}
      * @throws IOException 
+     * @throws RabbitException 
      */
-    public static void main(String[] args) throws IOException, YggdrasilException {
+    public static void main(String[] args) throws IOException, YggdrasilException, RabbitException {
       File configDir = Main.getConfigDir();
       File rabbitmqConfigFile = new File(configDir, Main.RABBITMQ_CONF_FILENAME);
       if (!rabbitmqConfigFile.exists()) {

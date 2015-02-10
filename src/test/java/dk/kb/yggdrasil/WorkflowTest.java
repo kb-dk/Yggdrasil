@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
+import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.JSONMessagingTestUtils;
 import dk.kb.yggdrasil.json.PreservationRequest;
@@ -39,7 +40,7 @@ public class WorkflowTest {
     private static RabbitMqSettings settings; 
 
     @BeforeClass
-    public static void beforeClass() throws YggdrasilException, IOException {
+    public static void beforeClass() throws YggdrasilException, IOException, RabbitException {
     	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
 
         Config config = new Config(generalConfigFile);
@@ -56,7 +57,7 @@ public class WorkflowTest {
     }
 
     @Test
-    public void correctlyFormattedPreservationResponse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, YggdrasilException {
+    public void correctlyFormattedPreservationResponse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, YggdrasilException, RabbitException {
         PreservationRequest preservationRequest = new PreservationRequest();
         preservationRequest.Model = "Book";
         preservationRequest.Valhal_ID = "Valhal:1";

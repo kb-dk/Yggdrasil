@@ -28,6 +28,7 @@ import org.xml.sax.EntityResolver;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.Preservation;
@@ -101,8 +102,9 @@ public class Workflow {
     /**
      * Run this method infinitely.
      * @throws YggdrasilException
+     * @throws RabbitException 
      */
-    public void run() throws YggdrasilException, FileNotFoundException {
+    public void run() throws YggdrasilException, FileNotFoundException, RabbitException {
         boolean shutdown = false;
         while (!shutdown) {
             PreservationRequest request = null;
@@ -505,8 +507,9 @@ public class Workflow {
      * Wait until the next request arrives on the queue, and then return the request.
      * @return the next request from the queue (returns null, if shutdown message)
      * @throws YggdrasilException If bad messagetype
+     * @throws RabbitException 
      */
-    private PreservationRequest getNextRequest() throws YggdrasilException {
+    private PreservationRequest getNextRequest() throws YggdrasilException, RabbitException {
         // TODO Should there be a timeout here?
         MqResponse requestContent = mq.receiveMessageFromQueue(
                 mq.getSettings().getPreservationDestination());

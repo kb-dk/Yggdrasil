@@ -24,6 +24,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
+import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MqResponse;
@@ -54,7 +55,7 @@ public class MqTest {
 
     @Test
     @Ignore
-    public void finalTest() throws YggdrasilException, IOException {
+    public void finalTest() throws YggdrasilException, IOException, RabbitException {
         RabbitMqSettings settings = fetchMqSettings();
         MQ mq = new MQ(settings);
         assertTrue(settings.equals(mq.getSettings()));
@@ -74,7 +75,7 @@ public class MqTest {
 
     @Test
     @Ignore
-    public void sendShutdown() throws YggdrasilException, IOException {
+    public void sendShutdown() throws YggdrasilException, IOException, RabbitException {
         RabbitMqSettings settings = fetchMqSettings();
         MQ mq = new MQ(settings);
         String queueName = settings.getPreservationDestination();

@@ -2,7 +2,6 @@ package dk.kb.yggdrasil.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ public class HostName {
             }
             
         } catch (UnknownHostException  e) {
-            // Failed the standard Java way, trying alternative ways.
+            logger.info("Failed finding hostname the standard Java way, trying alternative ways.");
         }
         
         // Trying to get hostname through environment properties.

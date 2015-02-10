@@ -3,12 +3,14 @@ package dk.kb.yggdrasil;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import dk.kb.yggdrasil.db.StateDatabase;
+import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.utils.RunState;
@@ -27,7 +29,10 @@ public class Main {
     public static final String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
     public static final String BITMAG_CONF_FILENAME = "bitmag.yml";
     public static final String MODELS_CONF_FILENAME = "models.yml";
-    
+
+    /** # of seconds to sleep before trying to reconnect to RabbitMQ. */
+    private static final int SLEEP_IN_SEC = 100;
+
     /**
      * The list of configuration files that should be present in the configuration directory.
      */
@@ -47,9 +52,6 @@ public class Main {
     private StateDatabase sd;
     private MQ mq;
     private Bitrepository bitrepository;
-    
-    /** RunChecker */
-    private static RunState runstate;
 
     public Main(StateDatabase sd, MQ mq, Bitrepository bitrepository) {
         this.sd = sd;
@@ -61,8 +63,9 @@ public class Main {
      * Main program of the Yggdrasil preservation service.
      * @param args No args is read here. Properties are used to locate confdir and the running mode.
      * @throws YggdrasilException When unable to find a configuration directory or locate required settings files.
+     * @throws RabbitException 
      */
-    public static void main(String[] args) throws YggdrasilException {
+    public static void main(String[] args) throws YggdrasilException, RabbitException {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
@@ -97,7 +100,6 @@ public class Main {
         try {
             File rabbitmqConfigFile = new File(configdir, RABBITMQ_CONF_FILENAME);
             RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
-            mq = new MQ(rabbitMqSettings);
             
             File bitmagConfigFile = new File(configdir, BITMAG_CONF_FILENAME);
             bitrepository = new Bitrepository(bitmagConfigFile);
@@ -117,9 +119,8 @@ public class Main {
 
             Main main = new Main(sd, mq, bitrepository);
             if (!isUnittestmode) {
-                logger.info("Starting main workflow of Yggdrasil program");
-                Workflow wf = new Workflow(mq, sd, bitrepository, generalConfig, modelsConfig);
-                wf.run();
+                main.runWorkflow(sd, bitrepository, generalConfig,
+                        modelsConfig, rabbitMqSettings);
             } else {
                 logger.info("isUnittestmode = " + isUnittestmode); 
             }
@@ -164,5 +165,45 @@ public class Main {
         }
         return configdir;
     }
-
+    
+    private void initializeRabbitMQ(RabbitMqSettings rabbitMqSettings) throws YggdrasilException, FileNotFoundException {
+        logger.info("Initialising RabbitMQ");
+        this.mq = null;
+        try {
+            this.mq = new MQ(rabbitMqSettings);
+        } catch (RabbitException e) {
+            String errMsg = "initializeRabbitMQ exception "; 
+            logger.error(errMsg, e);
+            try {
+                TimeUnit.SECONDS.sleep(SLEEP_IN_SEC);
+            } catch (InterruptedException e1) {
+                errMsg = "Slowing down workfow exception "; 
+                throw new YggdrasilException(errMsg, e1);
+            }
+            initializeRabbitMQ(rabbitMqSettings); 
+        }
+    }
+    
+    private void runWorkflow(StateDatabase sd, Bitrepository bitrepository,
+            Config generalConfig, Models modelsConfig, RabbitMqSettings rabbitMqSettings) 
+                    throws FileNotFoundException, YggdrasilException {
+        logger.info("Starting main workflow of Yggdrasil program");
+        this.initializeRabbitMQ(rabbitMqSettings);
+        Workflow wf = new Workflow(this.mq, sd, bitrepository, generalConfig, modelsConfig);
+        logger.info("Ready to run workflow");
+        try {
+            wf.run();
+        } catch (RabbitException e) {
+            String errMsg = "runWorkflow exception "; 
+            logger.error(errMsg, e);
+            try {
+                TimeUnit.SECONDS.sleep(SLEEP_IN_SEC);
+            } catch (InterruptedException e1) {
+                errMsg = "Slowing down workfow exception "; 
+                throw new YggdrasilException(errMsg, e1);
+            }
+            runWorkflow(sd, bitrepository, generalConfig, modelsConfig, rabbitMqSettings);   
+        }
+    }
+        
 }

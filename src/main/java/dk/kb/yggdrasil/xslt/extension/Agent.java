@@ -3,8 +3,6 @@ package dk.kb.yggdrasil.xslt.extension;
 import dk.kb.yggdrasil.xslt.XslTransformer;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Yggdrasil Matrjosjka agent XSLT functions.
