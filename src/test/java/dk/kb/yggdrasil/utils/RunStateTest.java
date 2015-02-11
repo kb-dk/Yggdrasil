@@ -28,11 +28,11 @@ public class RunStateTest {
     
     private static File generalConfigFile = new File("config/yggdrasil.yml");
     
-    // The guys at Travis don't like we're knocking on their port so we use @Ignore.
-    @Ignore    
     @Test
     public void testReadRunState() throws Exception {
-       
+        if (TravisUtils.runningOnTravis()) {
+            return;
+        }
         RunState runnableRunState = new RunState();
         Thread runstate = new Thread(runnableRunState);
         runstate.start();

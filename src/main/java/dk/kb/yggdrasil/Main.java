@@ -121,7 +121,7 @@ public class Main {
                 main.runWorkflow(sd, bitrepository, generalConfig,
                         modelsConfig, rabbitMqSettings);
             } else {
-                logger.info("isUnittestmode = " + isUnittestmode); 
+                logger.info("isUnittestmode = " + isUnittestmode);
             }
             logger.info("Shutting down the Yggdrasil Main program");
             runstate.interrupt();
@@ -138,7 +138,7 @@ public class Main {
     private void cleanup() {
         bitrepository.shutdown();
         try {
-            this.mq.close();
+            if (!isUnittestmode) {this.mq.close();}
         } catch (IOException e) {
             logger.debug("Ignoring exception while closing down RabbitMQ", e);
         }
