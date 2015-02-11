@@ -25,25 +25,58 @@ public class RunState implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(RunState.class.getName());
     
     /** Server socket */
-    private ServerSocket sock;
-  
+    private static ServerSocket sock;
+
+    /** Yggdrasil version */
+    private final String version;
+
+    /**
+     * Constructor - Setup the server socket at host at a specified port. 
+     */
+    public RunState() {
+        version = this.getClass().getPackage().getImplementationVersion();
+        final File generalConfigFile = new File("config/yggdrasil.yml");
+        
+        try {
+            sock = new ServerSocket();
+            sock.setReuseAddress(true);
+            
+            // Get host name where the service should run.
+            final HostName hostname = new HostName();
+            final String hname = hostname.getHostName();
+
+            // Set port
+            final Config config = new Config(generalConfigFile);
+            final int MONITOR_PORT = config.getMonitorPort();
+            
+            logger.info("RunState.initialize: " + hname + ":" + MONITOR_PORT);
+            
+            // Bind service endpoint.
+            final SocketAddress endpoint = new InetSocketAddress(hname, MONITOR_PORT);
+            if (!sock.isBound()) {sock.bind(endpoint);}
+
+        } catch (YggdrasilException e) {
+            logger.error("Caught exception while getting monitor port form config file", e);
+        } catch (IOException e) {
+            logger.error("Caught Server Socket exception while starting RunState", e);
+        }
+    }
+
     /**
     * This method start the thread and performs all the operations.
     */
     public void run() {
-        initialize();
         try {
             /** Wait for connection from client. */
             while (true) {
-                Socket socket = sock.accept();
+                final Socket socket = sock.accept();
 
                 /** Open a reader to receive (and ignore the input) */
-                BufferedReader rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                final BufferedReader rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 /** Write the status message to the outputstream */
                 try {
-                    BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                    String version = this.getClass().getPackage().getImplementationVersion();
+                    final BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                     wr.write("Yggdrasil version: " + version + " is running");
                     wr.flush();
                 } catch (IOException e) {
@@ -59,37 +92,6 @@ public class RunState implements Runnable {
             }
         } catch (Exception e) {
             logger.error("Caught exception while running RunState", e);
-        }
-    }
-
-    /**
-     * Setup the server socket at host at a specified port. 
-     */
-    private void initialize() {
-        File generalConfigFile = new File("config/yggdrasil.yml");
-        
-        try {
-            sock = new ServerSocket();
-            sock.setReuseAddress(true);
-            
-            // Get host name where the service should run.
-            HostName hostname = new HostName();
-            String hn = hostname.getHostName();
-
-            // Set port
-            Config config = new Config(generalConfigFile);
-            int MONITOR_PORT = config.getMonitorPort();
-            
-            logger.info("RunState.initialize: " + hn + ":" + MONITOR_PORT);
-            
-            // Bind service endpoint.
-            SocketAddress endpoint = new InetSocketAddress(hn, MONITOR_PORT);
-            if (!sock.isBound()) sock.bind(endpoint);
-
-        } catch (YggdrasilException e) {
-            logger.error("Caught exception while getting monitor port form config file", e);
-        } catch (IOException e) {
-            logger.error("Caught Server Socket exception while starting RunState", e);
         }
     }
 }

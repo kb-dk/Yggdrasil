@@ -69,7 +69,7 @@ public class MQ {
      * Constructor for the MQ object.
      * @param settings The settings used to create the broker connection.
      * @throws YggdrasilException
-     * @throws RabbitException 
+     * @throws RabbitException When message queue connection fails.
      */
     public MQ(RabbitMqSettings settings) throws YggdrasilException, RabbitException {
         this.existingConsumerTags = new HashSet<String>();
@@ -181,7 +181,7 @@ public class MQ {
     * @param queueName The name of the queue.
     * @return the messageType and bytes delivered in the message when a message is received.
     * @throws YggdrasilException
-    * @throws RabbitException 
+    * @throws RabbitException When message queue connection fails.
     */
    public MqResponse receiveMessageFromQueue(String queueName) throws YggdrasilException, RabbitException {
 	   ArgumentCheck.checkNotNullOrEmpty(queueName, "String queueName");

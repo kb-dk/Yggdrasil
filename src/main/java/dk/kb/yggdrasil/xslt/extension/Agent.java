@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Yggdrasil Matrjosjka agent XSLT functions.
  */
-public class Agent {
+public final class Agent {
     /** Current METS profile URL. */
     public static final String PROFILE_URL = "http://id.kb.dk/standards/mets/profiles/version_1/kbMetsProfile.xml";
 
@@ -24,7 +24,7 @@ public class Agent {
     public static final String ORGANIZATION_NAME = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
 
     /** Size of the major + minor substring. */
-    static final int SIZE_OF_MAJOR_MINOR_SUBSTRING = 3;
+    private static final int SIZE_OF_MAJOR_MINOR_SUBSTRING = 3;
     
     /** API ID. */
     public static final String API_ID = "kbDkYggdrasil" + StringUtils.left(VERSION, SIZE_OF_MAJOR_MINOR_SUBSTRING);

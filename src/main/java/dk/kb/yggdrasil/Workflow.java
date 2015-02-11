@@ -71,12 +71,12 @@ public class Workflow {
      */
     private Models metadataModel;
     /** Size of pushback buffer for determining the encoding of the json message. */
-    private static int PUSHBACKBUFFERSIZE = 4;
+    private final static int PUSHBACKBUFFERSIZE = 4;
 
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Workflow.class.getName());
 
-    public static String RABBITMQ_CONF_FILE = "./config/rabbitmq.yml";
+    public final static String RABBITMQ_CONF_FILE = "./config/rabbitmq.yml";
     /**
      * Constructor for the Workflow class.
      * @param rabbitconnector The rabbitmq connector object
@@ -102,7 +102,7 @@ public class Workflow {
     /**
      * Run this method infinitely.
      * @throws YggdrasilException
-     * @throws RabbitException 
+     * @throws RabbitException When message queue connection fails.
      */
     public void run() throws YggdrasilException, FileNotFoundException, RabbitException {
         boolean shutdown = false;
@@ -507,7 +507,7 @@ public class Workflow {
      * Wait until the next request arrives on the queue, and then return the request.
      * @return the next request from the queue (returns null, if shutdown message)
      * @throws YggdrasilException If bad messagetype
-     * @throws RabbitException 
+     * @throws RabbitException When message queue connection fails.
      */
     private PreservationRequest getNextRequest() throws YggdrasilException, RabbitException {
         // TODO Should there be a timeout here?

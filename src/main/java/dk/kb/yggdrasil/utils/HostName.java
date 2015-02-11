@@ -15,15 +15,22 @@ public class HostName {
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(HostName.class.getName());
     
+    /**
+     * Default constructor
+     */
+    public HostName() {
+        super();
+    }
+
     public String getHostName () throws UnknownHostException {
         String hostName;
         try {
             //Trying to get hostname through InetAddress
-            InetAddress iAddress = InetAddress.getLocalHost();
+            final InetAddress iAddress = InetAddress.getLocalHost();
             hostName = iAddress.getHostName();
             
             //Trying to do better and get Canonical hostname
-            String canonicalHostName = iAddress.getCanonicalHostName();         
+            final String canonicalHostName = iAddress.getCanonicalHostName();         
             hostName = canonicalHostName;
             
             if (StringUtils.isNotEmpty(hostName)) {

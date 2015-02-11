@@ -63,9 +63,8 @@ public class Main {
      * Main program of the Yggdrasil preservation service.
      * @param args No args is read here. Properties are used to locate confdir and the running mode.
      * @throws YggdrasilException When unable to find a configuration directory or locate required settings files.
-     * @throws RabbitException 
      */
-    public static void main(String[] args) throws YggdrasilException, RabbitException {
+    public static void main(String[] args) throws YggdrasilException {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
@@ -139,7 +138,7 @@ public class Main {
     private void cleanup() {
         bitrepository.shutdown();
         try {
-            mq.close();
+            this.mq.close();
         } catch (IOException e) {
             logger.debug("Ignoring exception while closing down RabbitMQ", e);
         }
@@ -165,8 +164,12 @@ public class Main {
         }
         return configdir;
     }
-    
-    private void initializeRabbitMQ(RabbitMqSettings rabbitMqSettings) throws YggdrasilException, FileNotFoundException {
+
+    /**
+     * Initialize message queue (RabbitMQ).
+     * @throws YggdrasilException When unable to connect to message queue.
+     */
+    private void initializeRabbitMQ(final RabbitMqSettings rabbitMqSettings) throws YggdrasilException {
         logger.info("Initialising RabbitMQ");
         this.mq = null;
         try {
@@ -183,13 +186,19 @@ public class Main {
             initializeRabbitMQ(rabbitMqSettings); 
         }
     }
-    
-    private void runWorkflow(StateDatabase sd, Bitrepository bitrepository,
-            Config generalConfig, Models modelsConfig, RabbitMqSettings rabbitMqSettings) 
+
+
+    /**
+     * Run Yggdrasil workflow with slow down if needed.
+     * @throws YggdrasilException When unable to connect to message queue.
+     * @throws FileNotFoundException Pass through from workflow run method.
+     */
+    private void runWorkflow(final StateDatabase sd, final Bitrepository bitrepository,
+            final Config generalConfig, final Models modelsConfig, final RabbitMqSettings rabbitMqSettings) 
                     throws FileNotFoundException, YggdrasilException {
         logger.info("Starting main workflow of Yggdrasil program");
         this.initializeRabbitMQ(rabbitMqSettings);
-        Workflow wf = new Workflow(this.mq, sd, bitrepository, generalConfig, modelsConfig);
+        final Workflow wf = new Workflow(this.mq, sd, bitrepository, generalConfig, modelsConfig);
         logger.info("Ready to run workflow");
         try {
             wf.run();
