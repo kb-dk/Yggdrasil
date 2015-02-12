@@ -112,6 +112,42 @@
 
       <!-- START amdSec -->
       <xsl:element name="mets:amdSec">
+        <!-- ADD PREMIS:OBJECT -->
+        <xsl:element name="mets:techMD">
+          <xsl:attribute name="CREATED">
+            <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
+          </xsl:attribute>
+          <xsl:attribute name="ID">
+            <xsl:value-of select="'PremisObject1'" />
+          </xsl:attribute>
+          <xsl:element name="mets:mdWrap">
+            <xsl:attribute name="MDTYPE">
+              <xsl:value-of select="'PREMIS:OBJECT'" />
+            </xsl:attribute>
+            <xsl:element name="mets:xmlData">
+              <premis:object xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd" xsi:type="premis:representation">
+                <xsl:element name="premis:objectIdentifier">
+                  <xsl:element name="premis:objectIdentifierType">
+                    <xsl:value-of select="'UUID'" />
+                  </xsl:element>
+                  <xsl:element name="premis:objectIdentifierValue">
+                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
+                  </xsl:element>
+                </xsl:element>
+                <!-- BEGIN linkingIntellectualEntityIdentifier -->
+                <xsl:element name="premis:linkingIntellectualEntityIdentifier">
+                  <xsl:element name="premis:linkingIntellectualEntityIdentifierType">
+                    <xsl:value-of select="'UUID'" />
+                  </xsl:element>
+                  <xsl:element name="premis:linkingIntellectualEntityIdentifierValue">
+                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
+                  </xsl:element>
+                </xsl:element>
+                <!-- END linkingIntellectualEntityIdentifier -->
+              </premis:object>
+            </xsl:element>
+          </xsl:element>
+        </xsl:element>
         <!-- ADD MODS (rights) -->
         <xsl:element name="mets:rightsMD">
           <xsl:attribute name="CREATED">
@@ -125,7 +161,7 @@
               <xsl:value-of select="'MODS'" />
             </xsl:attribute>
             <xsl:element name="mets:xmlData">
-              <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
+              <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd" version="3.5">
                 <xsl:element name="mods:accessCondition">
                   <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getModsAccessCondition()" />
                 </xsl:element>
@@ -233,7 +269,7 @@
               <xsl:value-of select="'Mods1'" />
             </xsl:attribute>
             <xsl:attribute name="ADMID">
-              <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1'" />
+              <xsl:value-of select="'ModsRights1 Premis1 PremisEvent1 PremisObject1'" />
             </xsl:attribute>
 
             <xsl:for-each  select="file">

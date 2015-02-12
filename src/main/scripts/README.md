@@ -55,7 +55,7 @@ yggdrasil_ctl.sh
 An init-like script, to be called from the real init script.
 
 
-yggdrasil
+yggdrasil-init-script
 --------------------------
 The real init script, so far specifically targeting Red Hat.
 

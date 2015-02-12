@@ -157,14 +157,6 @@
                   <xsl:value-of select="techMetadata/fields/original_filename"/>
                 </xsl:element>
                 <!-- END originalName -->
-                <xsl:element name="premis:linkingIntellectualEntityIdentifier">
-                  <xsl:element name="premis:linkingIntellectualEntityIdentifierType">
-                    <xsl:value-of select="'UUID'" />
-                  </xsl:element>
-                  <xsl:element name="premis:linkingIntellectualEntityIdentifierValue">
-                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
-                  </xsl:element>
-                </xsl:element>
               </premis:object>
             </xsl:element>
           </xsl:element>
@@ -183,7 +175,7 @@
             </xsl:attribute>
             <xsl:element name="mets:xmlData">
               <!-- START MODS -->
-              <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
+              <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd" version="3.5">
                 <xsl:element name="mods:accessCondition">
                   <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getModsAccessCondition()" />
                 </xsl:element>
@@ -285,8 +277,7 @@
         <xsl:element name="mets:fileGrp">
           <xsl:element name="mets:file">
             <xsl:attribute name="ID">
-              <!-- Removing unwanted charaters from the file-name (e.g. spaces, parantheses, etc.) -->
-              <xsl:value-of select="translate(techMetadata/fields/original_filename, '()@£$¤§|^*%$#@!~&lt;&gt;,?[]{}=-+/\ ', '')" />
+              <xsl:value-of select="concat('Fil-', techMetadata/fields/file_uuid)" />
             </xsl:attribute>
             <xsl:element name="mets:FLocat">
               <xsl:attribute name="LOCTYPE">
@@ -312,8 +303,7 @@
           </xsl:attribute>
           <xsl:element name="mets:fptr">
             <xsl:attribute name="FILEID">
-              <!-- Removing unwanted charaters from the file-name (e.g. spaces, parantheses, etc.) -->
-              <xsl:value-of select="translate(techMetadata/fields/original_filename, '()@£$¤§|^*%$#@!~&lt;&gt;,?[]{}=-+/\ ', '')" />
+              <xsl:value-of select="concat('Fil-', techMetadata/fields/file_uuid)" />
             </xsl:attribute>
           </xsl:element>
         </xsl:element>

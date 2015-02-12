@@ -127,7 +127,7 @@
               <xsl:value-of select="'MODS'" />
             </xsl:attribute>
             <xsl:element name="mets:xmlData">
-              <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd" version="3.4">
+              <mods:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd" version="3.5">
                 <xsl:element name="mods:accessCondition">
                   <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getModsAccessCondition()" />
                 </xsl:element>
