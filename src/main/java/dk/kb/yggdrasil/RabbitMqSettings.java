@@ -24,10 +24,12 @@ public final class RabbitMqSettings {
     public static final String RABBIT_MQ_URI_PROPERTY  = "mq_uri";
     /** The property for the rabbitmq preservation setting in our rabbitmq.yml */
     public static final String RABBIT_MQ_PRESERVATION_PROPERTY  = "preservation";
-    /** The property for the rabbitmq preservation response queue name **/
+    /** The property for the rabbitmq preservation response queue name */
     public static final String RABBIT_MQ_PRESERVATION_RESPONSE_PROPERTY = "response";
     /** The property for the destination subsetting in our rabbitmq.yml */
     public static final String RABBIT_MQ_DESTINATION_PROPERTY  = "destination";
+    /** The property for the rabbitmq  interval for polling the message queue in minutes */
+    public static final String RABBIT_MQ_POLLING_INTERVAL_IN_MINUTES_PROPERTY = "polling_interval_in_minutes";
     /** Use these this property to override the rabbitmq hostname in the YAML file. */
     public static final String RABBIT_MQ_HOSTNAME = "RABBITMQ_HOSTNAME";
     /** Use these this property to override the rabbitmq port in the YAML file. */
@@ -44,6 +46,9 @@ public final class RabbitMqSettings {
 
     /** The name of the preservation response queue. **/
     private String preservationResponseDestination;
+
+    /** The interval for polling the MQ in minutes. **/
+    private int polling_interval_in_minutes;
 
     /**
      * Constructor. Reads RabbitMQ settings from a YAML file.
@@ -67,6 +72,14 @@ public final class RabbitMqSettings {
             Map preservationMap = (Map) settings.get(RABBIT_MQ_PRESERVATION_PROPERTY);
             preservationDestination = (String) preservationMap.get(RABBIT_MQ_DESTINATION_PROPERTY);
             preservationResponseDestination = (String) preservationMap.get(RABBIT_MQ_PRESERVATION_RESPONSE_PROPERTY);
+            try {
+            polling_interval_in_minutes = (Integer) preservationMap.get(RABBIT_MQ_POLLING_INTERVAL_IN_MINUTES_PROPERTY);
+            
+            if (polling_interval_in_minutes < 0) {throw new YggdrasilException(
+                    "The polling interval wasn't set correctly, it has to be positive");}
+            } catch (Exception e) {
+                throw new YggdrasilException("The polling interval wasn't set correctly");
+            }
         } else {
             throw new YggdrasilException("Missing some or all of the required properties in the settings file");
         }
@@ -114,6 +127,14 @@ public final class RabbitMqSettings {
     public String getPreservationResponseDestination() {
         return preservationResponseDestination;
     }
+
+    /**
+    *
+    * @return the interval for polling the MQ in minutes
+    */
+   public int getPollingIntervalInMinutes() {
+       return polling_interval_in_minutes;
+   }
 
     /**
      * Set the brokerUri.

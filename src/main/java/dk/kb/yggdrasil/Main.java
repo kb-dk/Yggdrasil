@@ -30,9 +30,6 @@ public class Main {
     public static final String BITMAG_CONF_FILENAME = "bitmag.yml";
     public static final String MODELS_CONF_FILENAME = "models.yml";
 
-    /** # of seconds to sleep before trying to reconnect to RabbitMQ. */
-    private static final int SLEEP_IN_SEC = 100;
-
     /**
      * The list of configuration files that should be present in the configuration directory.
      */
@@ -178,7 +175,7 @@ public class Main {
             String errMsg = "initializeRabbitMQ exception "; 
             logger.error(errMsg, e);
             try {
-                TimeUnit.SECONDS.sleep(SLEEP_IN_SEC);
+                TimeUnit.MINUTES.sleep(rabbitMqSettings.getPollingIntervalInMinutes());
             } catch (InterruptedException e1) {
                 errMsg = "Slowing down workfow exception "; 
                 throw new YggdrasilException(errMsg, e1);
@@ -200,13 +197,15 @@ public class Main {
         this.initializeRabbitMQ(rabbitMqSettings);
         final Workflow wf = new Workflow(this.mq, sd, bitrepository, generalConfig, modelsConfig);
         logger.info("Ready to run workflow");
+        // Consider refactoring this at a time where the used rabbitmq.client.ConnectionFactory supports 
+        // the setAutomaticRecoveryEnabled and setNetworkRecoveryInterval methods.
         try {
             wf.run();
         } catch (RabbitException e) {
             String errMsg = "runWorkflow exception "; 
             logger.error(errMsg, e);
             try {
-                TimeUnit.SECONDS.sleep(SLEEP_IN_SEC);
+                TimeUnit.MINUTES.sleep(rabbitMqSettings.getPollingIntervalInMinutes());
             } catch (InterruptedException e1) {
                 errMsg = "Slowing down workfow exception "; 
                 throw new YggdrasilException(errMsg, e1);
