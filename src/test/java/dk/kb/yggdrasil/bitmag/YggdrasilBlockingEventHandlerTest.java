@@ -47,12 +47,14 @@ public class YggdrasilBlockingEventHandlerTest {
 
         COLLECTION_ID_1 = settings.getCollections().get(0).getID();
         PILLAR_1 = SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).get(0);
-        PILLAR_1 = SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).get(1);
+        PILLAR_2 = SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).get(1);
     }
 
     @Test
     public void testBeforeEvents() {
         YggdrasilBlockingEventHandler ybeh = new YggdrasilBlockingEventHandler(COLLECTION_ID_1, 0);
+        Assert.assertEquals(0, ybeh.getResults().size());
+        Assert.assertEquals(0, ybeh.getFailures().size());
         Assert.assertFalse("The operation should be considered a failure, before any events", ybeh.hasFailed());
     }
 
@@ -62,6 +64,8 @@ public class YggdrasilBlockingEventHandlerTest {
         for(String pillarId : SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1)) {
             ybeh.handleEvent(new ContributorCompleteEvent(pillarId, COLLECTION_ID_1));
         }
+        Assert.assertEquals(SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).size(), ybeh.getResults().size());
+        Assert.assertEquals(0, ybeh.getFailures().size());
         Assert.assertFalse("The operation should not be considered a failure, when every pillar has succeeded", ybeh.hasFailed());
     }
 
@@ -71,6 +75,8 @@ public class YggdrasilBlockingEventHandlerTest {
         for(String pillarId : SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1)) {
             ybeh.handleEvent(new ContributorFailedEvent(pillarId, COLLECTION_ID_1, ResponseCode.FAILURE));
         }
+        Assert.assertEquals(0, ybeh.getResults().size());
+        Assert.assertEquals(SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).size(), ybeh.getFailures().size());
         Assert.assertTrue("The operation should be considered a failure, when every pillar has failed", ybeh.hasFailed());
     }
 
@@ -78,12 +84,14 @@ public class YggdrasilBlockingEventHandlerTest {
     public void testOneFailureWhenNoneAllowed() {
         YggdrasilBlockingEventHandler ybeh = new YggdrasilBlockingEventHandler(COLLECTION_ID_1, 0);
         for(String pillarId : SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1)) {
-            if(pillarId == PILLAR_1) {
+            if(pillarId.equals(PILLAR_1)) {
                 ybeh.handleEvent(new ContributorFailedEvent(pillarId, COLLECTION_ID_1, ResponseCode.FAILURE));
             } else {
                 ybeh.handleEvent(new ContributorCompleteEvent(pillarId, COLLECTION_ID_1));
             }
         }
+        Assert.assertEquals(SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).size()-1, ybeh.getResults().size());
+        Assert.assertEquals(1, ybeh.getFailures().size());
         Assert.assertTrue("The operation should be considered a failure", ybeh.hasFailed());
     }
 
@@ -91,12 +99,14 @@ public class YggdrasilBlockingEventHandlerTest {
     public void testOneFailureWhenOneAllowed() {
         YggdrasilBlockingEventHandler ybeh = new YggdrasilBlockingEventHandler(COLLECTION_ID_1, 1);
         for(String pillarId : SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1)) {
-            if(pillarId == PILLAR_1) {
+            if(pillarId.equals(PILLAR_1)) {
                 ybeh.handleEvent(new ContributorFailedEvent(pillarId, COLLECTION_ID_1, ResponseCode.FAILURE));
             } else {
                 ybeh.handleEvent(new ContributorCompleteEvent(pillarId, COLLECTION_ID_1));
             }
         }
+        Assert.assertEquals(SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).size()-1, ybeh.getResults().size());
+        Assert.assertEquals(1, ybeh.getFailures().size());
         Assert.assertFalse("The operation should not be considered a failure", ybeh.hasFailed());
     }
     
@@ -104,25 +114,29 @@ public class YggdrasilBlockingEventHandlerTest {
     public void testOneFailureWhenTwoAllowed() {
         YggdrasilBlockingEventHandler ybeh = new YggdrasilBlockingEventHandler(COLLECTION_ID_1, 2);
         for(String pillarId : SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1)) {
-            if(pillarId == PILLAR_1) {
+            if(pillarId.equals(PILLAR_1)) {
                 ybeh.handleEvent(new ContributorFailedEvent(pillarId, COLLECTION_ID_1, ResponseCode.FAILURE));
             } else {
                 ybeh.handleEvent(new ContributorCompleteEvent(pillarId, COLLECTION_ID_1));
             }
         }
+        Assert.assertEquals(SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).size()-1, ybeh.getResults().size());
+        Assert.assertEquals(1, ybeh.getFailures().size());
         Assert.assertFalse("The operation should not be considered a failure", ybeh.hasFailed());
     }
     
     @Test
     public void testTwoFailuresWhenOneAllowed() {
-        YggdrasilBlockingEventHandler ybeh = new YggdrasilBlockingEventHandler(COLLECTION_ID_1, 2);
+        YggdrasilBlockingEventHandler ybeh = new YggdrasilBlockingEventHandler(COLLECTION_ID_1, 1);
         for(String pillarId : SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1)) {
-            if(pillarId == PILLAR_1 || pillarId == PILLAR_2) {
+            if(pillarId.equals(PILLAR_1) || pillarId.equals(PILLAR_2)) {
                 ybeh.handleEvent(new ContributorFailedEvent(pillarId, COLLECTION_ID_1, ResponseCode.FAILURE));
             } else {
                 ybeh.handleEvent(new ContributorCompleteEvent(pillarId, COLLECTION_ID_1));
             }
         }
-        Assert.assertFalse("The operation should be considered a failure", ybeh.hasFailed());
+        Assert.assertEquals(SettingsUtils.getPillarIDsForCollection(COLLECTION_ID_1).size()-2, ybeh.getResults().size());
+        Assert.assertEquals(2, ybeh.getFailures().size());
+        Assert.assertTrue("The operation should be considered a failure", ybeh.hasFailed());
     }
 }
