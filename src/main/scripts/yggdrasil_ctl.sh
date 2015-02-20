@@ -14,9 +14,9 @@ source ${assembly.home.env.name.ref}/daemon-settings.sh
 
 # ------------------------
 # check yggdrasil environment:
-[ -z "${assembly.runningmode.env.name.ref}" ] &&  echo "error: ${assembly.runningmode.env.name.ref} not set" && exit 1
-[ ! -d "${assembly.home.env.name.ref}" ] && echo "error: ${assembly.home.env.name.ref} not set" && exit 1
-[ ! -d "${assembly.config.env.name.ref}" ] && echo "error: ${assembly.config.env.name.ref} not set" && exit 1
+[ -z "${assembly.runningmode.env.name.ref}" ] &&  echo "error: ${assembly.runningmode.env.scriptname} not set" && exit 1
+[ ! -d "${assembly.home.env.name.ref}" ] && echo "error: ${assembly.home.env.name} not set" && exit 1
+[ ! -d "${assembly.config.env.name.ref}" ] && echo "error: ${assembly.config.env.name} not set" && exit 1
 
 # ------------------
 # daemon settings:
@@ -50,7 +50,8 @@ else
 fi
 
 function start() {
-    if [ -s $PIDFILE ]; then
+    if [ -s $PIDFILE ]; 
+    then
         echo "Error: $PIDFILE exists"
         echo "Perhaps $DNAM is already running, or it was stopped abnormally?"
         echo_failure; echo
@@ -78,7 +79,8 @@ function start() {
 
 function stop() {
     echo "Stopping $DNAM ..."
-    if [ ! -s $PIDFILE ]; then
+    if [ ! -s $PIDFILE ]; 
+    then
         echo "Error: $PIDFILE not found"
         echo_failure; echo
         RETVAL=1
@@ -121,7 +123,8 @@ function status() {
 # Main:
 
 # check user:
-if [ $(/usr/bin/id -un) != "$DUSER" ]; then
+if [ $(/usr/bin/id -un) != "$DUSER" ]; 
+then
  echo "Error: $0 must be run as $DUSER user"
  exit 1
 fi

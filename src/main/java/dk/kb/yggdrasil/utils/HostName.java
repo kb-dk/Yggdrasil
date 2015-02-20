@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provide the hostname of the machine on which the program is running.
- * @return the hostname as a {@link String}
  */
 public class HostName {
     /** Logging mechanism. */
@@ -22,6 +21,10 @@ public class HostName {
         super();
     }
 
+    /**
+     * Get the hostname of the machine.
+     * @return the hostname as a {@link String}
+     */
     public String getHostName () throws UnknownHostException {
         String hostName;
         try {

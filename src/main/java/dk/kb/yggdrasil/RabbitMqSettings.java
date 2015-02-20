@@ -72,11 +72,14 @@ public final class RabbitMqSettings {
             Map preservationMap = (Map) settings.get(RABBIT_MQ_PRESERVATION_PROPERTY);
             preservationDestination = (String) preservationMap.get(RABBIT_MQ_DESTINATION_PROPERTY);
             preservationResponseDestination = (String) preservationMap.get(RABBIT_MQ_PRESERVATION_RESPONSE_PROPERTY);
-            try {
-            polling_interval_in_minutes = (Integer) preservationMap.get(RABBIT_MQ_POLLING_INTERVAL_IN_MINUTES_PROPERTY);
             
-            if (polling_interval_in_minutes < 0) {throw new YggdrasilException(
-                    "The polling interval wasn't set correctly, it has to be positive");}
+            try {
+                polling_interval_in_minutes = (Integer) preservationMap.get(RABBIT_MQ_POLLING_INTERVAL_IN_MINUTES_PROPERTY);
+                
+                if (polling_interval_in_minutes < 0) {
+                    throw new YggdrasilException(
+                        "The polling interval wasn't set correctly, it has to be positive");}
+                
             } catch (Exception e) {
                 throw new YggdrasilException("The polling interval wasn't set correctly");
             }

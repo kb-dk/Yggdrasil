@@ -112,7 +112,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:objectIdentifierValue">
-                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
+                    <xsl:value-of select="techMetadata/fields/file_uuid" />
                   </xsl:element>
                 </xsl:element>
                 <!-- BEGIN significantProperties -->
@@ -262,7 +262,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingObjectIdentifierValue">
-                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
+                    <xsl:value-of select="techMetadata/fields/file_uuid" />
                   </xsl:element>
                 </xsl:element>
               </premis:event>
