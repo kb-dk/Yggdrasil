@@ -1,12 +1,18 @@
 development:
   settings_dir: ./config/bitmag-development-settings
-  keyfile:  ./config/bitmag-development-settings/webklient.pem    
+  keyfile:  ./config/bitmag-development-settings/webklient.pem
+  client:
+    putfile_max_pillars_failures: 2  
 
 test:
   settings_dir: ./src/test/resources/config/bitmag-test-settings
   keyfile: ./src/test/resources/config/bitmag-test-settings/client.pem    
+  client:
+    putfile_max_pillars_failures: 1  
 
 production:
   settings_dir: ./config/bitmag-settings
   keyfile:  ./config/bitmag-settings/webklient.pem   
+  client:
+    putfile_max_pillars_failures: 1  
 

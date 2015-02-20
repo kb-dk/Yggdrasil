@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jms.JMSException;
@@ -26,7 +27,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.BlockingEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
-import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.exceptions.NegativeResponseException;
@@ -61,6 +61,8 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.ClientSettings;
 import org.bitrepository.settings.repositorysettings.Collection;
 
+import dk.kb.yggdrasil.bitmag.BitrepositoryUtils;
+import dk.kb.yggdrasil.bitmag.YggdrasilBlockingEventHandler;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.HostName;
@@ -118,6 +120,14 @@ public class Bitrepository {
     public static final String YAML_BITMAG_SETTINGS_DIR_PROPERTY = "settings_dir";
     /** Name of YAML property used to find keyfile. */
     public static final String YAML_BITMAG_KEYFILE_PROPERTY = "keyfile";
+    
+    /** Name of the YAML sub-map client*/
+    public static final String YAML_BITMAG_CLIENTS = "client";
+    /** Name of the YAML property under the client sub-map for maximum number of pillars accept to fail.*/
+    public static final String YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES = "putfile_max_pillars_failures";
+    
+    /** The maximum number of failing pillars. Default is 0, can be overridden by settings in the bitmag.yml. */
+    private int maxNumberOfFailingPillars = 0; 
 
     /**
      * Constructor for the BitRepository class.
@@ -198,6 +208,12 @@ public class Bitrepository {
 
         this.settingsDir = new File((String) modeMap.get(YAML_BITMAG_SETTINGS_DIR_PROPERTY));
         this.privateKeyFile = new File((String) modeMap.get(YAML_BITMAG_KEYFILE_PROPERTY));
+        if(modeMap.containsKey(YAML_BITMAG_CLIENTS)) {
+            Map clientMap = (Map) modeMap.get(YAML_BITMAG_CLIENTS);
+            if(clientMap.containsKey(YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES)) {
+                this.maxNumberOfFailingPillars = Integer.parseInt((String) clientMap.get(YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES));
+            }            
+        }
     }
 
     /**
@@ -254,27 +270,20 @@ public class Bitrepository {
 
         ChecksumSpecTYPE requestChecksum = null;
         String putFileMessage = "Putting the file '" + packageFile + "' with the file id '"
-                + fileId + "' from Yggdrasil - the SIFD preservation service.";
+                + fileId + "' from Yggdrasil - the preservation service of Chronos.";
 
-        EventHandler putFileEventHandler = new BlockingEventHandler();
-       /*
-        // TODO For the moment the eventhandler only logs the progress.
-        // Later, some or all of the events could result in updates being sent back to Valhal
-        // TODO Make also the eventHandler a separate class.
-        EventHandler putFileEventHandler = new EventHandler() {
-            @Override
-            public void handleEvent(OperationEvent event) {
-                logger.info("Event " + event.getEventType()
-                        + " received related to putFile of package");
-            }
-        };
-        */
+        YggdrasilBlockingEventHandler putFileEventHandler = new YggdrasilBlockingEventHandler(collectionID, maxNumberOfFailingPillars);
         try {
             bpfc.putFile(collectionID, url, fileId, packageFile.length(), validationChecksum, requestChecksum,
                     putFileEventHandler, putFileMessage);
         } catch (OperationFailedException e) {
-            logger.warning("The putFile Operation failed (" + putFileMessage + ")" + e);
-            return OperationEventType.FAILED;
+            logger.log(Level.WARNING, "The putFile Operation was not a complete success (" + putFileMessage + ")."
+                    + " Checksum whether we accept anyway.", e);
+            if(putFileEventHandler.hasFailed()) {
+                return OperationEventType.FAILED;
+            } else {
+                return OperationEventType.COMPLETE;
+            }
         } finally {
             // delete the uploaded file from server
             fileexchange.deleteFromServer(url);
@@ -478,6 +487,7 @@ public class Bitrepository {
                                 settingsDir.getAbsolutePath()),
                         COMPONENT_ID);
             bitmagSettings = settingsLoader.getSettings();
+            SettingsUtils.initialize(bitmagSettings);
         }
     }
 
