@@ -62,7 +62,7 @@ import org.bitrepository.settings.repositorysettings.ClientSettings;
 import org.bitrepository.settings.repositorysettings.Collection;
 
 import dk.kb.yggdrasil.bitmag.BitrepositoryUtils;
-import dk.kb.yggdrasil.bitmag.YggdrasilEventHandler;
+import dk.kb.yggdrasil.bitmag.YggdrasilBlockingEventHandler;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.HostName;
@@ -126,8 +126,8 @@ public class Bitrepository {
     /** Name of the YAML property under the client sub-map for maximum number of pillars accept to fail.*/
     public static final String YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES = "putfile_max_pillars_failures";
     
-    /** The maximum number of failing pillars. Default is 1, can be overridden by settings in the bitmag.yml. */
-    private int maxNumberOfFailingPillars = 1; 
+    /** The maximum number of failing pillars. Default is 0, can be overridden by settings in the bitmag.yml. */
+    private int maxNumberOfFailingPillars = 0; 
 
     /**
      * Constructor for the BitRepository class.
@@ -272,7 +272,7 @@ public class Bitrepository {
         String putFileMessage = "Putting the file '" + packageFile + "' with the file id '"
                 + fileId + "' from Yggdrasil - the preservation service of Chronos.";
 
-        YggdrasilEventHandler putFileEventHandler = new YggdrasilEventHandler(collectionID, maxNumberOfFailingPillars);
+        YggdrasilBlockingEventHandler putFileEventHandler = new YggdrasilBlockingEventHandler(collectionID, maxNumberOfFailingPillars);
         try {
             bpfc.putFile(collectionID, url, fileId, packageFile.length(), validationChecksum, requestChecksum,
                     putFileEventHandler, putFileMessage);

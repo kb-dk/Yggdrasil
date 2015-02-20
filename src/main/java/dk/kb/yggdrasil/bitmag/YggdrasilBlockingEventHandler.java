@@ -10,7 +10,7 @@ import org.bitrepository.common.utils.SettingsUtils;
  * Eventhandler for Yggdrasil.
  * Extends the BlockingEventHandler by allowing failures of some pillars.
  */
-public class YggdrasilEventHandler extends BlockingEventHandler {
+public class YggdrasilBlockingEventHandler extends BlockingEventHandler {
     /** Logging mechanism. */
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -24,7 +24,7 @@ public class YggdrasilEventHandler extends BlockingEventHandler {
      * @param collectionId The id for the collection where the events occur.
      * @param maxNumberOfFailures The maximum number of failures.
      */
-    public YggdrasilEventHandler(String collectionId, int maxNumberOfFailures) {
+    public YggdrasilBlockingEventHandler(String collectionId, int maxNumberOfFailures) {
         super();
         this.pillars = SettingsUtils.getPillarIDsForCollection(collectionId);
         this.maxFailures = maxNumberOfFailures;
