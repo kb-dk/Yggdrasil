@@ -142,7 +142,7 @@ public class Workflow {
         } else {
             prs = new PreservationRequestState(request,
                     State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-            // Add check about whether profle is a known collectionID or not known
+            // Add check about whether profile is a known collectionID or not known
             String preservationProfile = prs.getRequest().Preservation_profile;
             List<String> possibleCollections = bitrepository.getKnownCollections();
             if (!possibleCollections.contains(preservationProfile)) {
