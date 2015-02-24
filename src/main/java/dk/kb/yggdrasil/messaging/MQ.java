@@ -38,7 +38,7 @@ public class MQ {
     /** List of existing consumers in use by this class.
      * The key is the queueName.
      */
-	protected Map<String, QueueingConsumer> existingConsumers;
+    protected Map<String, QueueingConsumer> existingConsumers;
 
     /** List of existing consumers in use by this class identified by consumertags. */
     protected Set<String> existingConsumerTags;
@@ -47,24 +47,24 @@ public class MQ {
     protected Channel theChannel;
     /** The settings used to create the broker configurations. */
     protected RabbitMqSettings settings;
-    
+
     /** Default exchangename to be used by all queues. */
     protected String exchangeName = "exchange"; //TODO should this be a parameter in the settings?
     /** exchange type direct means a message sent to only one recipient. */
     protected String exchangeType = "direct";
-    
+
     /** The only valid message type currently received. */ 
     public static final String PRESERVATIONREQUEST_MESSAGE_TYPE = "PreservationRequest";
-    
+
     /** The message type for responding to preservation requests. */
     public static final String PRESERVATIONRESPONSE_MESSAGE_TYPE = "PreservationResponse";
-    
+
     /** The only valid message type, currently. */ 
     public static final String SHUTDOWN_MESSAGE_TYPE = "Shutdown";
-    
+
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(MQ.class.getName());
-    
+
     /**
      * Constructor for the MQ object.
      * @param settings The settings used to create the broker connection.
@@ -114,11 +114,11 @@ public class MQ {
             conn.close();
         }
     }
-    
+
     public void cleanup() throws IOException {
         close();
     }
-    
+
 
     /**
      * @return a set of AMQP properties for
@@ -153,84 +153,92 @@ public class MQ {
         }
     }
 
-   /**
-    * Publish a message on the given queue.
-    * @param queueName A given MQ queue.
-    * @param message The message to be published on the queue.
-    * @param messageType The Type of the message
-    * @throws YggdrasilException If Unable to publish message to the queue.
-    */
-   public void publishOnQueue(String queueName, byte[] message, String messageType)
-           throws YggdrasilException {
-       try {
-           String routingKey = queueName;
-           AMQP.BasicProperties messageProps = MQ.getMQProperties();
-           messageProps.setType(messageType);
-           messageProps.setTimestamp(new Date());
-           logger.debug("Publishing message on a queue: {} at {}\n {}", queueName, settings.getBrokerUri(), new String(message));
-           theChannel.basicPublish(exchangeName, routingKey, messageProps, message);
-       } catch (IOException e) {
-           throw new YggdrasilException("Unable to publish message to queue '"
-                   + queueName + "'", e);
-       }
-   }
+    /**
+     * Publish a message on the given queue.
+     * @param queueName A given MQ queue.
+     * @param message The message to be published on the queue.
+     * @param messageType The Type of the message
+     * @throws YggdrasilException If Unable to publish message to the queue.
+     */
+    public void publishOnQueue(String queueName, byte[] message, String messageType) throws YggdrasilException {
+        try {
+            String routingKey = queueName;
+            AMQP.BasicProperties messageProps = MQ.getMQProperties();
+            messageProps.setType(messageType);
+            messageProps.setTimestamp(new Date());
+            logger.debug("Publishing message on a queue: {} at {}\n {}", queueName, settings.getBrokerUri(), new String(message));
+            theChannel.basicPublish(exchangeName, routingKey, messageProps, message);
+        } catch (IOException e) {
+            throw new YggdrasilException("Unable to publish message to queue '"
+                    + queueName + "'", e);
+        }
+    }
 
-   /**
-    * Receive message from a given queue. If no message is waiting on the queue, this message will
-    * wait until a message arrives on the queue.
-    * @param queueName The name of the queue.
-    * @return the messageType and bytes delivered in the message when a message is received.
-    * @throws YggdrasilException
-    * @throws RabbitException When message queue connection fails.
-    */
-   public MqResponse receiveMessageFromQueue(String queueName) throws YggdrasilException, RabbitException {
-	   ArgumentCheck.checkNotNullOrEmpty(queueName, "String queueName");
-       QueueingConsumer consumer = null;
-       String consumerTag = null;
-       if (existingConsumers.containsKey(queueName)) {
-           consumer = existingConsumers.get(queueName);
-       } else {
-           consumer = new QueueingConsumer(theChannel);
-           try {
-               consumerTag = theChannel.basicConsume(queueName, consumer);
-               existingConsumers.put(queueName, consumer);
-               existingConsumerTags.add(consumerTag);
-           } catch (IOException e) {
-               throw new YggdrasilException("Unable to attach to queue '"
-                       + queueName + "'", e);
-           }
-       }
-       byte[] payload = null;
-       String messageType = null;
-       try {
-           QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-           messageType = delivery.getProperties().getType();
-           Date sentDate = delivery.getProperties().getTimestamp();
-           logger.info("received message of type '" + messageType 
-                   + "' with timestamp '" + sentDate + "'");
-           payload = delivery.getBody();
-           boolean acknowledgeMultipleMessages = false;
-           theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), 
-                   acknowledgeMultipleMessages);
-       } catch (IOException e) {
-           throw new YggdrasilException("Unable to receive message from queue '"
-                   + queueName + "'", e);
-       } catch (ShutdownSignalException e) {
-           throw new RabbitException("Unable to receive message from queue '"
-                   + queueName + "'", e);
-       } catch (ConsumerCancelledException e) {
-           throw new YggdrasilException("Unable to receive message from queue '"
-                   + queueName + "'", e);
-       } catch (InterruptedException e) {
-           throw new YggdrasilException("Unable to receive message from queue '"
-                   + queueName + "'", e);
-       }
+    /**
+     * Receive message from a given queue. If no message is waiting on the queue, this message will
+     * wait until a message arrives on the queue.
+     * @param queueName The name of the queue.
+     * @return the messageType and bytes delivered in the message when a message is received.
+     * @throws YggdrasilException
+     * @throws RabbitException When message queue connection fails.
+     */
+    public MqResponse receiveMessageFromQueue(String queueName) throws YggdrasilException, RabbitException {
+        ArgumentCheck.checkNotNullOrEmpty(queueName, "String queueName");
+        QueueingConsumer consumer = null;
+        String consumerTag = null;
+        if (existingConsumers.containsKey(queueName)) {
+            consumer = existingConsumers.get(queueName);
+        } else {
+            consumer = new QueueingConsumer(theChannel);
+            try {
+                consumerTag = theChannel.basicConsume(queueName, consumer);
+                existingConsumers.put(queueName, consumer);
+                existingConsumerTags.add(consumerTag);
+            } catch (IOException e) {
+                throw new YggdrasilException("Unable to attach to queue '"
+                        + queueName + "'", e);
+            }
+        }
+        byte[] payload = null;
+        String messageType = null;
+        try {
+            QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+            messageType = delivery.getProperties().getType();
+            Date sentDate = delivery.getProperties().getTimestamp();
+            logger.info("received message of type '" + messageType 
+                    + "' with timestamp '" + sentDate + "'");
+            payload = delivery.getBody();
+            boolean acknowledgeMultipleMessages = false;
+            theChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), 
+                    acknowledgeMultipleMessages);
+        } catch (IOException e) {
+            throw new YggdrasilException("Unable to receive message from queue '"
+                    + queueName + "'", e);
+        } catch (ShutdownSignalException e) {
+            throw new RabbitException("Unable to receive message from queue '"
+                    + queueName + "'", e);
+        } catch (ConsumerCancelledException e) {
+            throw new YggdrasilException("Unable to receive message from queue '"
+                    + queueName + "'", e);
+        } catch (InterruptedException e) {
+            throw new YggdrasilException("Unable to receive message from queue '"
+                    + queueName + "'", e);
+        }
 
-       return new MqResponse(messageType, payload);
-   }
-   
-   public RabbitMqSettings getSettings() {
-       return this.settings;
-   }
-   
+        return new MqResponse(messageType, payload);
+    }
+    
+    /**
+     * Publishes a preservation response message.
+     * @param message The content of the preservation response message.
+     * @throws YggdrasilException If unable to publish the preservation response on the message queue.
+     */
+    public void publishPreservationResponse(byte[] message) throws YggdrasilException {
+        publishOnQueue(settings.getPreservationResponseDestination(), message, MQ.PRESERVATIONRESPONSE_MESSAGE_TYPE);
+    }
+
+    public RabbitMqSettings getSettings() {
+        return this.settings;
+    }
+
 }

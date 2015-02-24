@@ -33,8 +33,8 @@ public class PreservationRequestState implements Serializable {
     /** The metadata payload. This is the result of the transformation of the metadata
      * included in the request. */
     private File metadataPayload;
-    /** The uploadpackage. This is the warcfile to be uploaded to the bitrepository. */
-    private File uploadPackage;
+    /** The id of the warc file. */
+    private String warcId;
     
     /**
      * The constructor of the PreservationRequestState.
@@ -116,8 +116,8 @@ public class PreservationRequestState implements Serializable {
     /**
      * @return the Uploadpackage file.
      */
-    public File getUploadPackage() {
-        return uploadPackage;
+    public String getWarcId() {
+        return warcId;
     }
     
     /**
@@ -126,32 +126,26 @@ public class PreservationRequestState implements Serializable {
      */
     public void setUploadPackage(File uploadPackage) {
         ArgumentCheck.checkExistsNormalFile(uploadPackage, "File uploadPackage");
-        this.uploadPackage = uploadPackage;
+        this.warcId = uploadPackage.getName();
     }
    
     /**
     * Reset the uploadpackage file.
     */
    public void resetUploadPackage() {
-       this.uploadPackage = null;
+       this.warcId = null;
    }
    
    /**
-    * Remove the temporary files referred to in this object, if they
-    * still exist.
+    * Remove the temporary files for the records referred to in this object, if they still exist.
     */
    public void cleanup() {
-       if (uploadPackage != null && uploadPackage.exists()) {
-           if (!uploadPackage.delete()) {
-               logger.warn("Unable to delete uploadpackagefile '" 
-                       + uploadPackage.getAbsolutePath() + "'");
-           }
-       }
        if (contentPayload != null && contentPayload.exists()) {
            if (!contentPayload.delete()) {
                logger.warn("Unable to delete temporary file for contentPayload '" 
                        + contentPayload.getAbsolutePath() + "'");
            }
+           contentPayload = null;
        }
        
        if (metadataPayload != null && metadataPayload.exists()) {
@@ -159,6 +153,7 @@ public class PreservationRequestState implements Serializable {
                logger.warn("Unable to delete temporary file for metadataPayload '" 
                        + metadataPayload.getAbsolutePath() + "'");
            }
+           metadataPayload = null;
        }
    }
 }

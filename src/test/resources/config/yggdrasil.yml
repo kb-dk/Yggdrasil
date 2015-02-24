@@ -1,15 +1,20 @@
 development:
   database_dir: src/test/resources/databasedir
-  temporary_dir: src/test/resources/tmpdir
+  temporary_dir: src/test/resources/tmpdir	
   monitor_port: 2222
+  warc_size_limit: 100000000
+  upload_wait_limit: 60000
 
 test:
   database_dir: databasehome
-  temporary_dir: temporarydir
-  monitor_port: 2222		
-
+  temporary_dir: temporarydir		
+  monitor_port: 2222
+  warc_size_limit: 100
+  upload_wait_limit: 1000
+  
 production: 
   database_dir: databasehome
-  temporary_dir: temporarydir
+  temporary_dir: temporarydir		
   monitor_port: 2222
-
+  warc_size_limit: 1000000000
+  upload_wait_limit: 3600000

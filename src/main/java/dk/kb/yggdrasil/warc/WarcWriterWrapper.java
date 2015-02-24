@@ -215,6 +215,27 @@ public class WarcWriterWrapper {
 
         return warcRecordIdUri;
     }
+    
+    /**
+     * @return The current size of the warc file.
+     */
+    public long getWarcFileSize() {
+        return writerFile.length();
+    }
+    
+    /**
+     * @return The Warc file.
+     */
+    public File getWarcFile() {
+        return writerFile;
+    }
+    
+    /**
+     * @return The ID for the Warc file.
+     */
+    public String getWarcFileId() {
+        return writerFile.getName();
+    }
 
     /**
      * Close writer, output stream and random access file.

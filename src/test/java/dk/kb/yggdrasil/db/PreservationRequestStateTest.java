@@ -53,7 +53,7 @@ public class PreservationRequestStateTest {
         assertTrue(preservationState.equals(prs.getState()));
         assertFalse(prs.getContentPayload()!= null);
         assertFalse(prs.getMetadataPayload()!= null);
-        assertFalse(prs.getUploadPackage()!= null);
+        assertFalse(prs.getWarcId() != null);
         
         File nonexistingFile = new File(UUID.randomUUID().toString());
         assertFalse(nonexistingFile.exists());
@@ -94,7 +94,7 @@ public class PreservationRequestStateTest {
             prs.setUploadPackage(existingFileThree);
             assertTrue(existingFileOne.equals(prs.getContentPayload()));
             assertTrue(existingFileTwo.equals(prs.getMetadataPayload()));
-            assertTrue(existingFileThree.equals(prs.getUploadPackage()));
+            assertTrue(existingFileThree.getName().equals(prs.getWarcId()));
         } finally {
             existingFileOne.delete();
             existingFileTwo.delete();
