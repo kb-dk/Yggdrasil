@@ -107,7 +107,7 @@ public class Config {
         Object res = extractConfigValue(configs, property, defaultValue);
         if(res.getClass() == Integer.class) {
             int i = (Integer) res;
-            return new Long(i);
+            return Long.valueOf(i);
         }
         return (Long) res;
     }

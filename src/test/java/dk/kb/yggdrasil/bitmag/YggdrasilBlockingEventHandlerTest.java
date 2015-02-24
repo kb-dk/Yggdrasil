@@ -24,11 +24,6 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  */
 @RunWith(JUnit4.class)
 public class YggdrasilBlockingEventHandlerTest {
-
-    public static String MISSING_YAML_FILE = "src/test/resources/config/rabbitmq.yaml2";
-    public static String INCORRECT_YAML_FILE = "src/test/resources/config/rabbitmq.yml";
-    public static String OK_YAML_BITMAG_FILE = "src/test/resources/config/bitmag.yml";
-
     public static String TEST_SETTINGS_DIR = "config/bitmag-test-settings";
 
     private static Settings settings;

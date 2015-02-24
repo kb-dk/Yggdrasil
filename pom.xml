@@ -142,7 +142,7 @@
   </dependencies>
 
   <build>
- 	  <plugins>
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -151,6 +151,10 @@
           <source>1.6</source>
           <target>1.6</target>
         </configuration>
+      </plugin>
+      <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>2.8</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -214,7 +218,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>3.0.0</version>
         <configuration>
           <threshold>Low</threshold>
           <effort>Max</effort>
@@ -249,18 +253,69 @@
           </execution>
         </executions>
       </plugin>
-		  <plugin>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-jar-plugin</artifactId>
-		    <configuration>
-		      <archive>                   
-		        <manifest>
-		          <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-		          <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-		        </manifest>
-		      </archive>
-		    </configuration>
-		  </plugin>
-   	</plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <archive>                   
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <formats>
+            <format>html</format>
+            <format>xml</format>
+          </formats>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>cobertura</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+<!--
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+           <failOnError>false</failOnError>
+           <formats>
+               <format>html</format>
+               <format>xml</format>
+           </formats>
+        </configuration>
+      </plugin>
+-->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+           <failOnError>false</failOnError>
+           <formats>
+               <format>html</format>
+               <format>xml</format>
+           </formats>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
