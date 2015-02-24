@@ -131,7 +131,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:objectIdentifierValue">
-                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
+                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
                   </xsl:element>
                 </xsl:element>
                 <!-- BEGIN linkingIntellectualEntityIdentifier -->
@@ -140,6 +140,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingIntellectualEntityIdentifierValue">
+                    <!-- TODO should be work_uuid -->
                     <xsl:value-of select="provenanceMetadata/fields/uuid" />
                   </xsl:element>
                 </xsl:element>

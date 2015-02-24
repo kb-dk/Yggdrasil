@@ -45,7 +45,7 @@ echo_functions.sh
 Extra echo helper-functions for Debian systems.
 
 
-daemon-settings.sh (daemon-settings.templete.sh)
+daemon-settings.sh (daemon-settings.template.sh)
 --------------------------
 Sets environment variables for the init-like script (yggdrasil_ctl.sh).
 

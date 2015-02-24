@@ -160,6 +160,7 @@ public class StateDatabase {
             txn.commit();
         } catch (DatabaseException e) {
             if (txn != null) {
+                // Roll-back
                 txn.abort();
                 txn = null;
             }
@@ -218,6 +219,7 @@ public class StateDatabase {
             txn.commit();
         } catch (DatabaseException e) {
             if (txn != null) {
+                // Roll-back
                 txn.abort();
                 txn = null;
             }

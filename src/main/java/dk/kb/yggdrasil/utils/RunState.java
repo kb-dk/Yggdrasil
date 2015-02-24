@@ -53,7 +53,9 @@ public class RunState implements Runnable {
             
             // Bind service endpoint.
             final SocketAddress endpoint = new InetSocketAddress(hname, MONITOR_PORT);
-            if (!sock.isBound()) {sock.bind(endpoint);}
+            if (!sock.isBound()) {
+                sock.bind(endpoint);
+                }
 
         } catch (YggdrasilException e) {
             logger.error("Caught exception while getting monitor port form config file", e);

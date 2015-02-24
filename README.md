@@ -3,7 +3,7 @@
 Yggdrasil
 =========
 
-Yggdrasil - SIFD Preservation Service
+Yggdrasil - Preservation Service
 
 
 GIT checkout of repository
