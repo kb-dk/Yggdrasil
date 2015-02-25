@@ -2,6 +2,7 @@ package dk.kb.yggdrasil.messaging;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -166,7 +167,8 @@ public class MQ {
             AMQP.BasicProperties messageProps = MQ.getMQProperties();
             messageProps.setType(messageType);
             messageProps.setTimestamp(new Date());
-            logger.debug("Publishing message on a queue: {} at {}\n {}", queueName, settings.getBrokerUri(), new String(message));
+            logger.debug("Publishing message on a queue: {} at {}\n {}", queueName, settings.getBrokerUri(), 
+                    new String(message, Charset.defaultCharset()));
             theChannel.basicPublish(exchangeName, routingKey, messageProps, message);
         } catch (IOException e) {
             throw new YggdrasilException("Unable to publish message to queue '"

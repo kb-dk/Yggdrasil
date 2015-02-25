@@ -94,21 +94,34 @@ public class PreservationPacker {
             Digest digestor = new Digest("SHA-1");
             File resource = prs.getContentPayload();
             File metadata = prs.getMetadataPayload();
-            InputStream in;
+            InputStream in = null;
             if (resource != null) {
-                in = new FileInputStream(resource);
-                WarcDigest blockDigest = digestor.getDigestOfFile(resource);
-                resourceId = writer.writeResourceRecord(in, resource.length(),
-                        ContentType.parseContentType("application/binary"), blockDigest, prs.getRequest().File_UUID);
-                in.close();
+                try {
+                    in = new FileInputStream(resource);
+                    WarcDigest blockDigest = digestor.getDigestOfFile(resource);
+                    resourceId = writer.writeResourceRecord(in, resource.length(),
+                            ContentType.parseContentType("application/binary"), blockDigest, prs.getRequest().File_UUID);
+                } finally {
+                    if(in != null) {
+                        in.close();
+                        in = null;
+                    }
+                }
             }
             if (metadata != null) {
-                in = new FileInputStream(metadata);
-                WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
-                writer.writeMetadataRecord(in, metadata.length(),
-                        ContentType.parseContentType("text/xml"), resourceId, blockDigest,
-                        prs.getRequest().UUID);
-                in.close();
+                try {
+                    in = new FileInputStream(metadata);
+                    WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
+                    writer.writeMetadataRecord(in, metadata.length(),
+                            ContentType.parseContentType("text/xml"), resourceId, blockDigest,
+                            prs.getRequest().UUID);
+                    in.close();
+                } finally {
+                    if(in != null) {
+                        in.close();
+                        in = null;
+                    }
+                }
             }
             prs.setUploadPackage(writer.getWarcFile());
         } catch (FileNotFoundException e) {
@@ -178,7 +191,8 @@ public class PreservationPacker {
     private void cleanUp() throws YggdrasilException {
         preservationRequests.clear();
         if(writer != null) {
-            writer.getWarcFile().delete();
+            boolean deleteSuccess = writer.getWarcFile().delete();
+            logger.debug("Cleaned up file: succesfully removed from disc: " + deleteSuccess);
             writer.close();
             writer = null;
         }

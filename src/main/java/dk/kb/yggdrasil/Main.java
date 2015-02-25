@@ -25,18 +25,18 @@ import dk.kb.yggdrasil.xslt.Models;
  *
  */
 public class Main {
-    public static final String YGGDRASIL_CONF_FILENAME = "yggdrasil.yml";
-    public static final String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
-    public static final String BITMAG_CONF_FILENAME = "bitmag.yml";
-    public static final String MODELS_CONF_FILENAME = "models.yml";
+    static final String YGGDRASIL_CONF_FILENAME = "yggdrasil.yml";
+    static final String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
+    static final String BITMAG_CONF_FILENAME = "bitmag.yml";
+    static final String MODELS_CONF_FILENAME = "models.yml";
 
     /**
      * The list of configuration files that should be present in the configuration directory.
      */
-    public static final String[] REQUIRED_SETTINGS_FILES = new String[] {
+    static final String[] REQUIRED_SETTINGS_FILES = new String[] {
         RABBITMQ_CONF_FILENAME, BITMAG_CONF_FILENAME, MODELS_CONF_FILENAME};
     /** Java Property to define Yggdrasil configuration directory. */
-    public static final String CONFIGURATION_DIRECTORY_PROPERTY = "YGGDRASIL_CONF_DIR";
+    static final String CONFIGURATION_DIRECTORY_PROPERTY = "YGGDRASIL_CONF_DIR";
 
     /** Java Property to define user.home. */
     private static final String USER_HOME_PROPERTY = "user.home";

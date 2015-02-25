@@ -12,16 +12,13 @@ import java.util.UUID;
 public class HttpPayload {
 
     /** Response content body steam. (Remember to close) */
-    public InputStream contentBody;
-
+    private InputStream contentBody;
     /** Response content body content encoding, null if not returned. */
-    public String contentEncoding;
-
+    private String contentEncoding;
     /** Response content type, null if not returned. */
-    public String contentType;
-
+    private String contentType;
     /** Response content length, null if not returned. */
-    public Long contentLength;
+    private Long contentLength;
     /** The amount of data read into the buffer. */
     private static int READBUFFERSIZE = 16384; // 16 Kbytes
     
@@ -72,5 +69,22 @@ public class HttpPayload {
         in.close();
         return tmpFile;
     }
+
+    /** @return Response content body steam. (Remember to close) */
+    public InputStream getContentBody() {
+        return contentBody;
+    }
+    /** @return Response content body content encoding, null if not returned. */
+    public String getContentEncoding() {
+        return contentEncoding;
+    }
+    /** @return Response content type, null if not returned. */
+    public String getContentType() {
+        return contentType;
+    }
+    /** @return Response content length, null if not returned. */
+    public Long getContentLength() {
+        return contentLength;
+    };
 
 }

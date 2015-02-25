@@ -14,21 +14,20 @@ public class MqResponse {
      */
     public MqResponse(String messageType, byte[] payload) {
         this.messageType = messageType;
-        this.payload = payload;
+        this.payload = payload.clone();
     }
     
     /** 
      * @return the payload
      */
     public byte[] getPayload() {
-        return this.payload;
+        return payload.clone();
     }
     
     /**
      * @return the messageType.
      */
     public String getMessageType(){
-        return this.messageType;
+        return messageType;
     }
-    
 }

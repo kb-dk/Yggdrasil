@@ -10,6 +10,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +23,10 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  */
 public class RunState implements Runnable {
     /** Logging mechanism. */
-    private static Logger logger = LoggerFactory.getLogger(RunState.class.getName());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     
     /** Server socket */
-    private static ServerSocket sock;
+    private ServerSocket sock;
 
     /** Yggdrasil version */
     private final String version;
@@ -74,11 +75,13 @@ public class RunState implements Runnable {
                 final Socket socket = sock.accept();
 
                 /** Open a reader to receive (and ignore the input) */
-                final BufferedReader rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                final BufferedReader rd = new BufferedReader(new InputStreamReader(socket.getInputStream(), 
+                        Charset.defaultCharset()));
 
                 /** Write the status message to the outputstream */
                 try {
-                    final BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                    final BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), 
+                            Charset.defaultCharset()));
                     wr.write("Yggdrasil version: " + version + " is running");
                     wr.flush();
                 } catch (IOException e) {

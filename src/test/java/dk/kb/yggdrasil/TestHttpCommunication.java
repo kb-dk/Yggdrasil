@@ -70,16 +70,16 @@ public class TestHttpCommunication {
 
             int read;
             byte[] tmpArr = new byte[1024];
-            InputStream in = httpPayload.contentBody;
+            InputStream in = httpPayload.getContentBody();
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             while ((read = in.read(tmpArr)) != -1) {
                 bout.write(tmpArr, 0, read);
             }
             in.close();
 
-            Assert.assertNull(httpPayload.contentEncoding);
-            Assert.assertEquals("application/x-monkey", httpPayload.contentType);
-            Assert.assertEquals(new Long("I am Jettyman.".getBytes().length), httpPayload.contentLength);
+            Assert.assertNull(httpPayload.getContentEncoding());
+            Assert.assertEquals("application/x-monkey", httpPayload.getContentType());
+            Assert.assertEquals(new Long("I am Jettyman.".getBytes().length), httpPayload.getContentLength());
             Assert.assertArrayEquals("I am Jettyman.".getBytes(), bout.toByteArray());
 
             contentBody = "the body".getBytes();

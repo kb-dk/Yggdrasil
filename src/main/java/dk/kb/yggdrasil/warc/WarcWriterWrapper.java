@@ -118,7 +118,7 @@ public class WarcWriterWrapper {
             header.warcRecordIdUri = warcinfoRecordId;
             header.contentTypeStr = WarcConstants.CT_APP_WARC_FIELDS;
             header.warcBlockDigest = blockDigest;
-            header.contentLength = new Long(warcFieldsBytes.length);
+            header.contentLength = Long.valueOf(warcFieldsBytes.length);
             writer.writeHeader(record);
             writer.streamPayload(bin);
             writer.closeRecord();

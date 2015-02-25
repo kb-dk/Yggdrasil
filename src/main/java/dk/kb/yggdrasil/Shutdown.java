@@ -2,6 +2,7 @@ package dk.kb.yggdrasil;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
@@ -33,7 +34,7 @@ public class Shutdown {
       MQ mq = new MQ(rabbitMqSettings);
       String message = "Shutdown Yggdrasil, please";
       mq.publishOnQueue(rabbitMqSettings.getPreservationDestination(), 
-              message.getBytes(), MQ.SHUTDOWN_MESSAGE_TYPE);
+              message.getBytes(Charset.defaultCharset()), MQ.SHUTDOWN_MESSAGE_TYPE);
       mq.cleanup();
     }
 

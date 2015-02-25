@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +31,13 @@ public class XmlEntityResolver implements EntityResolver {
 
     /**
      * Construct a caching XML entity resolver instance.
-     * @param cache_dir path to cache directory
+     * @param cacheDir path to cache directory
      */
-    public XmlEntityResolver(File cache_dir) {
-        this.cache_dir = cache_dir;
-        if (!cache_dir.exists()) {
-            cache_dir.mkdirs();
+    public XmlEntityResolver(File cacheDir) {
+        this.cache_dir = cacheDir;
+        if (!cacheDir.exists()) {
+            boolean createDirsSuccess = cacheDir.mkdirs();
+            logger.debug("Created dir '" + cacheDir.getAbsolutePath() + "' successfully: " + createDirsSuccess);
         }
     }
 
@@ -54,7 +56,8 @@ public class XmlEntityResolver implements EntityResolver {
                      */
                     try {
                         logger.info(" Loading cached: " + file.getAbsolutePath());
-                        return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
+                        return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file), 
+                                Charset.defaultCharset())));
                     } catch (FileNotFoundException e) {
                         logger.warn(e.toString(), e);
                         return null;
@@ -78,7 +81,8 @@ public class XmlEntityResolver implements EntityResolver {
                         out.close();
                         in.close();
                         logger.info(" Saving cached: " + file.getAbsolutePath());
-                        return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
+                        return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file), 
+                                Charset.defaultCharset())));
                     } catch (MalformedURLException e) {
                         logger.warn(e.toString(), e);
                         return null;

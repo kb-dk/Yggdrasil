@@ -2,6 +2,7 @@ package dk.kb.yggdrasil;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -101,7 +102,7 @@ public class HttpCommunication {
              */
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost postRequest = new HttpPost(url);
-            StringEntity putEntity = new StringEntity(new String(contentBody));
+            StringEntity putEntity = new StringEntity(new String(contentBody, Charset.defaultCharset()));
             putEntity.setContentType(contentType);
             postRequest.setEntity(putEntity);
             /*

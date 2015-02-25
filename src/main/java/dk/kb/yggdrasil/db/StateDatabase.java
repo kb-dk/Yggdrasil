@@ -73,9 +73,9 @@ public class StateDatabase {
     private void initializeDatabase() throws DatabaseException {
         File homeDirectory = new File(databaseBaseDir, DATABASE_SUBDIR);
         if (!homeDirectory.isDirectory()) {
+            boolean success = homeDirectory.mkdirs();
             log.warn("The database directory '" + homeDirectory.getAbsolutePath() 
-                    + "' does not exist. Trying to create it");
-            homeDirectory.mkdirs();
+                    + "' does not exist. Successfully created it: " + success);
         }
         ArgumentCheck.checkExistsDirectory(homeDirectory, "File homeDirectory");
         
