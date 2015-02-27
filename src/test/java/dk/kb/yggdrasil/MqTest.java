@@ -70,7 +70,7 @@ public class MqTest {
         messageReceived = mq.receiveMessageFromQueue(queueName);
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
 
-        mq.cleanup();
+        mq.close();
     }
 
     @Test
@@ -86,7 +86,7 @@ public class MqTest {
         assertTrue(messageReceived.getPayload().equals(message.getBytes()));
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testReceived() throws KeyManagementException,
     NoSuchAlgorithmException, URISyntaxException, IOException, YggdrasilException {

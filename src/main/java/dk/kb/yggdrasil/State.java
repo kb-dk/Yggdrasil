@@ -17,14 +17,19 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  *  Step 2: If metadata download succesfully, package the metadata . This can result in either failstate
  *      PRESERVATION_METADATA_PACKAGED_FAILURE or successtate PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY
  *  Step 3: If still no failstate, we continue with fetching the resources associated with this metadata.
- *       This can result in the failstate PRESERVATION_RESOURCES_DOWNLOAD_FAILURE or the OK-state PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS
+ *       This can result in the failstate PRESERVATION_RESOURCES_DOWNLOAD_FAILURE or the OK-state 
+ *       PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS
  *  Step 4: If still good to go, we package the data in the warc-format. No failstate here (need one),
- *      but if more data required before upload to bitrepository we go to wait-state PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA
- *      otherwise we change state to PRESERVATION_PACKAGE_COMPLETE (is this state necessary?). If in PRESERVATION_PACKAGE_COMPLETE remember to check
- *      if status for other requests can be changed from PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA to PRESERVATION_PACKAGE_COMPLETE.
- *  Step 5: Initiate upload to Bitrepository. If initiation fails, go to the failstate PRESERVATION_PACKAGE_UPLOAD_FAILURE.
- *  Step 6: Wait for Bitrepository upload to complete. This can result in the failstate PRESERVATION_PACKAGE_UPLOAD_FAILURE or
- *      final OK-state PRESERVATION_PACKAGE_UPLOAD_SUCCESS.
+ *      but if more data required before upload to bitrepository we go to wait-state 
+ *      PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA
+ *      otherwise we change state to PRESERVATION_PACKAGE_COMPLETE (is this state necessary?). If in 
+ *      PRESERVATION_PACKAGE_COMPLETE remember to check
+ *      if status for other requests can be changed from PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA to 
+ *      PRESERVATION_PACKAGE_COMPLETE.
+ *  Step 5: Initiate upload to Bitrepository. If initiation fails, go to the failstate 
+ *      PRESERVATION_PACKAGE_UPLOAD_FAILURE.
+ *  Step 6: Wait for Bitrepository upload to complete. This can result in the failstate 
+ *      PRESERVATION_PACKAGE_UPLOAD_FAILURE or final OK-state PRESERVATION_PACKAGE_UPLOAD_SUCCESS.
  *
  */
 public enum State implements Serializable {
@@ -83,6 +88,7 @@ public enum State implements Serializable {
         return this.defaultDescription;
     }
     
+    /** Default description. */
     private String defaultDescription; 
     
     
@@ -102,9 +108,8 @@ public enum State implements Serializable {
     }
 
     /**
-     * Method for finding out whether the given state is a failstate or not.
-     * @param aState The given state
-     * @return true, if the given state is a failstate; otherwise it returns false.
+     * Method for finding out whether the state is a failstate or not.
+     * @return true, if the state is a failstate; otherwise it returns false.
      */
     public boolean isOkState() {
         return !FAIL_STATES.contains(this);
@@ -114,7 +119,7 @@ public enum State implements Serializable {
      * Verify if state change is valid. Throws an Exception if not valid change
      * @param oldState the old state
      * @param newState the new state
-     * @throws YggdrasilException
+     * @throws YggdrasilException If not a valid state change.
      */
     public static void verifyIfValidStateChange(State oldState, State newState) throws YggdrasilException {
         ArgumentCheck.checkNotNull(oldState, "State oldState");

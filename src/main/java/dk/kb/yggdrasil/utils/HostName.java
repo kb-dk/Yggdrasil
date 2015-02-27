@@ -25,7 +25,7 @@ public class HostName {
      * Get the hostname of the machine.
      * @return the hostname as a {@link String}
      */
-    public String getHostName () throws UnknownHostException {
+    public String getHostName() {
         String hostName;
         try {
             //Trying to get hostname through InetAddress
@@ -58,7 +58,7 @@ public class HostName {
             return hostName;
         }
         // Nothing worked, hostname undetermined.
-        logger.warn("Hostname undetermined");
-        throw new UnknownHostException();
+        logger.warn("Hostname undetermined. Return empty string.");
+        return "";
     }
 }

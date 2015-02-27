@@ -28,13 +28,13 @@ public class YamlTools {
             input = new FileInputStream(ymlFile);
             loadedSettings = new Yaml().load(input);
             if (!(loadedSettings instanceof LinkedHashMap)) {
-                throw new YggdrasilException("Internal error. Unable to read settings. Excepted load method to return a LinkedHashMap, "
-                    + "but it returned a "
-                    + loadedSettings.getClass().getName() + " instead");
+                throw new YggdrasilException("Internal error. Unable to read settings. Excepted load method to " 
+                        + "return a LinkedHashMap, but it returned a " + loadedSettings.getClass().getName() 
+                        + " instead");
             }
         } catch (IOException e) {
-            throw new YggdrasilException("Internal error. Unable to read settings from file '" + ymlFile.getAbsolutePath() 
-            		+ "'. Reason:  ", e);
+            throw new YggdrasilException("Internal error. Unable to read settings from file '" 
+                    + ymlFile.getAbsolutePath() + "'. Reason:  ", e);
         } finally {
             IOUtils.closeQuietly(input);
         }

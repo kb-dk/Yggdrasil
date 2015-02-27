@@ -1,6 +1,5 @@
 package dk.kb.yggdrasil.json;
 
-import dk.kb.yggdrasil.json.Preservation;
 
 /**
  * JSON preservation response object representation.

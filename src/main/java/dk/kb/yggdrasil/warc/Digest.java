@@ -13,9 +13,13 @@ import org.jwat.warc.WarcDigest;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
+/**
+ * Helper class for calculating checksums.
+ */
 public class Digest {
-
-    private final MessageDigest md; 
+    /** The message digest.*/
+    private final MessageDigest md;
+    /** The digest algorithm.*/
     private final String digestType;
 
     /** The maximal size of the byte array for digest.*/
@@ -40,6 +44,7 @@ public class Digest {
      * Create a WarcDigest based on the given file.
      * @param fileToDigest The file to digest
      * @return a WarcDigest based on the given file.
+     * @throws YggdrasilException If the checksum could not be calculated.
      */
     public WarcDigest getDigestOfFile(File fileToDigest) throws YggdrasilException {
         ArgumentCheck.checkExistsNormalFile(fileToDigest, "File fileToDigest");
@@ -65,7 +70,7 @@ public class Digest {
      * Create a WarcDigest based on the given bytes.
      * @param bytesToDigest The bytes to digest
      * @return a WarcDigest based on the given file.
-     * @throws YggdrasilException 
+     * @throws YggdrasilException If the checksum could not be calculated.
      */
     public WarcDigest getDigestOfBytes(byte[] bytesToDigest) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(bytesToDigest, "byte[] bytesToDigest");

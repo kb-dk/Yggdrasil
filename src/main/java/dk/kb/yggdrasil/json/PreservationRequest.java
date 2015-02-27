@@ -14,7 +14,7 @@ public class PreservationRequest implements Serializable {
 
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(PreservationRequest.class.getName());
-    
+
     /** Valhal element UUID. */
     public String UUID;
 
@@ -23,7 +23,7 @@ public class PreservationRequest implements Serializable {
 
     /** ID for the element on Valhal. */
     public String Valhal_ID;
-   
+
     /** Optional content UUID. */
     @JSONNullable
     public String File_UUID;
@@ -31,13 +31,17 @@ public class PreservationRequest implements Serializable {
     /** Optional content URI. */
     @JSONNullable
     public String Content_URI;
-    
+
     /** Metadata model. */
     public String Model;
 
     /** Metadata data. */
     public String metadata;
 
+    /**
+     * Validates the message.
+     * @return Whether the mandatory fields are set.
+     */
     public boolean isMessageValid() {
         StringBuffer missingContent = new StringBuffer();
         if (UUID == null || UUID.isEmpty()) {
@@ -49,15 +53,15 @@ public class PreservationRequest implements Serializable {
         if (Valhal_ID == null || Valhal_ID.isEmpty()) {
             missingContent.append("Mandatory field 'Update_URI' is undefined");
         }
-        
+
         if (Model == null || Model.isEmpty()) {
             missingContent.append("Mandatory field 'Model' is undefined");
         }
-        
+
         if (missingContent.length() > 0) {
             logger.warn(missingContent.toString());
             return false;
         }
         return true;
     }    
- }
+}

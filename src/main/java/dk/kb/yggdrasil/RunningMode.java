@@ -24,6 +24,7 @@ public enum RunningMode {
 
     /**
      * Override the existing toString method to avoid toLowercase calls
+     * @return The lowercase name of the running mode.
      */
     @Override
     public String toString() {
@@ -77,5 +78,3 @@ public enum RunningMode {
         }
     }
 }
-
-

@@ -16,16 +16,16 @@ import dk.kb.yggdrasil.json.PreservationRequest;
  * temporary files built during the workflow.
  */
 public class PreservationRequestState implements Serializable {
-    
+
     /** Logging mechanism. */
     private static final Logger logger = LoggerFactory.getLogger(
             PreservationRequestState.class.getName());
-    
+
     /** The preservationRequest received from Valhal. */ 
     private PreservationRequest request;
     /** The current preservationState */
     private State state;
-    
+
     /** The uuid for the current  */
     private String uuid;
     /** The content payload. This is downloaded using REST from Valhal. */
@@ -35,7 +35,7 @@ public class PreservationRequestState implements Serializable {
     private File metadataPayload;
     /** The id of the warc file. */
     private String warcId;
-    
+
     /**
      * The constructor of the PreservationRequestState.
      * @param request The request itself
@@ -51,28 +51,28 @@ public class PreservationRequestState implements Serializable {
         this.state = preservationState;
         this.uuid = uuid;
     }
-    
+
     /** @return the preservation state of this request. */  
     public State getState() {
         return state;
     }
-    
+
     /** @return uuid for this request */  
     public String getUUID() {
         return uuid;
     }    
-    
+
     /**
      * Change state to the newState if this is a valid statechange 
      * @param newState The new state
-     * @throws YggdrasilException
+     * @throws YggdrasilException If it fails to validate the state change.
      */
     public void setState(State newState) throws YggdrasilException {
         ArgumentCheck.checkNotNull(newState, "State newState");
         State.verifyIfValidStateChange(this.state, newState);
         this.state = newState;
     }
-    
+
     /** 
      * @return the request itself
      */
@@ -95,7 +95,7 @@ public class PreservationRequestState implements Serializable {
         ArgumentCheck.checkExistsNormalFile(contentPayload, "File contentPayload");
         this.contentPayload = contentPayload;
     }
-    
+
     /**
      * 
      * @return the metadata payload
@@ -119,7 +119,7 @@ public class PreservationRequestState implements Serializable {
     public String getWarcId() {
         return warcId;
     }
-    
+
     /**
      * Set the uploadpackage file.
      * @param uploadPackage The UploadPackage (This file must exist)
@@ -128,32 +128,32 @@ public class PreservationRequestState implements Serializable {
         ArgumentCheck.checkExistsNormalFile(uploadPackage, "File uploadPackage");
         this.warcId = uploadPackage.getName();
     }
-   
+
     /**
-    * Reset the uploadpackage file.
-    */
-   public void resetUploadPackage() {
-       this.warcId = null;
-   }
-   
-   /**
-    * Remove the temporary files for the records referred to in this object, if they still exist.
-    */
-   public void cleanup() {
-       if (contentPayload != null && contentPayload.exists()) {
-           if (!contentPayload.delete()) {
-               logger.warn("Unable to delete temporary file for contentPayload '" 
-                       + contentPayload.getAbsolutePath() + "'");
-           }
-           contentPayload = null;
-       }
-       
-       if (metadataPayload != null && metadataPayload.exists()) {
-           if (!metadataPayload.delete()) {
-               logger.warn("Unable to delete temporary file for metadataPayload '" 
-                       + metadataPayload.getAbsolutePath() + "'");
-           }
-           metadataPayload = null;
-       }
-   }
+     * Reset the uploadpackage file.
+     */
+    public void resetUploadPackage() {
+        this.warcId = null;
+    }
+
+    /**
+     * Remove the temporary files for the records referred to in this object, if they still exist.
+     */
+    public void cleanup() {
+        if (contentPayload != null && contentPayload.exists()) {
+            if (!contentPayload.delete()) {
+                logger.warn("Unable to delete temporary file for contentPayload '" 
+                        + contentPayload.getAbsolutePath() + "'");
+            }
+            contentPayload = null;
+        }
+
+        if (metadataPayload != null && metadataPayload.exists()) {
+            if (!metadataPayload.delete()) {
+                logger.warn("Unable to delete temporary file for metadataPayload '" 
+                        + metadataPayload.getAbsolutePath() + "'");
+            }
+            metadataPayload = null;
+        }
+    }
 }

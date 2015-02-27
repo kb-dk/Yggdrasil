@@ -37,23 +37,24 @@ public class StateDatabase {
     private static final String DATABASE_SUBDIR = "DB";
     /** The name of the database. */
     private static final String DATABASE_NAME = "YGGDRASIL";
-    
+
     /** The name of the class database. */
     private static final String CLASS_DATABASE_NAME = "classDb";
-    
-    
+
+
     /** The Database environment. */
     private Environment env;
     /** The request Database. */
     private Database requestDB;
     /** The class Database. */
     private Database classDB;
-    
+
     /** The Berkeley DB binder for the data object and keyObject in our database, 
      * i.e. PreservationRequestState. */
     private EntryBinding objectBinding;
+    /** Berkeley DB key binder. */
     private EntryBinding keyBinding;
-    
+
     /**
      * Constructor.
      * Initializes the Berkeley DB databases.
@@ -78,7 +79,7 @@ public class StateDatabase {
                     + "' does not exist. Successfully created it: " + success);
         }
         ArgumentCheck.checkExistsDirectory(homeDirectory, "File homeDirectory");
-        
+
         log.info("Opening DB-environment in: " + homeDirectory.getAbsolutePath());
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
@@ -90,24 +91,24 @@ public class StateDatabase {
         dbConfig.setAllowCreate(true);
 
         Transaction nullTransaction = null;
-        
+
         env = new Environment(homeDirectory, envConfig);
         requestDB = env.openDatabase(nullTransaction, DATABASE_NAME, dbConfig);
-        
+
         // Open the database that stores your class information.
         classDB = env.openDatabase(nullTransaction, CLASS_DATABASE_NAME, dbConfig);
         StoredClassCatalog classCatalog = new StoredClassCatalog(classDB);
-        
+
         // Create the binding
         objectBinding = new SerialBinding(classCatalog, PreservationRequestState.class);
         keyBinding = new SerialBinding(classCatalog, String.class);
     }
-    
+
     /**
      * Retrieve a PreservationRequestState with the given uuid.
      * @param uuid A given UUID representing an element in Valhal
      * @return a PreservationRequestState with the given uuid
-     * @throws YggdrasilException
+     * @throws YggdrasilException If it fails to retrieve the record.
      */
     public PreservationRequestState getRecord(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
@@ -125,7 +126,7 @@ public class StateDatabase {
         }
         PreservationRequestState retrievedRequest = null;
         if (status == OperationStatus.SUCCESS) {
-                retrievedRequest = (PreservationRequestState) objectBinding.entryToObject(data);
+            retrievedRequest = (PreservationRequestState) objectBinding.entryToObject(data);
         }
         return retrievedRequest;
     }
@@ -134,17 +135,18 @@ public class StateDatabase {
      * Determine, if the database contains a PreservationRequest for a specific uuid.
      * @param uuid A given UUID representing an element in Valhal
      * @return true, if database contains a PreservationRequest for the given uuid; otherwise false
-     * @throws YggdrasilException
+     * @throws YggdrasilException If it fails.
      */
     public boolean hasEntry(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         return (getRecord(uuid) != null);
     }
-    
+
     /**
      * Create a new PreservationRequest in the database.
      * @param uuid A given UUID representing an element in Valhal
-     * @param request 
+     * @param request The preservation request state to put.
+     * @throws YggdrasilException If it fails.
      */
     public void put(String uuid, PreservationRequestState request) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
@@ -171,7 +173,8 @@ public class StateDatabase {
     /** 
      * Retrieve list of outstanding requests. 
      * TODO maybe change to retrieve the requests themselves as a list?
-     * @throws YggdrasilException 
+     * @return The list of UUIDs for the outstanding requests.
+     * @throws YggdrasilException If it fails to extract the outstanding UUIDs.
      */
     public List<String> getOutstandingUUIDS() throws YggdrasilException {
         Cursor cursor = null;
@@ -202,18 +205,18 @@ public class StateDatabase {
         }
         return resultList;
     }
-    
+
     /**
      * Delete the entry in the request database with the given uuid. 
      * @param uuid A given UUID representing an element in Valhal
-     * @throws YggdrasilException
+     * @throws YggdrasilException If it is not possible to remove the record.
      */
     public void delete(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         Transaction txn = env.beginTransaction(null, null);
         DatabaseEntry key = new DatabaseEntry();
         keyBinding.objectToEntry(uuid, key);
- 
+
         try {
             requestDB.delete(txn, key);
             txn.commit();
@@ -227,7 +230,7 @@ public class StateDatabase {
                     "Database exception occuring during deletion of record", e);
         }
     }
-    
+
     /**
      * Close the databases and set the instance to null. 
      */

@@ -5,12 +5,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,7 +63,6 @@ import dk.kb.yggdrasil.bitmag.BitrepositoryUtils;
 import dk.kb.yggdrasil.bitmag.YggdrasilBlockingEventHandler;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.utils.HostName;
 import dk.kb.yggdrasil.utils.YamlTools;
 
 /**
@@ -84,8 +81,8 @@ public class Bitrepository {
     /** National bitrepository settings. */
     private Settings bitmagSettings = null;
 
-    /** The component id. */
-    private String COMPONENT_ID;
+    /** The bitrepository component id. */
+    private final String componentId;
 
     /** The bitmag security manager.*/
     private SecurityManager bitMagSecurityManager;
@@ -104,11 +101,11 @@ public class Bitrepository {
 
     /** The client for performing the ReplaceFile operation.
     private ReplaceFileClient bitMagReplaceFileClient;
-    */
+     */
 
     /** The client for performing the DeleteFile operation.
     private DeleteFileClient bitMagDeleteFileClient;
-    */
+     */
 
     /** The authentication key used by the putfileClient. */
     private File privateKeyFile;
@@ -120,12 +117,12 @@ public class Bitrepository {
     public static final String YAML_BITMAG_SETTINGS_DIR_PROPERTY = "settings_dir";
     /** Name of YAML property used to find keyfile. */
     public static final String YAML_BITMAG_KEYFILE_PROPERTY = "keyfile";
-    
+
     /** Name of the YAML sub-map client*/
     public static final String YAML_BITMAG_CLIENTS = "client";
     /** Name of the YAML property under the client sub-map for maximum number of pillars accept to fail.*/
     public static final String YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES = "putfile_max_pillars_failures";
-    
+
     /** The maximum number of failing pillars. Default is 0, can be overridden by settings in the bitmag.yml. */
     private int maxNumberOfFailingPillars = 0; 
 
@@ -137,7 +134,7 @@ public class Bitrepository {
      */
     public Bitrepository(File configFile) throws YggdrasilException {
         ArgumentCheck.checkExistsNormalFile(configFile, "File configFile");
-        initComponent_ID();
+        componentId = BitrepositoryUtils.generateComponentID();
         readConfigFile(configFile);
         initBitmagSettings();
         initBitmagSecurityManager();
@@ -151,7 +148,7 @@ public class Bitrepository {
      */
     private void initBitMagClients() {
         bitMagPutClient = ModifyComponentFactory.getInstance().retrievePutClient(
-                bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+                bitmagSettings, bitMagSecurityManager, componentId);
         // Maybe needed later
         // bitMagDeleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
         //        bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
@@ -170,13 +167,10 @@ public class Bitrepository {
         // ChecksumSpecTYPE checksumRequestsForNewFile, EventHandler eventHandler, String auditTrailInformation);
         //
         AccessComponentFactory acf = AccessComponentFactory.getInstance();
-        bitMagGetClient = acf.createGetFileClient(
-                bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
-        bitMagGetFileIDsClient = acf.createGetFileIDsClient(
-                bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+        bitMagGetClient = acf.createGetFileClient(bitmagSettings, bitMagSecurityManager, componentId);
+        bitMagGetFileIDsClient = acf.createGetFileIDsClient(bitmagSettings, bitMagSecurityManager, componentId);
 
-        bitMagGetChecksumsClient = acf.createGetChecksumsClient
-                (bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
+        bitMagGetChecksumsClient = acf.createGetChecksumsClient(bitmagSettings, bitMagSecurityManager, componentId);
     }
 
     /**
@@ -187,9 +181,8 @@ public class Bitrepository {
      */
     private void readConfigFile(File configFile) throws YggdrasilException {
         if (configFile == null || !configFile.isFile()) {
-            throw new YggdrasilException("ConfigFile '"
-                    + (configFile == null? "null" : configFile.getAbsolutePath())
-                            + "' is undefined or missing. ");
+            throw new YggdrasilException("ConfigFile '" + (configFile == null? "null" : configFile.getAbsolutePath())
+                    + "' is undefined or missing. ");
         }
         Map yamlMap = YamlTools.loadYamlSettings(configFile);
         RunningMode mode = RunningMode.getMode();
@@ -200,9 +193,8 @@ public class Bitrepository {
         Map modeMap = (Map) yamlMap.get(mode.toString());
         if (!modeMap.containsKey(YAML_BITMAG_KEYFILE_PROPERTY)
                 || !modeMap.containsKey(YAML_BITMAG_SETTINGS_DIR_PROPERTY)) {
-            throw new YggdrasilException("Unable to find one or both properties ("
-                    + YAML_BITMAG_KEYFILE_PROPERTY + ","
-                    + YAML_BITMAG_SETTINGS_DIR_PROPERTY + ") using the current running mode '"
+            throw new YggdrasilException("Unable to find one or both properties (" + YAML_BITMAG_KEYFILE_PROPERTY 
+                    + "," + YAML_BITMAG_SETTINGS_DIR_PROPERTY + ") using the current running mode '"
                     + mode + "' in the given YAML file ' " + configFile.getAbsolutePath() + "'");
         }
 
@@ -211,7 +203,8 @@ public class Bitrepository {
         if(modeMap.containsKey(YAML_BITMAG_CLIENTS)) {
             Map clientMap = (Map) modeMap.get(YAML_BITMAG_CLIENTS);
             if(clientMap.containsKey(YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES)) {
-                this.maxNumberOfFailingPillars = Integer.parseInt((String) clientMap.get(YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES));
+                this.maxNumberOfFailingPillars = Integer.parseInt((String) clientMap.get(
+                        YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES));
             }            
         }
     }
@@ -259,8 +252,7 @@ public class Bitrepository {
      */
     private OperationEventType putTheFile(PutFileClient client, File packageFile, String collectionID)
             throws IOException, URISyntaxException {
-        FileExchange fileexchange
-            = ProtocolComponentFactory.getInstance().getFileExchange(this.bitmagSettings);
+        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(this.bitmagSettings);
         BlockingPutFileClient bpfc = new BlockingPutFileClient(client);
         URL url = fileexchange.uploadToServer(packageFile);
         String fileId = packageFile.getName();
@@ -272,7 +264,8 @@ public class Bitrepository {
         String putFileMessage = "Putting the file '" + packageFile + "' with the file id '"
                 + fileId + "' from Yggdrasil - the preservation service of Chronos.";
 
-        YggdrasilBlockingEventHandler putFileEventHandler = new YggdrasilBlockingEventHandler(collectionID, maxNumberOfFailingPillars);
+        YggdrasilBlockingEventHandler putFileEventHandler = new YggdrasilBlockingEventHandler(collectionID, 
+                maxNumberOfFailingPillars);
         try {
             bpfc.putFile(collectionID, url, fileId, packageFile.length(), validationChecksum, requestChecksum,
                     putFileEventHandler, putFileMessage);
@@ -327,8 +320,8 @@ public class Bitrepository {
             }
             return result;
         } else {
-          throw new YggdrasilException("Download of package w/ id '" + fileId + "' failed. Reason: "
-                  + finalEvent.getInfo());
+            throw new YggdrasilException("Download of package w/ id '" + fileId + "' failed. Reason: "
+                    + finalEvent.getInfo());
         }
     }
 
@@ -357,90 +350,84 @@ public class Bitrepository {
         }
     }
 
-   /**
-    * Check if a package with the following id exists within a specific collection.
-    * @param packageId A given packageId
-    * @param collectionID A given collection ID
-    * @return true, if a package with the given ID exists within the given collection. Otherwise returns false
-    */
-   public boolean existsInCollection(String packageId, String collectionID) {
-       ArgumentCheck.checkNotNullOrEmpty(packageId, "String packageId");
-       ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
-       // Does collection exists? If not return false
-       if (getCollectionPillars(collectionID).isEmpty()) {
-           logger.warning("The given collection Id does not exist");
-           return false;
-       }
+    /**
+     * Check if a package with the following id exists within a specific collection.
+     * @param packageId A given packageId
+     * @param collectionID A given collection ID
+     * @return true, if a package with the given ID exists within the given collection. Otherwise returns false
+     */
+    public boolean existsInCollection(String packageId, String collectionID) {
+        ArgumentCheck.checkNotNullOrEmpty(packageId, "String packageId");
+        ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
+        // Does collection exists? If not return false
+        if (getCollectionPillars(collectionID).isEmpty()) {
+            logger.warning("The given collection Id does not exist");
+            return false;
+        }
 
-       OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
+        OutputHandler output = new DefaultOutputHandler(Bitrepository.class);
 
-       output.debug("Instantiation GetFileID outputFormatter.");
-       // TODO: change to non pagingClient
-       GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
+        output.debug("Instantiation GetFileID outputFormatter.");
+        // TODO: change to non pagingClient
+        GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
 
-       long timeout = getClientTimeout(bitmagSettings);
+        long timeout = getClientTimeout(bitmagSettings);
 
-       output.debug("Instantiation GetFileID paging client.");
-       PagingGetFileIDsClient pagingClient = new PagingGetFileIDsClient(
-               bitMagGetFileIDsClient, timeout, outputFormatter, output);
+        output.debug("Instantiation GetFileID paging client.");
+        PagingGetFileIDsClient pagingClient = new PagingGetFileIDsClient(
+                bitMagGetFileIDsClient, timeout, outputFormatter, output);
 
-       Boolean success = pagingClient.getFileIDs(collectionID, packageId,
-               getCollectionPillars(collectionID));
-       return success;
-   }
+        Boolean success = pagingClient.getFileIDs(collectionID, packageId,
+                getCollectionPillars(collectionID));
+        return success;
+    }
 
-   /**
-    * Check the checksums for a whole collection, or only a single packageId in a collection.
-    * @param packageId A given package ID (if null, checksums for the whole collection is requested)
-    * @param collectionID A given collection ID
-    * @throws IOException
-    * @throws YggdrasilException
-    * @return a map with the results from the pillars
-    */
-   public Map<String, ChecksumsCompletePillarEvent> getChecksums(String packageID, String collectionID) throws IOException, YggdrasilException {
-       ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
-       //If packageID = null, checksum is requested for all files in the collection.
-       if (packageID != null) {
-           logger.info("Collecting checksums for package '" + packageID
-               + "' in collection '" + collectionID + "'");
-       } else {
-           logger.info("Collecting checksums for all packages in collection '"
-                   + collectionID + "'");
-       }
-       BlockingGetChecksumsClient client = new BlockingGetChecksumsClient(
-               bitMagGetChecksumsClient);
-       ChecksumSpecTYPE checksumSpec = ChecksumUtils.getDefault(bitmagSettings);
-       BlockingEventHandler eventhandler = new BlockingEventHandler();
+    /**
+     * Check the checksums for a whole collection, or only a single packageId in a collection.
+     * @param packageID A given package ID (if null, checksums for the whole collection is requested)
+     * @param collectionID A given collection ID
+     * @return a map with the results from the pillars
+     * @throws YggdrasilException If it fails to retrieve the checksums.
+     */
+    public Map<String, ChecksumsCompletePillarEvent> getChecksums(String packageID, String collectionID) 
+            throws YggdrasilException {
+        ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
+        //If packageID = null, checksum is requested for all files in the collection.
+        if (packageID != null) {
+            logger.info("Collecting checksums for package '" + packageID + "' in collection '" + collectionID + "'");
+        } else {
+            logger.info("Collecting checksums for all packages in collection '" + collectionID + "'");
+        }
+        BlockingGetChecksumsClient client = new BlockingGetChecksumsClient(bitMagGetChecksumsClient);
+        ChecksumSpecTYPE checksumSpec = ChecksumUtils.getDefault(bitmagSettings);
+        BlockingEventHandler eventhandler = new BlockingEventHandler();
 
-       try {
-           client.getChecksums(collectionID, null, packageID, checksumSpec, null,
-                   eventhandler, null);
-       } catch (NegativeResponseException e) {
-           throw new YggdrasilException("Got bad feedback from the bitrepository " + e);
-       }
+        try {
+            client.getChecksums(collectionID, null, packageID, checksumSpec, null, eventhandler, null);
+        } catch (NegativeResponseException e) {
+            throw new YggdrasilException("Got bad feedback from the bitrepository " + e);
+        }
 
-       int failures = eventhandler.getFailures().size();
-       int results = eventhandler.getResults().size();
+        int failures = eventhandler.getFailures().size();
+        int results = eventhandler.getResults().size();
 
-       if (failures > 0) {
-           logger.warning("Got back " + eventhandler.getFailures().size() + " failures");
-       }
-       if (results > 0) {
-           logger.info("Got back " + eventhandler.getResults().size()
-                   + " successful responses");
-       }
+        if (failures > 0) {
+            logger.warning("Got back " + eventhandler.getFailures().size() + " failures");
+        }
+        if (results > 0) {
+            logger.info("Got back " + eventhandler.getResults().size() + " successful responses");
+        }
 
-       Map<String, ChecksumsCompletePillarEvent> resultsMap
-           = new HashMap<String, ChecksumsCompletePillarEvent>();
+        Map<String, ChecksumsCompletePillarEvent> resultsMap = new HashMap<String, ChecksumsCompletePillarEvent>();
 
-           for (ContributorEvent e : eventhandler.getResults()) {
-               ChecksumsCompletePillarEvent event = (ChecksumsCompletePillarEvent) e;
-               resultsMap.put(event.getContributorID(), event);
-           }
-       return resultsMap;
-   }
+        for (ContributorEvent e : eventhandler.getResults()) {
+            ChecksumsCompletePillarEvent event = (ChecksumsCompletePillarEvent) e;
+            resultsMap.put(event.getContributorID(), event);
+        }
+        return resultsMap;
+    }
 
-   /**
+    /**
      * Initialize the BITMAG security manager.
      */
     private void initBitmagSecurityManager() {
@@ -450,42 +437,25 @@ public class Bitrepository {
         OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
 
         bitMagSecurityManager = new BasicSecurityManager(bitmagSettings.getRepositorySettings(),
-              getPrivateKeyFile().getAbsolutePath(),
-              authenticator, signer, authorizer, permissionStore,
-              bitmagSettings.getComponentID());
+                getPrivateKeyFile().getAbsolutePath(),
+                authenticator, signer, authorizer, permissionStore,
+                bitmagSettings.getComponentID());
     }
 
     private File getPrivateKeyFile() {
         return this.privateKeyFile;
     }
 
-    
-    /**
-     * Set COMPONENT_ID using host name and random UUID.
-     */
-    private void initComponent_ID() {
-        HostName hostname = new HostName();
-        String hn;
-        try {
-            hn = hostname.getHostName();
-        } catch (UnknownHostException e) {
-            logger.warning("Caught unknown host exception while setting COMPONENT_ID");
-            // Will work with a empty host name.
-            hn = "";
-        }
-        COMPONENT_ID = "YggdrasilClient-" + hn + "-" + UUID.randomUUID();
-    }
-    
     /**
      * Load BitMag settings, if not already done.
      */
     private void initBitmagSettings() {
         if (bitmagSettings == null) {
             SettingsProvider settingsLoader =
-                new SettingsProvider(
-                        new XMLFileSettingsLoader(
-                                settingsDir.getAbsolutePath()),
-                        COMPONENT_ID);
+                    new SettingsProvider(
+                            new XMLFileSettingsLoader(
+                                    settingsDir.getAbsolutePath()),
+                                    componentId);
             bitmagSettings = settingsLoader.getSettings();
             SettingsUtils.initialize(bitmagSettings);
         }
@@ -529,7 +499,7 @@ public class Bitrepository {
         return ProtocolComponentFactory.getInstance().getFileExchange(
                 bitmagSettings);
     }
-    
+
     /**
      * @return a set of known CollectionIDs
      */
@@ -542,6 +512,6 @@ public class Bitrepository {
         }
         return collectionIDs;
     }
-    
+
 
 }

@@ -69,7 +69,7 @@ public class MQ {
     /**
      * Constructor for the MQ object.
      * @param settings The settings used to create the broker connection.
-     * @throws YggdrasilException
+     * @throws YggdrasilException If it fails.
      * @throws RabbitException When message queue connection fails.
      */
     public MQ(RabbitMqSettings settings) throws YggdrasilException, RabbitException {
@@ -102,7 +102,7 @@ public class MQ {
 
     /**
      * Close channel to broker, and cancel the associated consumers.
-     * @throws IOException
+     * @throws IOException If it fails to close the connection.
      */
     public void close() throws IOException {
         if (theChannel != null && theChannel.isOpen()) {
@@ -115,11 +115,6 @@ public class MQ {
             conn.close();
         }
     }
-
-    public void cleanup() throws IOException {
-        close();
-    }
-
 
     /**
      * @return a set of AMQP properties for
@@ -181,7 +176,7 @@ public class MQ {
      * wait until a message arrives on the queue.
      * @param queueName The name of the queue.
      * @return the messageType and bytes delivered in the message when a message is received.
-     * @throws YggdrasilException
+     * @throws YggdrasilException If it fails.
      * @throws RabbitException When message queue connection fails.
      */
     public MqResponse receiveMessageFromQueue(String queueName) throws YggdrasilException, RabbitException {
@@ -239,8 +234,10 @@ public class MQ {
         publishOnQueue(settings.getPreservationResponseDestination(), message, MQ.PRESERVATIONRESPONSE_MESSAGE_TYPE);
     }
 
+    /**
+     * @return The settings.
+     */
     public RabbitMqSettings getSettings() {
         return this.settings;
     }
-
 }

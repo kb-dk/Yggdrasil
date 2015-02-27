@@ -74,7 +74,8 @@ public class XslTransformer {
      * @param outputTarget output result target to use
      * @throws TransformerException if an exception occurs while transforming
      */
-    public void transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener, Result outputTarget) throws TransformerException {
+    public void transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener, 
+            Result outputTarget) throws TransformerException {
         ArgumentCheck.checkNotNull(xmlSource, "xmlSource");
         ArgumentCheck.checkNotNull(outputTarget, "outputTarget");
         transformerImpl.reset();
@@ -94,12 +95,12 @@ public class XslTransformer {
      * @return byte array of the result
      * @throws TransformerException if an exception occurs while transforming
      */
-    public byte[] transform(Source xmlSource, URIResolver uriResolver, ErrorListener errorListener) throws TransformerException {
+    public byte[] transform(Source xmlSource, URIResolver uriResolver, 
+            ErrorListener errorListener) throws TransformerException {
         ArgumentCheck.checkNotNull(xmlSource, "xmlSource");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         StreamResult result = new StreamResult(out);
         transform(xmlSource, uriResolver, errorListener, result);
         return out.toByteArray();
     }
-
 }

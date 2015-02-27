@@ -18,6 +18,7 @@ public class XslTransform {
 
     /**
      * Run method.
+     * @param args Arguments for the tool to run. 
      */
     public static void main(String[] args) {
         if (args.length < 3) {

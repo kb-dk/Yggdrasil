@@ -36,7 +36,8 @@ import dk.kb.yggdrasil.warc.YggdrasilWarcConstants;
 public class PreservationPacker {
     /** Logging mechanism. */
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-    
+
+    /** The context, containing settings, etc. */
     private final PreservationContext context;
     /** The collection id for this manager.*/
     private final String collectionId;
@@ -46,7 +47,7 @@ public class PreservationPacker {
     private List<PreservationRequestState> preservationRequests;
     /** */
     private Long currentTimeout = 0L;
-    
+
     /**
      * Constructor.
      * @param context The context for the preservation
@@ -56,7 +57,7 @@ public class PreservationPacker {
         this.context = context;
         this.collectionId = collectionId;
     }
-    
+
     /**
      * Check the conditions, and upload if any of them has been met.
      * @throws YggdrasilException  
@@ -72,7 +73,7 @@ public class PreservationPacker {
                 conditionsMet = true;
                 logger.debug("Time limit reached.");
             }
-            
+
             if(conditionsMet) {
                 logger.info("Finished packaging WARC file. Uploading and cleaning up.");
                 uploadWarcFile();
@@ -80,12 +81,12 @@ public class PreservationPacker {
             }
         }
     }
-    
+
     /**
      * Write the contentPaylod and transformed of the preservation record.
      * @param prs The record of the preservation request to write.
+     * @throws YggdrasilException If it fails to write the preservation request state.
      */
-
     public synchronized void writePreservationRecord(PreservationRequestState prs) throws YggdrasilException {
         checkInitialize();
         preservationRequests.add(prs);
@@ -100,7 +101,8 @@ public class PreservationPacker {
                     in = new FileInputStream(resource);
                     WarcDigest blockDigest = digestor.getDigestOfFile(resource);
                     resourceId = writer.writeResourceRecord(in, resource.length(),
-                            ContentType.parseContentType("application/binary"), blockDigest, prs.getRequest().File_UUID);
+                            ContentType.parseContentType("application/binary"), blockDigest, 
+                            prs.getRequest().File_UUID);
                 } finally {
                     if(in != null) {
                         in.close();
@@ -146,14 +148,14 @@ public class PreservationPacker {
                     + context.getConfig().getWarcSizeLimit() + ", date limit: " + new Date(currentTimeout));
         }
     }
-    
+
     /**
      * Uploads the Warc file to the Bitrepository.
      * @throws YggdrasilException
      */
     private void uploadWarcFile() throws YggdrasilException {
         boolean success = context.getBitrepository().uploadFile(writer.getWarcFile(), collectionId);
-        
+
         for(PreservationRequestState prs : preservationRequests) {
             if(success) {
                 updateRequestState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS, prs);
@@ -169,7 +171,7 @@ public class PreservationPacker {
             context.getStateDatabase().delete(prs.getUUID());
         }
     }
-    
+
     /**
      * Update the preservation state of the request, both locally and remote.
      * @param preservationState The new state.
@@ -179,11 +181,10 @@ public class PreservationPacker {
     private void updateRequestState(State preservationState, PreservationRequestState prs) 
             throws YggdrasilException {
         prs.setState(preservationState);
-        context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                preservationState);
+        context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, preservationState);
         context.getStateDatabase().put(prs.getUUID(), prs);
     }
-    
+
     /**
      * 
      * @throws YggdrasilException
@@ -197,7 +198,7 @@ public class PreservationPacker {
             writer = null;
         }
     }
-    
+
     /**
      * Initializes the new WarcFile, with the WarcInfo.
      */
@@ -205,7 +206,7 @@ public class PreservationPacker {
         UUID packageId = UUID.randomUUID();
         File writeDirectory = context.getConfig().getTemporaryDir();
         writer = WarcWriterWrapper.getWriter(writeDirectory, packageId.toString());
-        
+
         try {
             Digest digestor = new Digest("SHA-1");
             String warcInfoPayload = YggdrasilWarcConstants.getWarcInfoPayload();

@@ -9,6 +9,7 @@ public class XmlValidate {
 
     /**
      * Run method.
+     * @param args Arguments. Must have one argument with the path to the file to validate.
      */
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -41,5 +42,4 @@ public class XmlValidate {
             }
         }
     }
-
 }

@@ -43,10 +43,10 @@ public class WarcWriterWrapper {
     protected File writerFile;
 
     /** WARC <code>RandomAccessFile</code>.  */
-    protected RandomAccessFile writer_raf;
+    protected RandomAccessFile writerRaf;
 
     /** <code>RandomAccessFile</code> as an <code>OutputStream</code> */
-    protected RandomAccessFileOutputStream writer_rafout;
+    protected RandomAccessFileOutputStream writerRafout;
 
     /** WARC writer implementation. */
     protected WarcWriter writer;
@@ -73,12 +73,12 @@ public class WarcWriterWrapper {
             w3 = new WarcWriterWrapper();
             w3.uuid = uuid;
             w3.writerFile = writerFile;
-            w3.writer_raf = new RandomAccessFile(w3.writerFile, "rw");
-            w3.writer_raf.seek(w3.writer_raf.length());
-            w3.writer_rafout = new RandomAccessFileOutputStream(w3.writer_raf);
-            w3.writer = WarcWriterFactory.getWriter(w3.writer_rafout, WARC_READER_BUFFER_SIZE, false);
+            w3.writerRaf = new RandomAccessFile(w3.writerFile, "rw");
+            w3.writerRaf.seek(w3.writerRaf.length());
+            w3.writerRafout = new RandomAccessFileOutputStream(w3.writerRaf);
+            w3.writer = WarcWriterFactory.getWriter(w3.writerRafout, WARC_READER_BUFFER_SIZE, false);
             w3.writer.setExceptionOnContentLengthMismatch(true);
-            w3.bIsNew = (w3.writer_raf.length() == 0L);
+            w3.bIsNew = (w3.writerRaf.length() == 0L);
         } catch (FileNotFoundException e) {
             throw new YggdrasilException("Exception while opening WARC file", e);
         } catch (IOException e) {
@@ -144,7 +144,8 @@ public class WarcWriterWrapper {
      * @return WarcRecordId of newly created record
      * @throws YggdrasilException if an exception occurs while writing record
      */
-    public Uri writeResourceRecord(InputStream in, long len, ContentType contentType, WarcDigest blockDigest, String uuid) throws YggdrasilException {
+    public Uri writeResourceRecord(InputStream in, long len, ContentType contentType, WarcDigest blockDigest, 
+            String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(len, "len");
         ArgumentCheck.checkNotNull(contentType, "contentType");
@@ -179,13 +180,15 @@ public class WarcWriterWrapper {
      * Append a metadata record to WARC file.
      * @param in payload input stream
      * @param len payload length
+     * @param refersTo The refers to header element.
      * @param contentType payload content-type
      * @param blockDigest optional block digest
      * @param uuid The UUID for the record.
      * @return WarcRecordId of newly created record
      * @throws YggdrasilException if an exception occurs while writing record
      */
-    public Uri writeMetadataRecord(InputStream in, long len, ContentType contentType, Uri refersTo, WarcDigest blockDigest, String uuid) throws YggdrasilException {
+    public Uri writeMetadataRecord(InputStream in, long len, ContentType contentType, Uri refersTo, 
+            WarcDigest blockDigest, String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(len, "len");
         ArgumentCheck.checkNotNull(contentType, "contentType");
@@ -247,13 +250,13 @@ public class WarcWriterWrapper {
                 writer.close();
                 writer = null;
             }
-            if (writer_rafout != null) {
-                writer_rafout.close();
-                writer_rafout = null;
+            if (writerRafout != null) {
+                writerRafout.close();
+                writerRafout = null;
             }
-            if (writer_raf != null) {
-                writer_raf.close();
-                writer_raf = null;
+            if (writerRaf != null) {
+                writerRaf.close();
+                writerRaf = null;
             }
         } catch (IOException e) {
             throw new YggdrasilException("Exception closing WarcWriterWrapper!", e);

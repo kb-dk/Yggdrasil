@@ -25,9 +25,13 @@ import dk.kb.yggdrasil.xslt.Models;
  *
  */
 public class Main {
+    /** The name of the Yggdrasil configuration file.*/
     static final String YGGDRASIL_CONF_FILENAME = "yggdrasil.yml";
+    /** The name of the configuration for RabbitMQ.*/
     static final String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
+    /** The name of the configuration for the BitRepository.*/
     static final String BITMAG_CONF_FILENAME = "bitmag.yml";
+    /** The name of the configuration for the models.*/
     static final String MODELS_CONF_FILENAME = "models.yml";
 
     /**
@@ -43,13 +47,23 @@ public class Main {
     /** Boolean for deciding whether to start main workflow (Normal mode) 
      * or just shutdown program after initialization (Unittest mode). */
     private static boolean isUnittestmode = false;
-    
+
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Main.class.getName());
+    /** The state database.*/
     private StateDatabase sd;
+    /** The messagequeue.*/
     private MQ mq;
+    /** The bitrepository interface.*/
     private Bitrepository bitrepository;
 
+    /**
+     * Constructor.
+     * TODO: why is this public?
+     * @param sd The StateDatabase.
+     * @param mq The messagequeue
+     * @param bitrepository The bitrepository interface.
+     */
     public Main(StateDatabase sd, MQ mq, Bitrepository bitrepository) {
         this.sd = sd;
         this.mq = mq;
@@ -71,7 +85,7 @@ public class Main {
         if (args.length == 1 && args[0].equals("test")) {
             isUnittestmode = true;
         }
-        
+
         File configdir = getConfigDir();
         if (!configdir.exists()) {
             throw new YggdrasilException("Fatal error: The chosen configuration directory '"
@@ -96,13 +110,13 @@ public class Main {
         try {
             File rabbitmqConfigFile = new File(configdir, RABBITMQ_CONF_FILENAME);
             RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
-            
+
             File bitmagConfigFile = new File(configdir, BITMAG_CONF_FILENAME);
             bitrepository = new Bitrepository(bitmagConfigFile);
-            
+
             File yggrasilConfigFile = new File(configdir, YGGDRASIL_CONF_FILENAME);
             generalConfig = new Config(yggrasilConfigFile);
-            
+
             File modelsConfigFile = new File(configdir, MODELS_CONF_FILENAME);
             modelsConfig = new Models(modelsConfigFile);
 
@@ -115,22 +129,20 @@ public class Main {
 
             Main main = new Main(sd, mq, bitrepository);
             if (!isUnittestmode) {
-                main.runWorkflow(sd, bitrepository, generalConfig,
-                        modelsConfig, rabbitMqSettings);
+                main.runWorkflow(sd, bitrepository, generalConfig, modelsConfig, rabbitMqSettings);
             } else {
                 logger.info("isUnittestmode = " + isUnittestmode);
             }
             logger.info("Shutting down the Yggdrasil Main program");
             runstate.interrupt();
             main.cleanup();
-            
+
         } catch (FileNotFoundException e) {
             String errMsg = "Configuration file(s) missing!"; 
             logger.error(errMsg, e);
             throw new RuntimeException(errMsg, e);
         }
-        
-  }
+    }
 
     private void cleanup() {
         bitrepository.shutdown();
@@ -141,7 +153,7 @@ public class Main {
         }
         sd.cleanup();
     }
-    
+
     /** 
      * @return the configuration directory.
      */
@@ -190,9 +202,9 @@ public class Main {
      * @throws YggdrasilException When unable to connect to message queue.
      * @throws FileNotFoundException Pass through from workflow run method.
      */
-    private void runWorkflow(final StateDatabase sd, final Bitrepository bitrepository,
-            final Config generalConfig, final Models modelsConfig, final RabbitMqSettings rabbitMqSettings) 
-                    throws FileNotFoundException, YggdrasilException {
+    private void runWorkflow(final StateDatabase sd, final Bitrepository bitrepository, final Config generalConfig, 
+            final Models modelsConfig, final RabbitMqSettings rabbitMqSettings) throws FileNotFoundException, 
+            YggdrasilException {
         logger.info("Starting main workflow of Yggdrasil program");
         this.initializeRabbitMQ(rabbitMqSettings);
         final Workflow wf = new Workflow(this.mq, sd, bitrepository, generalConfig, modelsConfig);
@@ -213,5 +225,4 @@ public class Main {
             runWorkflow(sd, bitrepository, generalConfig, modelsConfig, rabbitMqSettings);   
         }
     }
-        
 }

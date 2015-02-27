@@ -16,22 +16,28 @@ public class XmlErrorHandler extends XmlErrorHandlerAbstract {
     @Override
     public void error(SAXParseException exception) throws SAXException {
         ++numberOfErrors;
-        errors.add("Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage());
-        logger.error("SAX parsing error!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
+        errors.add("Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " 
+                + exception.getMessage());
+        logger.error("SAX parsing error!", "Line " + exception.getLineNumber() + ", Column " 
+                + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
     }
 
     @Override
     public void fatalError(SAXParseException exception) throws SAXException {
         ++numberOfFatalErrors;
-        fatalErrors.add("Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage());
-        logger.error("SAX parsing error!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
+        fatalErrors.add("Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " 
+                + exception.getMessage());
+        logger.error("SAX parsing error!", "Line " + exception.getLineNumber() + ", Column " 
+                + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
     }
 
     @Override
     public void warning(SAXParseException exception) throws SAXException {
         ++numberOfWarnings;
-        warnings.add("Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage());
-        logger.warn("SAX parsing warning!", "Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
+        warnings.add("Line " + exception.getLineNumber() + ", Column " + exception.getColumnNumber() + ": " 
+                + exception.getMessage());
+        logger.warn("SAX parsing warning!", "Line " + exception.getLineNumber() + ", Column " 
+                + exception.getColumnNumber() + ": " + exception.getMessage(), exception);
     }
 
 }

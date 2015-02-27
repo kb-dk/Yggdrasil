@@ -27,14 +27,14 @@ public class XmlEntityResolver implements EntityResolver {
     private static Logger logger = LoggerFactory.getLogger(XmlEntityResolver.class.getName());
 
     /** Path to cache directory. */
-    protected File cache_dir;
+    protected File cacheDir;
 
     /**
      * Construct a caching XML entity resolver instance.
      * @param cacheDir path to cache directory
      */
     public XmlEntityResolver(File cacheDir) {
-        this.cache_dir = cacheDir;
+        this.cacheDir = cacheDir;
         if (!cacheDir.exists()) {
             boolean createDirsSuccess = cacheDir.mkdirs();
             logger.debug("Created dir '" + cacheDir.getAbsolutePath() + "' successfully: " + createDirsSuccess);
@@ -42,14 +42,13 @@ public class XmlEntityResolver implements EntityResolver {
     }
 
     @Override
-    public synchronized InputSource resolveEntity(String publicId, String systemId)
-            throws SAXException, IOException {
+    public synchronized InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         logger.info("Resolving: " + systemId + " (\"" + publicId + "\")");
         if (systemId != null) {
             int pos = systemId.lastIndexOf("/");
             if (pos != -1) {
                 String res = systemId.substring(pos + 1);
-                File file = new File(cache_dir, res);
+                File file = new File(cacheDir, res);
                 if (file.exists() && file.isFile()) {
                     /*
                      * Load cached dtd.
@@ -78,8 +77,6 @@ public class XmlEntityResolver implements EntityResolver {
                         while ((len = in.read( buffer, 0, 1024)) != -1) {
                             out.write(buffer, 0, len);
                         }
-                        out.close();
-                        in.close();
                         logger.info(" Saving cached: " + file.getAbsolutePath());
                         return new InputSource(new BufferedReader(new InputStreamReader(new FileInputStream(file), 
                                 Charset.defaultCharset())));
@@ -93,13 +90,15 @@ public class XmlEntityResolver implements EntityResolver {
                         try {
                             if (out != null) {
                                 out.close();
+                                out = null;
                             }
-                        } catch (IOException e) {}
-                        try {
                             if (in != null) {
                                 in.close();
+                                in = null;
                             }
-                        } catch (IOException e) {}
+                        } catch (IOException e) {
+                            logger.warn("Issue closing the input and output streams.", e);
+                        }
                     }
                 }
             }

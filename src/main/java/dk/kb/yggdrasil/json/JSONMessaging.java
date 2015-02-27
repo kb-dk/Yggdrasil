@@ -27,22 +27,22 @@ public class JSONMessaging {
     private static Logger logger = LoggerFactory.getLogger(JSONMessaging.class.getName());
 
     /** JSON encoding encoder/decoder dispatcher. */
-    protected static final JSONEncoding json_encoding = JSONEncoding.getJSONEncoding();
+    protected static final JSONEncoding JSON_ENCODING = JSONEncoding.getJSONEncoding();
 
     /** JSON object mapping worker. */
-    protected static final JSONObjectMappings json_om = new JSONObjectMappings();
+    protected static final JSONObjectMappings JSON_OM = new JSONObjectMappings();
 
     /** JSON decoder/encoder. */
-    protected static final JSONText json_text;
+    protected static final JSONText JSON_TEXT;
 
     /**
      * Initialize JSON marshaller.
      */
     static {
-        json_text = new JSONText();
+        JSON_TEXT = new JSONText();
         try {
-            json_om.register(PreservationRequest.class);
-            json_om.register(PreservationResponse.class);
+            JSON_OM.register(PreservationRequest.class);
+            JSON_OM.register(PreservationResponse.class);
         } catch (JSONException e) {
             logger.error(e.toString(), e);
         }
@@ -57,9 +57,10 @@ public class JSONMessaging {
     public static PreservationRequest getPreservationRequest(PushbackInputStream in) throws YggdrasilException {
         try {
             int encoding = JSONEncoding.encoding(in);
-            JSONDecoder json_decoder = json_encoding.getJSONDecoder(encoding);
-            JSONStructure json_object = json_text.decodeJSONtext(in, json_decoder);
-            PreservationRequest request = json_om.getStructureUnmarshaller().toObject(json_object, PreservationRequest.class);
+            JSONDecoder json_decoder = JSON_ENCODING.getJSONDecoder(encoding);
+            JSONStructure json_object = JSON_TEXT.decodeJSONtext(in, json_decoder);
+            PreservationRequest request = JSON_OM.getStructureUnmarshaller().toObject(json_object, 
+                    PreservationRequest.class);
             return request;
         } catch (IOException e) {
             throw new YggdrasilException("IOException unmarshalling preservation request.", e);
@@ -76,10 +77,10 @@ public class JSONMessaging {
      */
     public static byte[] getPreservationResponse(PreservationResponse response) throws YggdrasilException {
         try {
-            JSONEncoder json_encoder = json_encoding.getJSONEncoder(JSONEncoding.E_UTF8);
-            JSONStructure json_object = json_om.getStructureMarshaller().toJSON(response);
+            JSONEncoder json_encoder = JSON_ENCODING.getJSONEncoder(JSONEncoding.E_UTF8);
+            JSONStructure json_object = JSON_OM.getStructureMarshaller().toJSON(response);
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            json_text.encodeJSONtext(json_object, json_encoder, false, bout);
+            JSON_TEXT.encodeJSONtext(json_object, json_encoder, false, bout);
             bout.close();
             byte[] content = bout.toByteArray();
             return content;

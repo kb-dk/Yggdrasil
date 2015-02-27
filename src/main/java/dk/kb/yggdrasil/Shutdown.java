@@ -23,19 +23,19 @@ public class Shutdown {
      * @throws RabbitException 
      */
     public static void main(String[] args) throws IOException, YggdrasilException, RabbitException {
-      File configDir = Main.getConfigDir();
-      File rabbitmqConfigFile = new File(configDir, Main.RABBITMQ_CONF_FILENAME);
-      if (!rabbitmqConfigFile.exists()) {
-          throw new YggdrasilException(
-                  "Unable to shutdown Yggdrasil. Rabbitmq configuration is missing. "
-          		+ "Looked here: " +  rabbitmqConfigFile.getAbsolutePath());
-      }
-      RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
-      MQ mq = new MQ(rabbitMqSettings);
-      String message = "Shutdown Yggdrasil, please";
-      mq.publishOnQueue(rabbitMqSettings.getPreservationDestination(), 
-              message.getBytes(Charset.defaultCharset()), MQ.SHUTDOWN_MESSAGE_TYPE);
-      mq.cleanup();
+        File configDir = Main.getConfigDir();
+        File rabbitmqConfigFile = new File(configDir, Main.RABBITMQ_CONF_FILENAME);
+        if (!rabbitmqConfigFile.exists()) {
+            throw new YggdrasilException(
+                    "Unable to shutdown Yggdrasil. Rabbitmq configuration is missing. "
+                            + "Looked here: " +  rabbitmqConfigFile.getAbsolutePath());
+        }
+        RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
+        MQ mq = new MQ(rabbitMqSettings);
+        String message = "Shutdown Yggdrasil, please";
+        mq.publishOnQueue(rabbitMqSettings.getPreservationDestination(), 
+                message.getBytes(Charset.defaultCharset()), MQ.SHUTDOWN_MESSAGE_TYPE);
+        mq.close();
     }
 
 }

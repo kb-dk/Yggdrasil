@@ -1,7 +1,6 @@
 package dk.kb.yggdrasil;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.PushbackInputStream;
 
 import org.slf4j.Logger;
@@ -30,11 +29,12 @@ public class Workflow {
     /** The RabbitMQ connection used by this workflow. */
     private MQ mq;
     /** Size of pushback buffer for determining the encoding of the json message. */
-    private final static int PUSHBACKBUFFERSIZE = 4;
+    private static final int PUSHBACKBUFFERSIZE = 4;
 
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Workflow.class.getName());
     
+    /** The preservation request handler. */
     private final PreservationRequestHandler preservationRequestHandler;
     
     /**
@@ -61,10 +61,10 @@ public class Workflow {
 
     /**
      * Run this method infinitely.
-     * @throws YggdrasilException
+     * @throws YggdrasilException If a preservation request cannot be handled.
      * @throws RabbitException When message queue connection fails.
      */
-    public void run() throws YggdrasilException, FileNotFoundException, RabbitException {
+    public void run() throws YggdrasilException, RabbitException {
         boolean shutdown = false;
         while (!shutdown) {
             PreservationRequest request = null;

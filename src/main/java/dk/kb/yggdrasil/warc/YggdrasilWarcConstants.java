@@ -2,6 +2,9 @@ package dk.kb.yggdrasil.warc;
 
 import dk.kb.yggdrasil.xslt.extension.Agent;
 
+/**
+ * Constants for creating WARC files.
+ */
 public class YggdrasilWarcConstants {
     /**
      * Generate the WarcInfoPayload that Yggdrasil inserts into the warcfiles being

@@ -14,13 +14,13 @@ import dk.kb.yggdrasil.utils.YamlTools;
  * The mappings are read from the models.yml file.
  */
 public class Models {
-
+    /** Map between models and XSLT scripts.*/
     private final Map<String, String> modelmapper;
 
     /**
      * Constructor.
      * @param mappingFile the YAML file with the mappings
-     * @throws YggdrasilException
+     * @throws YggdrasilException If the model mapping file cannot be loaded.
      */
     public Models(File mappingFile) throws YggdrasilException {
         ArgumentCheck.checkExistsNormalFile(mappingFile, "File mappingFile");

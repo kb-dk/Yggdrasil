@@ -14,9 +14,9 @@ public class JSONMessagingTestUtils extends JSONMessaging {
     public static PreservationResponse getPreservationResponse(PushbackInputStream in) throws YggdrasilException {
         try {
             int encoding = JSONEncoding.encoding(in);
-            JSONDecoder json_decoder = json_encoding.getJSONDecoder(encoding);
-            JSONStructure json_object = json_text.decodeJSONtext(in, json_decoder);
-            PreservationResponse response = json_om.getStructureUnmarshaller().toObject(json_object, PreservationResponse.class);
+            JSONDecoder json_decoder = JSON_ENCODING.getJSONDecoder(encoding);
+            JSONStructure json_object = JSON_TEXT.decodeJSONtext(in, json_decoder);
+            PreservationResponse response = JSON_OM.getStructureUnmarshaller().toObject(json_object, PreservationResponse.class);
             return response;
         } catch (IOException e) {
             throw new YggdrasilException("IOException unmarshalling preservation response.", e);

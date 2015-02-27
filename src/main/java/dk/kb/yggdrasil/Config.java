@@ -22,56 +22,54 @@ public class Config {
     private static final String TEMPORARY_DIR_PROPERTY = "temporary_dir";
     /** The temporary directory. (created if it doesn't exist. )*/
     private final File tmpDir;
-//    /** The prefix for object ids in the management repository (Valhal) **/
-//    private final String MANAGEMENT_REPO_OBJECT_ID_PREFIX_PROPERTY = "management_repo_object_id_prefix";
 
     /** The monitor endpoint port property. */
     private static final String MONITOR_PORT_PROPERTY = "monitor_port";
     /** The monitor port for the RunState service endpoint */
     private final int monitorPort;
-    
+
     /** The property for the warc size limit. */
     private static final String WARC_SIZE_LIMIT_PROPERTY = "warc_size_limit";
     /** The default value for the warc size limit: 1 GB. */
     private static final Long DEFAULT_WARC_SIZE_LIMIT = 1000000000L;
     /** The warc size limit. */
     private final long warcSizeLimit;
-    
+
     /** The property for the upload wait limit. */
     private static final String UPLOAD_WAIT_LIMIT_PROPERTY = "upload_wait_limit";
     /** The default value for the upload wait limit: 10 min.*/
     private static final Long DEFAULT_UPLOAD_WAIT_LIMIT = 600000L;
     /** The upload wait limit.*/
     private final long uploadWaitLimit;
-    
+
     /** The property for the interval for checking the conditions for the WARC files. */
     private static final String CHECK_WARC_CONDITION_INTERVAL_PROPERTY = "check_conditions";
     /** The default value for the interval.*/
     private static final Long DEFAULT_CHECK_WARC_CONDITION_INTERVAL = 60000L;
     /** The interval for checking WARC conditions. */
     private final Long checkWarcConditionInterval;
-    
+
     /**
      * Constructor for class reading the general Yggdrasil config file.
      * @param yggrasilConfigFile the config file.
-     * @throws YggdrasilException
+     * @throws YggdrasilException If an issue occurs during loading the configuration.
      */
     public Config(File yggrasilConfigFile) throws YggdrasilException {
-       ArgumentCheck.checkExistsNormalFile(yggrasilConfigFile, "File yggrasilConfigFile");
-       configdir = yggrasilConfigFile.getParentFile();
-       Map<String, LinkedHashMap> settings = YamlTools.loadYamlSettings(yggrasilConfigFile);
-       Map<String, Object> valuesMap = settings.get(RunningMode.getMode().toString());
+        ArgumentCheck.checkExistsNormalFile(yggrasilConfigFile, "File yggrasilConfigFile");
+        configdir = yggrasilConfigFile.getParentFile();
+        Map<String, LinkedHashMap> settings = YamlTools.loadYamlSettings(yggrasilConfigFile);
+        Map<String, Object> valuesMap = settings.get(RunningMode.getMode().toString());
 
-       databaseDir = extractConfigValueAsDirectory(valuesMap, DATABASE_DIR_PROPERTY, null);
-       tmpDir = extractConfigValueAsDirectory(valuesMap, TEMPORARY_DIR_PROPERTY, "temporarydir");
-       
-       monitorPort = (Integer) extractConfigValue(valuesMap, MONITOR_PORT_PROPERTY, null);
-       warcSizeLimit = extractConfigLongValue(valuesMap, WARC_SIZE_LIMIT_PROPERTY, DEFAULT_WARC_SIZE_LIMIT);
-       uploadWaitLimit = extractConfigLongValue(valuesMap, UPLOAD_WAIT_LIMIT_PROPERTY, DEFAULT_UPLOAD_WAIT_LIMIT);
-       checkWarcConditionInterval = extractConfigLongValue(valuesMap, CHECK_WARC_CONDITION_INTERVAL_PROPERTY, 
-               DEFAULT_CHECK_WARC_CONDITION_INTERVAL);
+        databaseDir = extractConfigValueAsDirectory(valuesMap, DATABASE_DIR_PROPERTY, null);
+        tmpDir = extractConfigValueAsDirectory(valuesMap, TEMPORARY_DIR_PROPERTY, "temporarydir");
+
+        monitorPort = (Integer) extractConfigValue(valuesMap, MONITOR_PORT_PROPERTY, null);
+        warcSizeLimit = extractConfigLongValue(valuesMap, WARC_SIZE_LIMIT_PROPERTY, DEFAULT_WARC_SIZE_LIMIT);
+        uploadWaitLimit = extractConfigLongValue(valuesMap, UPLOAD_WAIT_LIMIT_PROPERTY, DEFAULT_UPLOAD_WAIT_LIMIT);
+        checkWarcConditionInterval = extractConfigLongValue(valuesMap, CHECK_WARC_CONDITION_INTERVAL_PROPERTY, 
+                DEFAULT_CHECK_WARC_CONDITION_INTERVAL);
     }
-    
+
     /**
      * Extracts the configuration value for the given property.
      * If the property has not been defined in the configuration, then the default value is used.
@@ -93,7 +91,7 @@ public class Config {
         }
         return res;
     }
-    
+
     /**
      * Extracts a configuration property as a Long, even though YAML claims it to be a Integer.
      * @param configs The configuration map to extract the given configuration from.
@@ -111,7 +109,7 @@ public class Config {
         }
         return (Long) res;
     }
-    
+
     /**
      * Extracts the configuration value for the given property.
      * If the property has not been defined in the configuration, then the default value is used.
@@ -133,7 +131,7 @@ public class Config {
         }
         return res;
     }
-    
+
     /**
      * Instantiates a configuration property as a directory.
      * @param configs The configuration map to extract the given configuration from.
@@ -156,24 +154,24 @@ public class Config {
             throw new YggdrasilException("The configuration '" + property 
                     + "' cannot be instantiated as a directory.");
         }
-        
+
         return res;
     }
-    
+
     /** 
      * @return the database dir
      */
     public File getDatabaseDir() {
         return databaseDir;
     }
-    
+
     /** 
      * @return the temporary directory
      */
     public File getTemporaryDir() {
         return tmpDir;
     }  
-    
+
     /** 
      * @return the config directory
      */
@@ -194,14 +192,14 @@ public class Config {
     public long getWarcSizeLimit() {
         return warcSizeLimit;
     }
-    
+
     /**
      * @return The upload wait limit.
      */
     public long getUploadWaitLimit() {
         return uploadWaitLimit;
     }
-    
+
     /**
      * @return The interval for checking the warc conditions.
      */

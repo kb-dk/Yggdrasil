@@ -56,7 +56,7 @@ public class RunState implements Runnable {
             final SocketAddress endpoint = new InetSocketAddress(hname, MONITOR_PORT);
             if (!sock.isBound()) {
                 sock.bind(endpoint);
-                }
+            }
 
         } catch (YggdrasilException e) {
             logger.error("Caught exception while getting monitor port form config file", e);
@@ -93,7 +93,7 @@ public class RunState implements Runnable {
                 if (Thread.currentThread().isInterrupted()) {
                     logger.info("RunState Thread interrupted");
                     break;
-                  }
+                }
             }
         } catch (Exception e) {
             logger.error("Caught exception while running RunState", e);

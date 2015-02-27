@@ -21,7 +21,8 @@ public final class Agent {
     public static final String ORGANIZATION_ID = "kbDk";
 
     /** Organization name. */
-    public static final String ORGANIZATION_NAME = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
+    public static final String ORGANIZATION_NAME = 
+            "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
 
     /** Size of the major + minor substring. */
     private static final int SIZE_OF_MAJOR_MINOR_SUBSTRING = 3;
@@ -42,10 +43,10 @@ public final class Agent {
     public static final String DEPARTMENT_NAME = "NSA: Nationalsamlingsafdelingen";
 
     /** PREMIS message digest originator. */
-    public static final String MESSAGE_DIGEST_ORIGINATOR = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
+    public static final String MESSAGE_DIGEST_ORIGINATOR = ORGANIZATION_NAME;
 
     /** MODS access condition. */
-    public static final String MODS_ACCESS_CONDITION = "Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek";
+    public static final String MODS_ACCESS_CONDITION = ORGANIZATION_NAME;
 
     /**
      * Private constructor to prevent instantiation of extension class.

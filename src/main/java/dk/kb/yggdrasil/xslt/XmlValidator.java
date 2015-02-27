@@ -73,8 +73,10 @@ public class XmlValidator {
      * @param entityResolver XML entity resolver or null
      * @param errorHandler error handler or null
      * @return XML validation result
+     * @throws YggdrasilException If the validation fails.
      */
-    public XmlValidationResult validate(File xmlFile, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler) throws YggdrasilException {
+    public XmlValidationResult validate(File xmlFile, EntityResolver entityResolver, 
+            XmlErrorHandlerAbstract errorHandler) throws YggdrasilException {
         ArgumentCheck.checkExistsNormalFile(xmlFile, "xmlFile");
         XmlValidationResult result = new XmlValidationResult();
         if (errorHandler == null) {
@@ -137,14 +139,15 @@ public class XmlValidator {
                 result.bValid = !errorHandler.hasErrors();
             }
         } catch (Throwable t) {
-            logger.error("Exception validating XML stream!", t.toString(), t);
+            logger.error("Exception validating XML stream!", t);
             try {
                 String publicId = "";
                 String systemId = "";
                 int lineNumber = -1;
                 int columnNumber = -1;
                 Exception sillyApiException = new Exception("XML validation exception!", t);
-                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, sillyApiException));
+                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, 
+                        sillyApiException));
             } catch (SAXException e) {
                 throw new YggdrasilException("Failed to add error to ErrorHandler!", e);
             }
@@ -171,8 +174,10 @@ public class XmlValidator {
      * @param errorHandler error handler or null
      * @param result validation results
      * @return result of testing, true if the document is well-formed
+     * @throws YggdrasilException If if fails.
      */
-    public boolean testStructuralValidity(InputStream in, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) throws YggdrasilException {
+    public boolean testStructuralValidity(InputStream in, EntityResolver entityResolver, 
+            XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(result, "result");
         if (errorHandler == null) {
@@ -226,7 +231,8 @@ public class XmlValidator {
                 int lineNumber = -1;
                 int columnNumber = -1;
                 Exception sillyApiException = new Exception("XML validation exception!", t);
-                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, sillyApiException));
+                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, 
+                        sillyApiException));
             } catch (SAXException e) {
                 throw new YggdrasilException("Failed to add error to ErrorHandler!", e);
             }
@@ -251,8 +257,10 @@ public class XmlValidator {
      * @param errorHandler error handler or null
      * @param result validation results
      * @return result of testing, true if the document was validated against DTD/XSD(s).
+     * @throws YggdrasilException If it fails.
      */
-    public boolean testDefinedValidity(InputStream in, EntityResolver entityResolver, XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) throws YggdrasilException {
+    public boolean testDefinedValidity(InputStream in, EntityResolver entityResolver, 
+            XmlErrorHandlerAbstract errorHandler, XmlValidationResult result) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(result, "result");
         if (errorHandler == null) {
@@ -276,7 +284,8 @@ public class XmlValidator {
                 int lineNumber = -1;
                 int columnNumber = -1;
                 Exception sillyApiException = new Exception("XML validation exception!", t);
-                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, sillyApiException));
+                errorHandler.error(new SAXParseException(t.toString(), publicId, systemId, lineNumber, columnNumber, 
+                        sillyApiException));
             } catch (SAXException e) {
                 throw new YggdrasilException("Failed to add error to ErrorHandler!", e);
             }

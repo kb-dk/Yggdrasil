@@ -20,7 +20,7 @@ public class HttpPayload {
     /** Response content length, null if not returned. */
     private Long contentLength;
     /** The amount of data read into the buffer. */
-    private static int READBUFFERSIZE = 16384; // 16 Kbytes
+    private static final int READBUFFERSIZE = 16384; // 16 Kbytes
     
     /**
      * Construct a payload object with the supplied parameters.

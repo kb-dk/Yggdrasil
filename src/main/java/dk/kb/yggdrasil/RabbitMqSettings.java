@@ -48,13 +48,13 @@ public final class RabbitMqSettings {
     private String preservationResponseDestination;
 
     /** The interval for polling the MQ in minutes. **/
-    private int polling_interval_in_minutes;
+    private int pollingIntervalInMinutes;
 
     /**
      * Constructor. Reads RabbitMQ settings from a YAML file.
      * @param ymlFile A YAML file containing RabbitMQ settings.
      * @throws YggdrasilException If some or all of the required RabbitMQ settings are missing.
-     * @throws YggdrasilException If the YAML file is missing
+     * @throws FileNotFoundException If the YAML file is missing
      */
     public RabbitMqSettings(File ymlFile) throws YggdrasilException, FileNotFoundException {
         // Select correct LinkedHashMap based on the runningmode.
@@ -72,30 +72,30 @@ public final class RabbitMqSettings {
             Map preservationMap = (Map) settings.get(RABBIT_MQ_PRESERVATION_PROPERTY);
             preservationDestination = (String) preservationMap.get(RABBIT_MQ_DESTINATION_PROPERTY);
             preservationResponseDestination = (String) preservationMap.get(RABBIT_MQ_PRESERVATION_RESPONSE_PROPERTY);
-            
+
             try {
-                polling_interval_in_minutes = (Integer) preservationMap.get(RABBIT_MQ_POLLING_INTERVAL_IN_MINUTES_PROPERTY);
-                
-                if (polling_interval_in_minutes < 0) {
-                    throw new YggdrasilException(
-                        "The polling interval wasn't set correctly, it has to be positive");}
-                
+                pollingIntervalInMinutes = (Integer) preservationMap.get(
+                        RABBIT_MQ_POLLING_INTERVAL_IN_MINUTES_PROPERTY);
+
+                if (pollingIntervalInMinutes < 0) {
+                    throw new YggdrasilException("The polling interval wasn't set correctly, it has to be positive");
+                }
             } catch (Exception e) {
                 throw new YggdrasilException("The polling interval wasn't set correctly");
             }
         } else {
             throw new YggdrasilException("Missing some or all of the required properties in the settings file");
         }
-        
+
         // Check if rabbitmq-port or rabbitmq-hostname is overridden by defined properties
         // If either is overriden, set the BrokerURI to the overridden values and use the default value if only
         // partially overriden.
         if (null != System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME)
                 ||
                 null != System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT)) {
-          setBrokerUri("amqp://"
-                + System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME, RABBIT_MQ_DEFAULT_HOSTNAME)
-                + ":" + System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT, RABBIT_MQ_DEFAULT_PORT));
+            setBrokerUri("amqp://"
+                    + System.getProperty(RabbitMqSettings.RABBIT_MQ_HOSTNAME, RABBIT_MQ_DEFAULT_HOSTNAME)
+                    + ":" + System.getProperty(RabbitMqSettings.RABBIT_MQ_PORT, RABBIT_MQ_DEFAULT_PORT));
         }
     }
 
@@ -132,19 +132,19 @@ public final class RabbitMqSettings {
     }
 
     /**
-    *
-    * @return the interval for polling the MQ in minutes
-    */
-   public int getPollingIntervalInMinutes() {
-       return polling_interval_in_minutes;
-   }
+     *
+     * @return the interval for polling the MQ in minutes
+     */
+    public int getPollingIntervalInMinutes() {
+        return pollingIntervalInMinutes;
+    }
 
     /**
      * Set the brokerUri.
      * @param newBrokerUri A new value for the brokerUri
      */
     public void setBrokerUri(String newBrokerUri) {
-       this.brokerUri = newBrokerUri;
+        this.brokerUri = newBrokerUri;
     }
 
 }
