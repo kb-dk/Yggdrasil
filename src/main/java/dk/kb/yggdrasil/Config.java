@@ -18,6 +18,7 @@ public class Config {
     private static final String DATABASE_DIR_PROPERTY = "database_dir";
     /** The database directory.  (created if it doesn't exist. ) */
     private final File databaseDir;
+
     /** The temporary directory property.  */
     private static final String TEMPORARY_DIR_PROPERTY = "temporary_dir";
     /** The temporary directory. (created if it doesn't exist. )*/
@@ -25,6 +26,8 @@ public class Config {
 
     /** The monitor endpoint port property. */
     private static final String MONITOR_PORT_PROPERTY = "monitor_port";
+    /** The default value for the monitor port */
+    private static final Integer DEFAULT_MONITOR_PORT_PROPERTY = 1938;
     /** The monitor port for the RunState service endpoint */
     private final int monitorPort;
 
@@ -63,7 +66,7 @@ public class Config {
         databaseDir = extractConfigValueAsDirectory(valuesMap, DATABASE_DIR_PROPERTY, null);
         tmpDir = extractConfigValueAsDirectory(valuesMap, TEMPORARY_DIR_PROPERTY, "temporarydir");
 
-        monitorPort = (Integer) extractConfigValue(valuesMap, MONITOR_PORT_PROPERTY, null);
+        monitorPort = (Integer) extractConfigValue(valuesMap, MONITOR_PORT_PROPERTY, DEFAULT_MONITOR_PORT_PROPERTY);
         warcSizeLimit = extractConfigLongValue(valuesMap, WARC_SIZE_LIMIT_PROPERTY, DEFAULT_WARC_SIZE_LIMIT);
         uploadWaitLimit = extractConfigLongValue(valuesMap, UPLOAD_WAIT_LIMIT_PROPERTY, DEFAULT_UPLOAD_WAIT_LIMIT);
         checkWarcConditionInterval = extractConfigLongValue(valuesMap, CHECK_WARC_CONDITION_INTERVAL_PROPERTY, 

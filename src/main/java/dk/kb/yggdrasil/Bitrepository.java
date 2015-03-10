@@ -203,8 +203,8 @@ public class Bitrepository {
         if(modeMap.containsKey(YAML_BITMAG_CLIENTS)) {
             Map clientMap = (Map) modeMap.get(YAML_BITMAG_CLIENTS);
             if(clientMap.containsKey(YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES)) {
-                this.maxNumberOfFailingPillars = Integer.parseInt((String) clientMap.get(
-                        YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES));
+                this.maxNumberOfFailingPillars = (Integer) clientMap.get(
+                        YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES);
             }            
         }
     }

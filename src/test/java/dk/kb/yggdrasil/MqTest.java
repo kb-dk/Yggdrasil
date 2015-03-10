@@ -59,13 +59,15 @@ public class MqTest {
         RabbitMqSettings settings = fetchMqSettings();
         MQ mq = new MQ(settings);
         assertTrue(settings.equals(mq.getSettings()));
-        String message = "Hello world";
+        String message = "Hello world from " + "Class:" + this.getClass().getName()
+                + " Method:" + Thread.currentThread().getStackTrace()[1].getMethodName();
         String queueName = settings.getPreservationDestination();
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         MqResponse messageReceived = mq.receiveMessageFromQueue(queueName); 
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
         
-        message = "Hello X";
+        message = "Hello X from " + "Class:" + this.getClass().getName()
+                + " Method:" + Thread.currentThread().getStackTrace()[1].getMethodName();
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         messageReceived = mq.receiveMessageFromQueue(queueName);
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
@@ -86,7 +88,7 @@ public class MqTest {
         assertTrue(messageReceived.getPayload().equals(message.getBytes()));
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testReceived() throws KeyManagementException,
     NoSuchAlgorithmException, URISyntaxException, IOException, YggdrasilException {
@@ -104,7 +106,9 @@ public class MqTest {
         channel.exchangeDeclare(exchangeName, "direct", true);
         channel.queueDeclare(queueName, true, false, false, null);
         channel.queueBind(queueName, exchangeName, routingKey);
-        byte[] messageBodyBytes = "hello world".getBytes();
+        String message = "Hello world from " + "Class:" + this.getClass().getName()
+                + " Method:" + Thread.currentThread().getStackTrace()[1].getMethodName();
+        byte[] messageBodyBytes = message.getBytes();
         // .userId("bob")
         channel.basicPublish(exchangeName, routingKey,
                 new AMQP.BasicProperties.Builder().contentType("text/plain").deliveryMode(2)

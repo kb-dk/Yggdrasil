@@ -6,7 +6,7 @@ development:
 
 test:
   settings_dir: ./src/test/resources/config/bitmag-test-settings
-  keyfile: ./src/test/resources/config/bitmag-test-settings/client.pem    
+  keyfile: ./src/test/resources/config/bitmag-test-settings/webklient.pem    
   client:
     putfile_max_pillars_failures: 1  
 

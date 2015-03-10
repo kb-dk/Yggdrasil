@@ -6,7 +6,7 @@ development:
     polling_interval_in_minutes: 1
 
 test:
-  mq_uri: "amqp://localhost:5673"
+  mq_uri: "amqp://localhost:5672"
   preservation:
     destination: "preservation-test-queue"
     response: "preservation-test-response-queue"

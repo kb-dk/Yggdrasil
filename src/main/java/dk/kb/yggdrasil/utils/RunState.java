@@ -89,9 +89,13 @@ public class RunState implements Runnable {
                 }
                 /** Close the inputstream since we really don't care about it */
                 rd.close();
-                //TimeUnit.SECONDS.sleep(1);
                 if (Thread.currentThread().isInterrupted()) {
                     logger.info("RunState Thread interrupted");
+                    sock.close();
+                    if (sock.isClosed())
+                    {
+                        logger.info("Socket closed"); 
+                    }
                     break;
                 }
             }
