@@ -137,11 +137,11 @@ public class MQ {
             // These next 3 lines are not necessarily all needed
             boolean durableExchange = true; // Exchanges will survive a rabbitmq server crash.
             theChannel.exchangeDeclare(exchangeName, exchangeType, durableExchange);
-            boolean durable = true;
+            boolean durableQueue = true;
             boolean exclusive = false; // meaning restricted to this connection
             boolean autodelete = false; //meaning delete when no longer used
             Map<String, Object> arguments = null;
-            theChannel.queueDeclare(queueName, durable, exclusive, autodelete, arguments);
+            theChannel.queueDeclare(queueName, durableQueue, exclusive, autodelete, arguments);
             // Bind a queue to a given exchange
             theChannel.queueBind(queueName, exchangeName, routingKey);
         } catch (IOException e) {

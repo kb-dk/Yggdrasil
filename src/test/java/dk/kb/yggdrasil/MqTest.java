@@ -10,7 +10,9 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,8 +23,11 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.ShutdownSignalException;
 
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
@@ -45,7 +50,6 @@ import dk.kb.yggdrasil.messaging.MqResponse;
  */
 @RunWith(JUnit4.class)
 public class MqTest {
-
     public static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
     
     @BeforeClass
@@ -53,21 +57,29 @@ public class MqTest {
     	System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, RunningMode.TEST.name());
     }
 
+    /**
+     * Testing of queue publish and consume for MQ class 
+     * @throws YggdrasilException
+     * @throws IOException
+     * @throws RabbitException
+     */
     @Test
     @Ignore
     public void finalTest() throws YggdrasilException, IOException, RabbitException {
         RabbitMqSettings settings = fetchMqSettings();
         MQ mq = new MQ(settings);
         assertTrue(settings.equals(mq.getSettings()));
-        String message = "Hello world from " + "Class:" + this.getClass().getName()
-                + " Method:" + Thread.currentThread().getStackTrace()[1].getMethodName();
+        
+        String functionName = this.getClass().getName()
+                + "." + Thread.currentThread().getStackTrace()[1].getMethodName();
+        
+        String message = "Hello world from " + functionName;
         String queueName = settings.getPreservationDestination();
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         MqResponse messageReceived = mq.receiveMessageFromQueue(queueName); 
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
         
-        message = "Hello X from " + "Class:" + this.getClass().getName()
-                + " Method:" + Thread.currentThread().getStackTrace()[1].getMethodName();
+        message = "Hello X from " + functionName;
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         messageReceived = mq.receiveMessageFromQueue(queueName);
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
@@ -75,6 +87,12 @@ public class MqTest {
         mq.close();
     }
 
+    /**
+     * Unit test for sending a Yggdrasil shutdown message
+     * @throws YggdrasilException
+     * @throws IOException
+     * @throws RabbitException
+     */
     @Test
     @Ignore
     public void sendShutdown() throws YggdrasilException, IOException, RabbitException {
@@ -87,72 +105,61 @@ public class MqTest {
         assertTrue(messageReceived.getMessageType().equals(MQ.SHUTDOWN_MESSAGE_TYPE));
         assertTrue(messageReceived.getPayload().equals(message.getBytes()));
     }
-    
-    @Ignore
+
+    /**
+     * Unit test for general testing of queue publish and consume
+     * @throws KeyManagementException
+     * @throws NoSuchAlgorithmException
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws YggdrasilException
+     * @throws ShutdownSignalException
+     * @throws ConsumerCancelledException
+     * @throws InterruptedException
+     */
     @Test
-    public void testReceived() throws KeyManagementException,
-    NoSuchAlgorithmException, URISyntaxException, IOException, YggdrasilException {
+    public void testReceived() throws KeyManagementException,NoSuchAlgorithmException, URISyntaxException, IOException, 
+    YggdrasilException, ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         RabbitMqSettings settings = fetchMqSettings();
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(settings.getBrokerUri());
         Connection conn = factory.newConnection();
 
         final Channel channel = conn.createChannel();
+        
+        String functionName = this.getClass().getName()
+                + "." + Thread.currentThread().getStackTrace()[1].getMethodName();
 
-        String exchangeName = "exchange";
-        String queueName = settings.getPreservationDestination();
+        String exchangeName = "exchange" + "-" + this.getClass().getName();
+        String queueName = settings.getPreservationDestination() + "-" + functionName;
         String routingKey = "routing";
 
         channel.exchangeDeclare(exchangeName, "direct", true);
-        channel.queueDeclare(queueName, true, false, false, null);
+        
+        boolean queueDurable = true;
+        channel.queueDeclare(queueName, queueDurable, false, false, null);
         channel.queueBind(queueName, exchangeName, routingKey);
-        String message = "Hello world from " + "Class:" + this.getClass().getName()
-                + " Method:" + Thread.currentThread().getStackTrace()[1].getMethodName();
-        byte[] messageBodyBytes = message.getBytes();
-        // .userId("bob")
+
+        String pmessage = "Hello world from " + functionName;
+        byte[] messageBodyBytes = pmessage.getBytes();
+        
         channel.basicPublish(exchangeName, routingKey,
                 new AMQP.BasicProperties.Builder().contentType("text/plain").deliveryMode(2)
                 .priority(1).build(), messageBodyBytes);
+        
+        final boolean AUTO_ACK = false;
+        
+        QueueingConsumer consumer = new QueueingConsumer(channel);
+        channel.basicConsume(queueName, AUTO_ACK, consumer);
+        QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+        String cmessage = new String(delivery.getBody());
+        
+        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
-        try {
-            Thread.sleep(5*1000);
-        } catch (InterruptedException e) {
-        }
-
-        boolean autoAck = false;
-        channel.basicConsume(queueName, autoAck, "myConsumerTag",
-                new DefaultConsumer(channel) {
-            @Override
-            public void handleDelivery(String consumerTag,
-                    Envelope envelope,
-                    AMQP.BasicProperties properties,
-                    byte[] body)
-                            throws IOException {
-                //String routingKey = envelope.getRoutingKey();
-                //String contentType = properties.getContentType();
-                long deliveryTag = envelope.getDeliveryTag();
-                // (process the message components here ...)
-                //System.out.println(new String(body));
-                channel.basicAck(deliveryTag, false);
-            }
-        });
-
-        // .userId("bob")
-        channel.basicPublish(exchangeName, routingKey,
-                new AMQP.BasicProperties.Builder().contentType("text/plain").deliveryMode(2).priority(1)
-                .build(),messageBodyBytes);
-
-        try {
-            Thread.sleep(5*1000);
-        } catch (InterruptedException e) {
-        }
-
-        channel.basicCancel("myConsumerTag");
-
+        assertEquals(pmessage, cmessage);
+        
         channel.close();
         conn.close();
-        //System.out.println(channel.getCloseReason());
-        
     }
 
     @Test
