@@ -70,16 +70,16 @@ public class MqTest {
         MQ mq = new MQ(settings);
         assertTrue(settings.equals(mq.getSettings()));
         
-        String functionName = this.getClass().getName()
+        String methodName = this.getClass().getName()
                 + "." + Thread.currentThread().getStackTrace()[1].getMethodName();
         
-        String message = "Hello world from " + functionName;
+        String message = "Hello world from " + methodName;
         String queueName = settings.getPreservationDestination();
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         MqResponse messageReceived = mq.receiveMessageFromQueue(queueName); 
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
         
-        message = "Hello X from " + functionName;
+        message = "Hello X from " + methodName;
         mq.publishOnQueue(queueName, message.getBytes(), MQ.PRESERVATIONREQUEST_MESSAGE_TYPE);
         messageReceived = mq.receiveMessageFromQueue(queueName);
         Assert.assertArrayEquals(message.getBytes(), messageReceived.getPayload());
@@ -127,11 +127,11 @@ public class MqTest {
 
         final Channel channel = conn.createChannel();
         
-        String functionName = this.getClass().getName()
+        String methodName = this.getClass().getName()
                 + "." + Thread.currentThread().getStackTrace()[1].getMethodName();
 
         String exchangeName = "exchange" + "-" + this.getClass().getName();
-        String queueName = settings.getPreservationDestination() + "-" + functionName;
+        String queueName = settings.getPreservationDestination() + "-" + methodName;
         String routingKey = "routing";
 
         channel.exchangeDeclare(exchangeName, "direct", true);
@@ -140,7 +140,7 @@ public class MqTest {
         channel.queueDeclare(queueName, queueDurable, false, false, null);
         channel.queueBind(queueName, exchangeName, routingKey);
 
-        String pmessage = "Hello world from " + functionName;
+        String pmessage = "Hello world from " + methodName;
         byte[] messageBodyBytes = pmessage.getBytes();
         
         channel.basicPublish(exchangeName, routingKey,
