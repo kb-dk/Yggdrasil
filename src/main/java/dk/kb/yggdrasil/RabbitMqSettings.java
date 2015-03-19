@@ -41,6 +41,7 @@ public final class RabbitMqSettings {
 
     /** The broker address as a URI. */
     private String brokerUri;
+    
     /** The name of the preservation queue. */
     private String preservationDestination;
 
@@ -124,11 +125,25 @@ public final class RabbitMqSettings {
     }
 
     /**
+     * Set the preservation destination
+     */
+    public void setPreservationDestination(String preservationDestination) {
+        this.preservationDestination = preservationDestination;
+    }
+    
+    /**
      *
      * @return the preservation response destination
      */
     public String getPreservationResponseDestination() {
         return preservationResponseDestination;
+    }
+
+    /**
+     * Set the preservation response destination
+     */
+    public void setPreservationResponseDestination (String preservationResponseDestination) {
+        this.preservationResponseDestination = preservationResponseDestination;
     }
 
     /**
