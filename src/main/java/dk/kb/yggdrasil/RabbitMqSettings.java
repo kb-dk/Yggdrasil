@@ -125,7 +125,8 @@ public final class RabbitMqSettings {
     }
 
     /**
-     * Set the preservation destination
+     * Set the preservation destination.
+     * @param preservationDestination The new destination for the preservation.
      */
     public void setPreservationDestination(String preservationDestination) {
         this.preservationDestination = preservationDestination;
@@ -141,8 +142,9 @@ public final class RabbitMqSettings {
 
     /**
      * Set the preservation response destination
+     * @param preservationResponseDestination The new destination for the preservation responses.
      */
-    public void setPreservationResponseDestination (String preservationResponseDestination) {
+    public void setPreservationResponseDestination(String preservationResponseDestination) {
         this.preservationResponseDestination = preservationResponseDestination;
     }
 
