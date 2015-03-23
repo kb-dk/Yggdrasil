@@ -31,7 +31,7 @@ import dk.kb.yggdrasil.xslt.Models;
  * Created by jatr on 2/24/14.
  */
 @RunWith(JUnit4.class)
-public class WorkflowTest {
+public class WorkflowTest extends MqFixtureTestAPI {
 
     private static Workflow workflow;
     private static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
@@ -48,12 +48,14 @@ public class WorkflowTest {
 
         File rabbitMQConfig = new File(RABBITMQ_CONF_FILE);
         settings = new RabbitMqSettings(rabbitMQConfig);
-        mq = new MQ(settings);
+        mq = instantiatePurgesMQ(settings);
+        
         StateDatabase stateDatabase = new StateDatabase(config.getDatabaseDir());
         Bitrepository bitrepository = Mockito.mock(Bitrepository.class);
         Models models = new Models(new File("config/models.yml"));
 
         workflow = new Workflow(mq, stateDatabase, bitrepository, config, models);
+
     }
 
     @Test

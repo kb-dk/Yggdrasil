@@ -42,7 +42,7 @@ import dk.kb.yggdrasil.messaging.MqResponse;
  *
  */
 @RunWith(JUnit4.class)
-public class MqTest {
+public class MqTest extends MqFixtureTestAPI {
     public static String RABBITMQ_CONF_FILE = "src/test/resources/config/rabbitmq.yml";
     
     @BeforeClass
@@ -63,7 +63,7 @@ public class MqTest {
         
         RabbitMqSettings settings = fetchMqSettings();
         settings.setPreservationDestination(settings.getPreservationDestination() + "-" + methodName);
-        MQ mq = new MQ(settings);
+        MQ mq = instantiatePurgesMQ(settings);
         assertTrue(settings.equals(mq.getSettings()));
         
         String message = "Hello world from " + methodName;
@@ -93,7 +93,7 @@ public class MqTest {
         
         RabbitMqSettings settings = fetchMqSettings();
         settings.setPreservationDestination(settings.getPreservationDestination() + "-" + methodName);
-        MQ mq = new MQ(settings);
+        MQ mq = instantiatePurgesMQ(settings);
         
         String queueName = settings.getPreservationDestination();
         String message = "Shutdown Message";

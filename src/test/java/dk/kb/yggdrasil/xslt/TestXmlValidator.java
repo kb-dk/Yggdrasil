@@ -16,9 +16,8 @@ public class TestXmlValidator {
 
     public static Object[][] xmlFiles = new Object[][] {
         {2, 1, 1, 1, "valhal/xml/basic_file.xml"},
-        {1, 1, 1, 1, "valhal/xml/ordered_instance.xml"},
-        {1, 1, 1, 1, "valhal/xml/single_file_instance.xml"},
-        {1, 1, 1, 1, "valhal/xml/work.xml"}
+        {1, 1, 1, 1, "valhal/xml/instance_with_unordered_multiple_files.xml"},
+        {1, 1, 1, 1, "valhal/xml/namespaceless_mods.xml"}
     };
 
     @Test
@@ -54,6 +53,7 @@ public class TestXmlValidator {
                  * Combined.
                  */
                 url = this.getClass().getClassLoader().getResource(xmlFilename);
+                Assert.assertNotNull(url);
                 file = new File(url.getFile());
                 errorHandler.reset();
                 result = xmlValidator.validate(file, entityResolver, errorHandler);
