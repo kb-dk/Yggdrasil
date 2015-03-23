@@ -23,7 +23,7 @@
         <xsl:value-of select="'Instance'" />
       </xsl:attribute>
       <xsl:attribute name="OBJID">
-        <xsl:value-of select="provenanceMetadata/fields/uuid" />
+        <xsl:value-of select="provenanceMetadata/instance/uuid" />
       </xsl:attribute>
       <xsl:attribute name="PROFILE">
         <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getProfileURL()" />
@@ -131,7 +131,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:objectIdentifierValue">
-                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
+                    <xsl:value-of select="provenanceMetadata/instance/uuid" />
                   </xsl:element>
                 </xsl:element>
                 <!-- BEGIN linkingIntellectualEntityIdentifier -->
@@ -141,7 +141,7 @@
                   </xsl:element>
                   <xsl:element name="premis:linkingIntellectualEntityIdentifierValue">
                     <!-- TODO should be work_uuid -->
-                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
+                    <xsl:value-of select="provenanceMetadata/work/uuid" />
                   </xsl:element>
                 </xsl:element>
                 <!-- END linkingIntellectualEntityIdentifier -->
@@ -248,7 +248,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingObjectIdentifierValue">
-                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
+                    <xsl:value-of select="provenanceMetadata/instance/uuid" />
                   </xsl:element>
                 </xsl:element>
               </premis:event>
