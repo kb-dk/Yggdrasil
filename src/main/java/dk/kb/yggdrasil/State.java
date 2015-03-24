@@ -37,21 +37,25 @@ public enum State implements Serializable {
     PRESERVATION_REQUEST_RECEIVED("Preservation request received and validated"),
     
     /** Preservation request incomplete. Something is missing. Failstate. */
-    PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE
-    ("Preservation request incomplete. Something is missing"),
+    PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE("Preservation request incomplete. Something is missing"),
     
     /** Metadata packaged successfully. */
     PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY("Metadata packaged successfully."),
     
     /** Metadata packaged unsuccessfully (eg. METS error or similar). Failstate. */
-    PRESERVATION_METADATA_PACKAGED_FAILURE(
-            "Metadata packaged unsuccessfully (eg. METS error or similarly)"),
+    PRESERVATION_METADATA_PACKAGED_FAILURE("Metadata packaged unsuccessfully (eg. METS error or similarly)"),
     
     /** Resources downloaded successfully. */
     PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS("Resources downloaded successfully"),
 
     /** Resources downloaded unsuccessfully. Failstate. */
     PRESERVATION_RESOURCES_DOWNLOAD_FAILURE("Resources downloaded unsuccessfully"),
+    
+    /** Resources packaged successfully. */
+    PRESERVATION_RESOURCES_PACKAGE_SUCCESS("Resources packaged successfully."),
+
+    /** Resources not package successfully. Failstate. */
+    PRESERVATION_RESOURCES_PACKAGE_FAILURE("Resources not packaged successfully."),
 
     /** Package complete (metadata and ressources written to the WARC format).
      * and ready to initiate upload. */

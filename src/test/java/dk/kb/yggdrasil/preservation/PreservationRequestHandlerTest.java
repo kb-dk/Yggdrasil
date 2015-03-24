@@ -140,6 +140,8 @@ public class PreservationRequestHandlerTest {
 
         verify(updater).updateRemotePreservationState(any(PreservationRequestState.class), eq(State.PRESERVATION_REQUEST_RECEIVED));
         verify(updater).updateRemotePreservationState(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).updateRemotePreservationState(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).updateRemotePreservationState(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verify(bitrepository).getKnownCollections();
 
         // Wait for timeout

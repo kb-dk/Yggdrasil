@@ -43,9 +43,9 @@ public class PreservationPacker {
     private final String collectionId;
     /** The writer of the WARC file.*/
     private WarcWriterWrapper writer;
-    /** The list of states for the preservationRequests to be stored in the WARC file.*/
-    private List<PreservationRequestState> preservationRequests;
-    /** */
+    /** The preservationRequests where the metadata are stored in the warc file.*/
+    private List<PreservationRequestState> metadataRequests;
+    /** The date for the current timeout. 0 until the writer is initialized. */
     private Long currentTimeout = 0L;
 
     /**
@@ -89,7 +89,7 @@ public class PreservationPacker {
      */
     public synchronized void writePreservationRecord(PreservationRequestState prs) throws YggdrasilException {
         checkInitialize();
-        preservationRequests.add(prs);
+        metadataRequests.add(prs);
         try {
             Uri resourceId = null;
             Digest digestor = new Digest("SHA-1");
@@ -109,6 +109,8 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
+                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                        State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
             if (metadata != null) {
                 try {
@@ -124,11 +126,19 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
+                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                        State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
-            prs.setUploadPackage(writer.getWarcFile());
+            prs.setMetadataWarcFile(writer.getWarcFile());
+            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                    State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
         } catch (FileNotFoundException e) {
+            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                    State.PRESERVATION_METADATA_PACKAGED_FAILURE);
             throw new YggdrasilException("Horrible exception while writing WARC record!", e);
         } catch (IOException e) {
+            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                    State.PRESERVATION_METADATA_PACKAGED_FAILURE);
             throw new YggdrasilException("Horrible exception while writing WARC record!", e);
         }
     }
@@ -142,7 +152,7 @@ public class PreservationPacker {
         verifyConditions();
         if(writer == null) {
             currentTimeout = new Date().getTime() + context.getConfig().getUploadWaitLimit();
-            preservationRequests = new ArrayList<PreservationRequestState>();
+            metadataRequests = new ArrayList<PreservationRequestState>();
             initializeNewWarcFile();
             logger.debug("Initialising new WARC file: " + writer.getWarcFileId() + ", with size limit: " 
                     + context.getConfig().getWarcSizeLimit() + ", date limit: " + new Date(currentTimeout));
@@ -156,7 +166,7 @@ public class PreservationPacker {
     private void uploadWarcFile() throws YggdrasilException {
         boolean success = context.getBitrepository().uploadFile(writer.getWarcFile(), collectionId);
 
-        for(PreservationRequestState prs : preservationRequests) {
+        for(PreservationRequestState prs : metadataRequests) {
             if(success) {
                 updateRequestState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS, prs);
                 logger.info("Upload to bitrepository for UUID '" + prs.getUUID()
@@ -190,7 +200,7 @@ public class PreservationPacker {
      * @throws YggdrasilException
      */
     private void cleanUp() throws YggdrasilException {
-        preservationRequests.clear();
+        metadataRequests.clear();
         if(writer != null) {
             boolean deleteSuccess = writer.getWarcFile().delete();
             logger.debug("Cleaned up file: succesfully removed from disc: " + deleteSuccess);

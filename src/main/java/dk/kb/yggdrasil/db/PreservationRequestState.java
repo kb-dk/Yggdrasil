@@ -35,6 +35,8 @@ public class PreservationRequestState implements Serializable {
     private File metadataPayload;
     /** The id of the warc file. */
     private String warcId;
+    /** The id of the warc file containing the resource.*/
+    private String fileWarcId;
 
     /**
      * The constructor of the PreservationRequestState.
@@ -114,19 +116,35 @@ public class PreservationRequestState implements Serializable {
     }
 
     /**
-     * @return the Uploadpackage file.
+     * @return the warc file containing the metadata.
      */
     public String getWarcId() {
         return warcId;
     }
 
     /**
-     * Set the uploadpackage file.
-     * @param uploadPackage The UploadPackage (This file must exist)
+     * Set the warc file containing the metadata.
+     * @param metadataWarcPackage The UploadPackage (This file must exist)
      */
-    public void setUploadPackage(File uploadPackage) {
-        ArgumentCheck.checkExistsNormalFile(uploadPackage, "File uploadPackage");
-        this.warcId = uploadPackage.getName();
+    public void setMetadataWarcFile(File metadataWarcPackage) {
+        ArgumentCheck.checkExistsNormalFile(metadataWarcPackage, "File metadataWarcPackage");
+        this.warcId = metadataWarcPackage.getName();
+    }
+    
+    /**
+     * @return The id of the warc file containing the resource file.
+     */
+    public String getFileWarcId() {
+        return fileWarcId;
+    }
+    
+    /**
+     * Set the warc file with the resource. 
+     * @param resourceWarcPackage The Warc file containing the resource.
+     */
+    public void setResourceWarcFile(File resourceWarcPackage) {
+        ArgumentCheck.checkExistsNormalFile(resourceWarcPackage, "File resourceWarcPackage");
+        this.fileWarcId = resourceWarcPackage.getName();        
     }
 
     /**

@@ -16,4 +16,8 @@ public class Preservation {
     /** WARC ID, optional. */
     @JSONNullable
     public String warc_id;
+        
+    /** WARC ID for the file, optional. */
+    @JSONNullable
+    public String file_warc_id; 
 }

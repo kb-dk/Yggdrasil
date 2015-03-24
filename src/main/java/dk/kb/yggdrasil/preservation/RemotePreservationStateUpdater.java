@@ -17,7 +17,7 @@ import dk.kb.yggdrasil.messaging.MQ;
  */
 public class RemotePreservationStateUpdater {
     /** Logging mechanism. */
-    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     /** The RabbitMQ connection used by this workflow. */
     private final MQ mq;    
 
@@ -57,8 +57,8 @@ public class RemotePreservationStateUpdater {
      * @param newState The new Preservation State.
      * @throws YggdrasilException If an issue with sending the message occurs.
      */
-    public void updateRemotePreservationState(PreservationRequestState prs,
-            State newState) throws YggdrasilException {
+    public void updateRemotePreservationState(PreservationRequestState prs, State newState) 
+            throws YggdrasilException {
         ArgumentValidator.checkNotNull(prs, "PreservationRequestState prs");
         ArgumentValidator.checkNotNull(newState, "State newState");
         
@@ -67,8 +67,7 @@ public class RemotePreservationStateUpdater {
         preservationInfo.preservation_details = newState.getDescription();
         updateRemotePreservationState(prs, preservationInfo);
 
-        logger.info("Preservation status updated to '" + newState.name()
-                +  "' using the updateURI.");
+        logger.info("Preservation status updated to '" + newState.name() +  "' using the updateURI.");
     }
     
     /**
@@ -86,6 +85,9 @@ public class RemotePreservationStateUpdater {
         response.preservation = newState;
         if (prs.getWarcId() != null) {
             response.preservation.warc_id = prs.getWarcId();
+        }
+        if(prs.getFileWarcId() != null) {
+            response.preservation.file_warc_id = prs.getFileWarcId();
         }
 
         /* send to RabbitMQ */

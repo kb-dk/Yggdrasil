@@ -73,7 +73,7 @@ public class PreservationRequestStateTest {
         }
         
         try {
-            prs.setUploadPackage(nonexistingFile);
+            prs.setMetadataWarcFile(nonexistingFile);
             fail("Should have thrown ArgumentCheck exception on nonexisting file");
         } catch (ArgumentCheck e) {
             // Expected
@@ -91,7 +91,7 @@ public class PreservationRequestStateTest {
 
             prs.setContentPayload(existingFileOne);
             prs.setMetadataPayload(existingFileTwo);
-            prs.setUploadPackage(existingFileThree);
+            prs.setMetadataWarcFile(existingFileThree);
             assertTrue(existingFileOne.equals(prs.getContentPayload()));
             assertTrue(existingFileTwo.equals(prs.getMetadataPayload()));
             assertTrue(existingFileThree.getName().equals(prs.getWarcId()));
