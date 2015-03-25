@@ -1,14 +1,19 @@
 package dk.kb.yggdrasil.preservation;
 
+import java.io.File;
+import java.util.UUID;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.messaging.MQ;
 
 @RunWith(JUnit4.class)
@@ -33,20 +38,66 @@ public class RemotePreservationStateUpdaterTest {
         MQ mq = Mockito.mock(MQ.class);
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, NON_RANDOM_UUID);        
         RemotePreservationStateUpdater updater = new RemotePreservationStateUpdater(mq);
-        
+
         updater.updateRemotePreservationState(prs, State.PRESERVATION_REQUEST_FAILED);
-        
-        Mockito.verify(mq).publishPreservationResponse(Mockito.any(byte[].class));
+
+        Mockito.verify(mq).publishPreservationResponse(Mockito.any(PreservationResponse.class));
     }
-    
+
     @Test
     public void testUsingSpecificDetails() throws Exception {
         MQ mq = Mockito.mock(MQ.class);
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, NON_RANDOM_UUID);        
         RemotePreservationStateUpdater updater = new RemotePreservationStateUpdater(mq);
-        
+
         updater.updateRemotePreservationStateWithSpecificDetails(prs, State.PRESERVATION_REQUEST_FAILED, "Test are test specific details.");
-        
-        Mockito.verify(mq).publishPreservationResponse(Mockito.any(byte[].class));
+
+        Mockito.verify(mq).publishPreservationResponse(Mockito.any(PreservationResponse.class));
+    }
+
+    @Test
+    public void testAllElements() throws Exception {
+        MQ mq = Mockito.mock(MQ.class);
+        final String warcId = UUID.randomUUID().toString();
+        File warc = new File("temporarydir", warcId);
+        try {
+            warc.createNewFile();
+            PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, NON_RANDOM_UUID);
+            prs.setMetadataWarcFile(warc);
+            prs.setResourceWarcFile(warc);
+            RemotePreservationStateUpdater updater = new RemotePreservationStateUpdater(mq);
+
+            updater.updateRemotePreservationStateWithSpecificDetails(prs, State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA, "Test are test specific details.");
+
+            ArgumentMatcher<PreservationResponse> matcher = new ArgumentMatcher<PreservationResponse>() {
+                @Override
+                public boolean matches(Object item) {
+                    PreservationResponse response = (PreservationResponse) item;
+                    if(!response.id.equals(request.Valhal_ID)) {
+                        return false;
+                    }
+                    if(!response.model.equals(request.Model)) {
+                        return false;
+                    }
+
+                    if(!response.preservation.preservation_state.equals(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA.name())) {
+                        return false;
+                    }
+                    if(!response.preservation.warc_id.equals(warcId)) {
+                        return false;
+                    }
+                    if(!response.preservation.file_warc_id.equals(warcId)) {
+                        return false;
+                    }
+                    return true;
+                }
+            };
+
+            Mockito.verify(mq).publishPreservationResponse(Mockito.argThat(matcher));     
+        } finally {
+            if(warc.exists()) {
+                warc.delete();
+            }
+        }
     }
 }

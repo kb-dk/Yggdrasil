@@ -62,10 +62,8 @@ public class JSONMessaging {
             PreservationRequest request = JSON_OM.getStructureUnmarshaller().toObject(json_object, 
                     PreservationRequest.class);
             return request;
-        } catch (IOException e) {
-            throw new YggdrasilException("IOException unmarshalling preservation request.", e);
-        } catch (JSONException e) {
-            throw new YggdrasilException("JSONException unmarshalling preservation request.", e);
+        } catch (Exception e) {
+            throw new YggdrasilException("Error while unmarshalling preservation request.", e);
         }
     }
 
@@ -84,10 +82,8 @@ public class JSONMessaging {
             bout.close();
             byte[] content = bout.toByteArray();
             return content;
-        } catch (IOException e) {
-            throw new YggdrasilException("IOException marshalling preservation response.", e);
-        } catch (JSONException e) {
-            throw new YggdrasilException("JSONException marshalling preservation response.", e);
+        } catch (Exception e) {
+            throw new YggdrasilException("Error while marshalling preservation response.", e);
         }
     }
 

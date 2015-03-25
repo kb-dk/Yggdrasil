@@ -1,7 +1,8 @@
 language: java
+services:
+  - rabbitmq
 notifications:
   email: true
 jdk:
   - oraclejdk8
-services:
-  - rabbitmq	
+#  - openjdk8

@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.Preservation;
 import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.messaging.MQ;
@@ -90,8 +89,6 @@ public class RemotePreservationStateUpdater {
             response.preservation.file_warc_id = prs.getFileWarcId();
         }
 
-        /* send to RabbitMQ */
-        byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
-        mq.publishPreservationResponse(responseBytes);
+        mq.publishPreservationResponse(response);
     }
 }

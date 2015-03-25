@@ -26,6 +26,8 @@ import dk.kb.yggdrasil.RabbitMqSettings;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.json.JSONMessaging;
+import dk.kb.yggdrasil.json.PreservationResponse;
 
 /**
  * Methods for publishing messages on a queue and receiving from a queue
@@ -227,11 +229,13 @@ public class MQ {
     
     /**
      * Publishes a preservation response message.
-     * @param message The content of the preservation response message.
+     * @param response The preservation response message.
      * @throws YggdrasilException If unable to publish the preservation response on the message queue.
      */
-    public void publishPreservationResponse(byte[] message) throws YggdrasilException {
-        publishOnQueue(settings.getPreservationResponseDestination(), message, MQ.PRESERVATIONRESPONSE_MESSAGE_TYPE);
+    public void publishPreservationResponse(PreservationResponse response) throws YggdrasilException {
+        byte[] responseBytes = JSONMessaging.getPreservationResponse(response);
+        publishOnQueue(settings.getPreservationResponseDestination(), responseBytes, 
+                MQ.PRESERVATIONRESPONSE_MESSAGE_TYPE);
     }
 
     /**

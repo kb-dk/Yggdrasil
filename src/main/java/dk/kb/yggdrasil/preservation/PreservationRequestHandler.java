@@ -3,7 +3,6 @@ package dk.kb.yggdrasil.preservation;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -12,7 +11,6 @@ import java.util.UUID;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -27,6 +25,7 @@ import dk.kb.yggdrasil.HttpPayload;
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.PreservationRequest;
 import dk.kb.yggdrasil.xslt.Models;
@@ -70,81 +69,74 @@ public class PreservationRequestHandler {
      * @throws YggdrasilException if anything goes wrong.
      */
     public void handleRequest(PreservationRequest request) throws YggdrasilException {
-        String currentUUID = null;
-
         logger.info("Preservation request received.");
-        PreservationRequestState prs = null;
-        /* Validate message content. */
         if (!request.isMessageValid()) {
             logger.error("Skipping invalid message");
-        } else {
-            prs = new PreservationRequestState(request,
-                    State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-            // Add check about whether the profile is a known collectionID or not known
-            String preservationProfile = prs.getRequest().Preservation_profile;
-            List<String> possibleCollections = context.getBitrepository().getKnownCollections();
-            if (!possibleCollections.contains(preservationProfile)) {
-                String errMsg = "The given preservation profile '" + preservationProfile
-                        + "' does not match a known collection ID. Expected one of: " + possibleCollections;
-                logger.error(errMsg);
-                context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
-                        State.PRESERVATION_REQUEST_FAILED, errMsg);
-            } else {
-                currentUUID = request.UUID;
-                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                        State.PRESERVATION_REQUEST_RECEIVED);
-                context.getStateDatabase().put(currentUUID, prs);
-            }
+            return;
         }
+        PreservationRequestState prs = new PreservationRequestState(request,
+                State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
 
         try {
-            if (currentUUID != null) { // Message received is valid. proceed with workflow
-                if (prs.getRequest().Content_URI != null) {
-                    doContentAndMetadataWorkflow(currentUUID, prs);
-                } else {
-                    doMetadataWorkflow(currentUUID, prs);
-                }
+            if (validateMessage(prs)) {
+                preserveRequest(prs);
             }
-        } catch (YggdrasilException e) {
-            currentUUID = null;            
-        } catch (IOException e) {
-            throw new YggdrasilException("Issue occured during packaging the data.", e);
+        } catch (PreservationException e) {
+            // Fault barrier to ensure, that failures will send update and remove stuff.
+            logger.warn("Preservation message handling fault barrier caught exception.", e);
+            context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
+                    e.getState(), e.getMessage());
+            context.getStateDatabase().delete(prs.getUUID());
+            throw new YggdrasilException(e.getMessage(), e);
         }
         logger.info("Finished processing the preservation request");
     }
 
     /**
-     * Performs the Content and Metadata workflow.
-     * @param currentUUID The UUID of the current request
-     * @param prs The current request
+     * Validates whether the content of the request is valid.
+     * @param prs The preservation request state.
+     * @return Whether or not is is valid.
      * @throws YggdrasilException
      */
-    private void doContentAndMetadataWorkflow(String currentUUID, PreservationRequestState prs) 
-            throws YggdrasilException, FileNotFoundException {
-        try {
-            logger.info("Starting a Content and metadata workflow for UUID '" + currentUUID + "'");
-            fetchContent(currentUUID, prs);
-            transformMetadata(currentUUID, prs);
-            preservationManager.addToWarcFile(prs.getRequest().Preservation_profile, prs);
-            logger.info("Finished the content metadata workflow for UUID '" + currentUUID + "' successfully");
-        } catch (YggdrasilException e) {
-            logger.error("An exception occurred during the workflow for UUID: "
-                    + currentUUID, e);
-        }
+    private boolean validateMessage(PreservationRequestState prs) throws YggdrasilException {
+        // Add check about whether the profile is a known collectionID or not known
+        String preservationProfile = prs.getRequest().Preservation_profile;
+        List<String> possibleCollections = context.getBitrepository().getKnownCollections();
+        if (!possibleCollections.contains(preservationProfile)) {
+            String errMsg = "The given preservation profile '" + preservationProfile
+                    + "' does not match a known collection ID. Expected one of: " + possibleCollections;
+            logger.error(errMsg);
+            context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
+                    State.PRESERVATION_REQUEST_FAILED, errMsg);
+            return false;
+        } 
+        
+        context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                State.PRESERVATION_REQUEST_RECEIVED);
+        context.getStateDatabase().put(prs.getUUID(), prs);
+        return true;
     }
 
     /**
-     * Performs the Metadata workflow. This is currently a method stub.
-     * @param currentUUID The UUID of the element
-     * @param prs The current request
+     * 
+     * @param prs
      * @throws YggdrasilException
      */
-    private void doMetadataWorkflow(String currentUUID, PreservationRequestState prs) 
-            throws YggdrasilException, FileNotFoundException {
-        logger.info("Starting a metadata workflow for UUID '" + currentUUID + "'");
-        transformMetadata(currentUUID, prs);
+    private void preserveRequest(PreservationRequestState prs) throws PreservationException, YggdrasilException {
+        if (prs.getRequest().Content_URI != null) {
+            logger.info("Fetching content for preseravtion request with UUID '" + prs.getUUID() + "'");
+            try {
+                fetchContent(prs);
+            } catch (IOException e) {
+                String reason = "An issue occured when fetching the content for preservation request '" 
+                        + prs.getUUID() + "'";
+                throw new PreservationException(State.PRESERVATION_REQUEST_FAILED, reason, e);
+            }
+        }
+        
+        transformMetadata(prs);
         preservationManager.addToWarcFile(prs.getRequest().Preservation_profile, prs);
-        logger.info("Finished the metadata workflow for UUID '" + currentUUID + "' successfully");
+        logger.info("Finished handling the preservation request with UUID '" + prs.getUUID() + "' successfully");
     }
 
     /**
@@ -153,32 +145,26 @@ public class PreservationRequestHandler {
      * @param currentUUID The UUID of the current request
      * @throws YggdrasilException Failure to transform the metadata.
      */
-    private void transformMetadata(String currentUUID, PreservationRequestState prs) throws YggdrasilException {
+    private void transformMetadata(PreservationRequestState prs) throws PreservationException, YggdrasilException {
         String theMetadata = prs.getRequest().metadata;
         String modelToUse = prs.getRequest().Model.toLowerCase();
 
         if (!metadataModel.getMapper().containsKey(modelToUse)) {
             final String errMsg = "The given metadata-model'" + modelToUse
                     + "' is unknown. Expected one of: " + metadataModel.getMapper().keySet();
-            context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
-                    State.PRESERVATION_REQUEST_FAILED, errMsg);
-            throw new YggdrasilException(errMsg);
+            throw new PreservationException(State.PRESERVATION_REQUEST_FAILED, errMsg);
         }
         File xsltDir = new File(context.getConfig().getConfigDir(), "xslt");
         if (!xsltDir.isDirectory()) {
             final String errMsg = "The xslt directory '" + xsltDir.getAbsolutePath()
                     + "' does not exist!";
-            context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
-                    State.PRESERVATION_REQUEST_FAILED, errMsg);
-            throw new YggdrasilException(errMsg);
+            throw new PreservationException(State.PRESERVATION_REQUEST_FAILED, errMsg);
         }
         File xslFile = new File(xsltDir, metadataModel.getMapper().get(modelToUse));
         if (!xslFile.isFile()) {
             final String errMsg = "The needed xslt-script '" + xslFile.getAbsolutePath()
                     + "' does not exist!";
-            context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
-                    State.PRESERVATION_REQUEST_FAILED, errMsg);
-            throw new YggdrasilException(errMsg);
+            throw new PreservationException(State.PRESERVATION_REQUEST_FAILED, errMsg);
         }
 
         try {
@@ -201,8 +187,6 @@ public class PreservationRequestHandler {
                 boolean bValid = new XmlValidator().testDefinedValidity(xmlFileStream, entityResolver, 
                         errorHandler, result);
                 if (!bValid) {
-                    context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                            State.PRESERVATION_METADATA_PACKAGED_FAILURE);
                     StringBuffer errMsg = new StringBuffer();
                     errMsg.append("The output metadata is invalid: ");
                     try {
@@ -232,9 +216,7 @@ public class PreservationRequestHandler {
                             }
                         }
                     }
-                    context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
-                            State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg.toString());
-                    throw new YggdrasilException(errMsg.toString());
+                    throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg.toString());
                 } else {
                     prs.setMetadataPayload(outputFile);
                     context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
@@ -245,45 +227,24 @@ public class PreservationRequestHandler {
                     xmlFileStream.close();
                 }
             } 
-        } catch (TransformerConfigurationException e) {
-            final String errMsg = "Error occurred during transformation of metadata for uuid '"
-                    + currentUUID + "'";
-            logger.error(errMsg, e);
-            context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
-                    State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
-                    errMsg);
-            throw new YggdrasilException(errMsg, e);
         } catch (TransformerException e) {
             final String errMsg = "Error occurred during transformation of metadata for uuid '"
-                    + currentUUID + "'";
-            logger.error(errMsg, e);
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                    State.PRESERVATION_METADATA_PACKAGED_FAILURE);
-            throw new YggdrasilException(errMsg, e);
-        } catch (FileNotFoundException e) {
-            final String errMsg = "Error occurred during transformation of metadata for uuid '"
-                    + currentUUID + "'";
-            logger.error(errMsg, e);
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                    State.PRESERVATION_METADATA_PACKAGED_FAILURE);
-            throw new YggdrasilException(errMsg, e);
+                    + prs.getUUID() + "'";
+            throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg, e);
         } catch (IOException e) {
-            final String errMsg = "Error occured during reading/writing/closing a file";
-            logger.error(errMsg, e);
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                    State.PRESERVATION_METADATA_PACKAGED_FAILURE);
-            throw new YggdrasilException(errMsg, e);
+            final String errMsg = "Error occurred during transformation of metadata for uuid '"
+                    + prs.getUUID() + "'";
+            throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg, e);
         }
     }
 
     /**
      * Try and download the content using the Content_URI.
-     * @param currentUUID The UUID of the current request
      * @param prs The current request
      * @throws YggdrasilException
      */
-    private void fetchContent(String currentUUID, PreservationRequestState prs) 
-            throws YggdrasilException, FileNotFoundException {
+    private void fetchContent(PreservationRequestState prs) throws PreservationException, 
+            YggdrasilException, IOException {
         // Try to download resource from Content_URI
         File tmpFile = null;
         PreservationRequest pr = prs.getRequest();
@@ -291,24 +252,14 @@ public class PreservationRequestHandler {
                 + pr.Content_URI + "'");
         HttpPayload payload = HttpCommunication.get(pr.Content_URI);
         if (payload != null) {
-            try {
-                tmpFile = payload.writeToFile();
-            } catch (IOException e) {
-                String reason = "Unable to write content to local file: " + e;
-                context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
-                        State.PRESERVATION_REQUEST_FAILED, reason);
-                throw new YggdrasilException(reason, e);
-            }
+            tmpFile = payload.writeToFile();
             prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
             prs.setContentPayload(tmpFile);
             context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
                     State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
-            context.getStateDatabase().put(currentUUID, prs);
+            context.getStateDatabase().put(prs.getUUID(), prs);
         } else {
-            prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE);
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                    State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE);
-            context.getStateDatabase().put(currentUUID, prs);
+            throw new PreservationException(State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE, "Failed to download resource.");
         }
     }
 }

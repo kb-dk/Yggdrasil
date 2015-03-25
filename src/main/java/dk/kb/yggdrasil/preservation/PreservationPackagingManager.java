@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.db.PreservationRequestState;
+import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 /**
@@ -46,7 +47,8 @@ public class PreservationPackagingManager {
      * @param prs The preservation request to handle.
      * @throws YggdrasilException 
      */
-    public void addToWarcFile(String collectionId, PreservationRequestState prs) throws YggdrasilException {
+    public void addToWarcFile(String collectionId, PreservationRequestState prs) throws YggdrasilException, 
+            PreservationException {
         getCreator(collectionId).writePreservationRecord(prs);
         getCreator(collectionId).verifyConditions();
     }
@@ -72,24 +74,9 @@ public class PreservationPackagingManager {
         @Override
         public void run() {
             for(PreservationPacker creator : creators.values()) {
-                try {
-                    logger.trace("Checking conditions");
-                    creator.verifyConditions();
-                } catch (YggdrasilException e) {
-                    logger.error("Issue with creating and/or uploading warc-file.", e);
-                }
+                logger.trace("Checking conditions");
+                creator.verifyConditions();
             }
         }
-    }
-    
-    /**
-     * Closes the preservation packaging manager.
-     */
-    public void close() {
-        if(timer != null) {
-            timer.cancel();
-            timer = null;
-        }
-        creators.clear();
     }
 }

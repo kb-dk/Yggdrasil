@@ -2,7 +2,6 @@ package dk.kb.yggdrasil.preservation;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
+import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.warc.Digest;
 import dk.kb.yggdrasil.warc.WarcWriterWrapper;
@@ -60,9 +60,8 @@ public class PreservationPacker {
 
     /**
      * Check the conditions, and upload if any of them has been met.
-     * @throws YggdrasilException  
      */
-    public synchronized void verifyConditions() throws YggdrasilException {
+    public synchronized void verifyConditions() {
         if(writer != null) {
             boolean conditionsMet = false;
             if (writer.getWarcFileSize() > context.getConfig().getWarcSizeLimit()) {
@@ -87,7 +86,8 @@ public class PreservationPacker {
      * @param prs The record of the preservation request to write.
      * @throws YggdrasilException If it fails to write the preservation request state.
      */
-    public synchronized void writePreservationRecord(PreservationRequestState prs) throws YggdrasilException {
+    public synchronized void writePreservationRecord(PreservationRequestState prs) throws YggdrasilException,
+            PreservationException {
         checkInitialize();
         metadataRequests.add(prs);
         try {
@@ -132,14 +132,9 @@ public class PreservationPacker {
             prs.setMetadataWarcFile(writer.getWarcFile());
             context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
                     State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
-        } catch (FileNotFoundException e) {
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                    State.PRESERVATION_METADATA_PACKAGED_FAILURE);
-            throw new YggdrasilException("Horrible exception while writing WARC record!", e);
         } catch (IOException e) {
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
-                    State.PRESERVATION_METADATA_PACKAGED_FAILURE);
-            throw new YggdrasilException("Horrible exception while writing WARC record!", e);
+            throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
+                    "Error while writing WARC record!", e);
         }
     }
 
@@ -163,22 +158,27 @@ public class PreservationPacker {
      * Uploads the Warc file to the Bitrepository.
      * @throws YggdrasilException
      */
-    private void uploadWarcFile() throws YggdrasilException {
+    private void uploadWarcFile() {
         boolean success = context.getBitrepository().uploadFile(writer.getWarcFile(), collectionId);
 
-        for(PreservationRequestState prs : metadataRequests) {
-            if(success) {
-                updateRequestState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS, prs);
-                logger.info("Upload to bitrepository for UUID '" + prs.getUUID()
-                        + "' of package '" + writer.getWarcFileId() + "' was successful.");
-            } else {
-                prs.resetUploadPackage(); // reset warcId to null
-                updateRequestState(State.PRESERVATION_PACKAGE_UPLOAD_FAILURE, prs);
-                logger.warn("Upload to bitrepository for UUID '" + prs.getUUID() + "' of package '" 
-                        + writer.getWarcFileId() + "' failed.");
-            }
-            prs.cleanup();
-            context.getStateDatabase().delete(prs.getUUID());
+        try {
+            for(PreservationRequestState prs : metadataRequests) {
+                if(success) {
+                    updateRequestState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS, prs);
+                    logger.info("Upload to bitrepository for UUID '" + prs.getUUID()
+                            + "' of package '" + writer.getWarcFileId() + "' was successful.");
+                } else {
+                    prs.resetUploadPackage(); // reset warcId to null
+                    updateRequestState(State.PRESERVATION_PACKAGE_UPLOAD_FAILURE, prs);
+                    logger.warn("Upload to bitrepository for UUID '" + prs.getUUID() + "' of package '" 
+                            + writer.getWarcFileId() + "' failed.");
+                }
+                prs.cleanup();
+                context.getStateDatabase().delete(prs.getUUID());
+            } 
+        } catch (YggdrasilException e) {
+            logger.error("A error occured when reporting about bitrepository upload of the file '"
+                    + writer.getWarcFileId() + "' to the collection '" + collectionId + "'. Trying to continue.", e);
         }
     }
 
@@ -196,15 +196,18 @@ public class PreservationPacker {
     }
 
     /**
-     * 
-     * @throws YggdrasilException
+     * Cleans up the current warc writer.
      */
-    private void cleanUp() throws YggdrasilException {
+    protected void cleanUp() {
         metadataRequests.clear();
         if(writer != null) {
             boolean deleteSuccess = writer.getWarcFile().delete();
             logger.debug("Cleaned up file: succesfully removed from disc: " + deleteSuccess);
-            writer.close();
+            try {
+                writer.close();
+            } catch (YggdrasilException e) {
+                logger.warn("An issue occured when closing the current writer.", e);
+            }
             writer = null;
         }
     }
