@@ -9,15 +9,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /**
- * Tests of the YggdrasilException class.
+ * Tests of the RabbitException class.
  */
 @RunWith(JUnit4.class)
-public class YggdrasilExceptionTest {
+public class RabbitExceptionTest {
 
     @Test
     public void testWithoutEmbeddedException() {
         String message = "reason";
-        YggdrasilException e = new YggdrasilException(message);
+        RabbitException e = new RabbitException(message);
         assertEquals(message, e.getMessage());
     }
 
@@ -26,21 +26,8 @@ public class YggdrasilExceptionTest {
         String message = "reason";
         String exceptionMessage = "Some error occurred";
         Exception e = new IOException(exceptionMessage);
-        YggdrasilException e1 = new YggdrasilException(message, e);
+        RabbitException e1 = new RabbitException(message, e);
         assertEquals(message, e1.getMessage());
         assertEquals(exceptionMessage, e1.getCause().getMessage());
     }
-
-    @Test
-    public void testWithNullArgs() {
-        String message = null;
-        YggdrasilException e = new YggdrasilException(message);
-        assertTrue(e.getMessage() == null);
-
-        Exception anException = null;
-        e = new YggdrasilException(message, anException);
-        assertTrue(e.getMessage() == null);
-        assertTrue(e.getCause() == null);
-    }
-
 }

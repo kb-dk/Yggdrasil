@@ -10,13 +10,13 @@ import org.junit.runners.JUnit4;
 import dk.kb.yggdrasil.State;
 
 /**
- * Tests of the YggdrasilException class.
+ * Tests of the PreservationException class.
  */
 @RunWith(JUnit4.class)
 public class PreservationExceptionTest {
 
     @Test
-    public void testWithoutException() {
+    public void testWithoutEmbeddedException() {
         String message = "reason";
         State state = State.PRESERVATION_METADATA_PACKAGED_FAILURE;
         PreservationException e = new PreservationException(state, message);
@@ -26,7 +26,7 @@ public class PreservationExceptionTest {
     }
     
     @Test
-    public void testWithException() {
+    public void testWithEmbeddedException() {
         String message = "reason";
         State state = State.PRESERVATION_METADATA_PACKAGED_FAILURE;
         Exception embeddedException = new YggdrasilException("This is apparently an YggdrasilException");

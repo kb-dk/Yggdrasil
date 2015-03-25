@@ -2,7 +2,6 @@ package dk.kb.yggdrasil.bitmag;
 
 import java.io.File;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -16,9 +15,6 @@ import dk.kb.yggdrasil.utils.HostName;
 
 /** Utilities used by the Bitrepository class. */
 public class BitrepositoryUtils {
-    /** Logging mechanism. */
-    private static final Logger logger = Logger.getLogger(BitrepositoryUtils.class.getName());
-
     /**
      * Creates the data structure for encapsulating the validation checksums for validation of the PutFile operation.
      * @param file The file to have the checksum calculated.
