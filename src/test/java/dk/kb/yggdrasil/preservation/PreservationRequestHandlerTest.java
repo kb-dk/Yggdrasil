@@ -250,8 +250,8 @@ public class PreservationRequestHandlerTest {
         // Wait for timeout
         verify(updater, timeout(1500)).updateRemotePreservationState(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS));
 
-        verify(states, times(2)).put(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
         verify(states, timeout(500)).delete(eq(NON_RANDOM_UUID));
+        verify(states, times(2)).put(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
 
         verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
     }
