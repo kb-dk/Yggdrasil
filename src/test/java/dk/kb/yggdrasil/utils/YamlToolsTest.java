@@ -3,11 +3,9 @@ package dk.kb.yggdrasil.utils;
 import static org.junit.Assert.*;
 
 import java.io.File;
-
 import java.util.LinkedHashMap;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -50,6 +48,7 @@ public class YamlToolsTest {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testReadYamlFile() throws Exception {
         File f = new File(YAML_TEST_FILE);

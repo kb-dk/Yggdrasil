@@ -1,9 +1,7 @@
 package dk.kb.yggdrasil;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PushbackInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -16,15 +14,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
-import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.JSONMessagingTestUtils;
 import dk.kb.yggdrasil.json.PreservationRequest;
-import dk.kb.yggdrasil.json.PreservationResponse;
 import dk.kb.yggdrasil.messaging.MQ;
-import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.xslt.Models;
 
 /**

@@ -170,15 +170,15 @@ public class BitrepositoryTest {
             = br.getChecksums(null, "books");
         assertTrue(resultMap.entrySet().size() == 3);
     }
-
-    @Ignore
-    @Test
-    public void testGetFileIds() throws YggdrasilException {
-        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
-        Bitrepository br = new Bitrepository(okConfigFile);
-        //br.shutdown();
-    }
-    
+//
+//    @Ignore
+//    @Test
+//    public void testGetFileIds() throws YggdrasilException {
+//        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
+//        Bitrepository br = new Bitrepository(okConfigFile);
+//        //br.shutdown();
+//    }
+//    
     @Test
     public void testGetCollections() throws YggdrasilException {
         if (TravisUtils.runningOnTravis()) {

@@ -512,6 +512,4 @@ public class Bitrepository {
         }
         return collectionIDs;
     }
-
-
 }

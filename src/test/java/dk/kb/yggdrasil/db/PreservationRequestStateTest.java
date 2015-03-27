@@ -102,9 +102,95 @@ public class PreservationRequestStateTest {
         }
         
     }
+    
+    @Test
+    public void testCleanupWhenNoFiles() throws Exception {
+        PreservationRequest pr = new PreservationRequest();
+        String uuid = UUID.randomUUID().toString();
+        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationRequestState prs = new PreservationRequestState(pr, preservationState, uuid);
 
+        prs.cleanup();
+    }
+
+    @Test
+    public void testCleanupOfBothFiles() throws Exception {
+        PreservationRequest pr = new PreservationRequest();
+        String uuid = UUID.randomUUID().toString();
+        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationRequestState prs = new PreservationRequestState(pr, preservationState, uuid);
+
+        File contentFile = File.createTempFile("contentFile", null);
+        File metadataFile = File.createTempFile("metadataFile", null);
+        
+        assertTrue(contentFile.exists());
+        assertTrue(metadataFile.exists());
+        
+        prs.setContentPayload(contentFile);
+        prs.setMetadataPayload(metadataFile);
+        
+        prs.cleanup();
+        
+        assertFalse(contentFile.exists());
+        assertFalse(metadataFile.exists());        
+    }
+
+    @Test
+    public void testCleanupWhenFilesAreAlreadyRemoved() throws Exception {
+        PreservationRequest pr = new PreservationRequest();
+        String uuid = UUID.randomUUID().toString();
+        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationRequestState prs = new PreservationRequestState(pr, preservationState, uuid);
+
+        File contentFile = File.createTempFile("contentFile", null);
+        File metadataFile = File.createTempFile("metadataFile", null);
+        
+        assertTrue(contentFile.exists());
+        assertTrue(metadataFile.exists());
+        
+        prs.setContentPayload(contentFile);
+        prs.setMetadataPayload(metadataFile);
+        
+        assertTrue(contentFile.delete());
+        assertTrue(metadataFile.delete());
+        
+        prs.cleanup();
+        prs.cleanup();
+        
+        assertFalse(contentFile.exists());
+        assertFalse(metadataFile.exists());        
+    }
     
-    
-    
-    
+    @Test
+    public void testCleanupOfDirectories() throws Exception {
+        PreservationRequest pr = new PreservationRequest();
+        String uuid = UUID.randomUUID().toString();
+        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationRequestState prs = new PreservationRequestState(pr, preservationState, uuid);
+
+        File contentFile = File.createTempFile("contentFile", null);
+        File metadataFile = File.createTempFile("metadataFile", null);
+        
+        assertTrue(contentFile.exists());
+        assertTrue(metadataFile.exists());
+        
+        prs.setContentPayload(contentFile);
+        prs.setMetadataPayload(metadataFile);
+
+        assertTrue(contentFile.delete());
+        assertTrue(contentFile.mkdir());
+        File.createTempFile("OddSubFolderFile", null, contentFile);
+
+        assertTrue(metadataFile.delete());
+        assertTrue(metadataFile.mkdir());
+        File.createTempFile("OddSubFolderFile", null, metadataFile);
+
+        assertTrue(contentFile.exists());
+        assertTrue(metadataFile.exists());
+
+        prs.cleanup();
+        
+        assertTrue(contentFile.exists());
+        assertTrue(metadataFile.exists());
+    }
 }

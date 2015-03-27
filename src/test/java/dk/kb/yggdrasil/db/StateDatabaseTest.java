@@ -48,14 +48,6 @@ public class StateDatabaseTest {
         String UUID_sample = "sample_uuid";
         pr.UUID = UUID_sample;
         pr.File_UUID = "dasdasdsdasd";
-        
-        /*
-        Metadata m = new Metadata();
-        m.descMetadata = "Some descriptive metadata";
-        m.preservationMetadata = "Some preservation metadata";
-        m.provenanceMetadata = "Some provenance metadata";
-        m.techMetadata = "Some technical metadata";
-        */
         pr.metadata = "Some technical metadata";
 
         PreservationRequestState prs = new PreservationRequestState(pr, 
