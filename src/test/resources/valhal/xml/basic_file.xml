@@ -1,9 +1,4 @@
 <metadata>
-  <descMetadata>
-    <dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <dcterms:extent>416 bytes</dcterms:extent>
-    </dc>
-  </descMetadata>
   <provenanceMetadata>
     <fields>
       <uuid>f3c98a60-b0d9-0131-875f-0050562881f4</uuid>
@@ -32,7 +27,7 @@
       <file_uuid>f0ec1560-b0d9-0131-875e-0050562881f4</file_uuid>
     </fields>
   </techMetadata>
-  <fitsMetadata1>
+  <fitsMetadata>
     <fits xmlns="http://hul.harvard.edu/ois/xml/ns/fits/fits_output" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/fits/fits_output http://hul.harvard.edu/ois/xml/xsd/fits/fits_output.xsd" version="0.6.2" timestamp="4/28/14 10:06 AM">
       <identification>
         <identity format="Tagged Image File Format" mimetype="image/tiff" toolname="FITS" toolversion="0.6.2">
@@ -83,5 +78,5 @@
         </image>
       </metadata>
     </fits>
-  </fitsMetadata1>
+  </fitsMetadata>
 </metadata>

@@ -5,7 +5,7 @@ import dk.kb.yggdrasil.xslt.XslTransformer;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Yggdrasil Matrjosjka agent XSLT functions.
+ * Yggdrasil agent XSLT functions (from KB's Metadata Matrjosjka).
  */
 public final class Agent {
     /** Current METS profile URL. */
@@ -13,6 +13,9 @@ public final class Agent {
 
     /** Ingest agent URL. */
     public static final String INGEST_AGENT_URL = "http://id.kb.dk/authorities/agents/kbDkYggdrasilIngest.xml";
+
+    /** Update agent URL. */
+    public static final String UPDATE_AGENT_URL = "http://id.kb.dk/authorities/agents/kbDkYggdrasilUpdate.xml";
 
     /** The current version of the agent. */
     public static final String VERSION = Agent.class.getPackage().getImplementationVersion();
@@ -129,5 +132,13 @@ public final class Agent {
      */
     public static String getIngestAgentURL() {
         return INGEST_AGENT_URL;
+    }
+    
+
+    /**
+     * @return URL for the update agent.
+     */
+    public static String getUpdateAgentURL() {
+        return UPDATE_AGENT_URL;
     }
 }

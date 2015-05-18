@@ -2,7 +2,7 @@ package dk.kb.yggdrasil;
 
 public class MetadataContentUtils {
 
-    public static String getExampleMetadata() {
+    public static String getExampleInstanceMetadata() {
         return "<metadata>"
                 + "    <provenanceMetadata>"
                 + "                <fields>"

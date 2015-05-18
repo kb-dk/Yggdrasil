@@ -1,5 +1,6 @@
 models:
-  work: work.xslt
-  basicfile: file.xslt
+  basicfile: file.xsl
+  contentfile: file.xsl
+  instance: instance.xsl
   orderedinstance: instance.xsl
   singlefileinstance: instance.xsl

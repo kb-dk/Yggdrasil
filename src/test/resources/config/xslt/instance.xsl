@@ -23,7 +23,7 @@
         <xsl:value-of select="'Instance'" />
       </xsl:attribute>
       <xsl:attribute name="OBJID">
-        <xsl:value-of select="provenanceMetadata/fields/uuid" />
+        <xsl:value-of select="provenanceMetadata/instance/uuid" />
       </xsl:attribute>
       <xsl:attribute name="PROFILE">
         <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getProfileURL()" />
@@ -131,7 +131,7 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:objectIdentifierValue">
-                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
+                    <xsl:value-of select="provenanceMetadata/instance/uuid" />
                   </xsl:element>
                 </xsl:element>
                 <!-- BEGIN linkingIntellectualEntityIdentifier -->
@@ -140,7 +140,8 @@
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingIntellectualEntityIdentifierValue">
-                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
+                    <!-- TODO should be work_uuid -->
+                    <xsl:value-of select="provenanceMetadata/work/uuid" />
                   </xsl:element>
                 </xsl:element>
                 <!-- END linkingIntellectualEntityIdentifier -->
@@ -225,9 +226,18 @@
                     <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
                   </xsl:element>
                 </xsl:element>
-                <xsl:element name="premis:eventType">
-                  <xsl:value-of select="'ingestion'" />
-                </xsl:element>
+                <xsl:choose>
+                  <xsl:when test="preservationMetadata/fields/warc_id">
+                    <xsl:element name="premis:eventType">
+                      <xsl:value-of select="'update'" />
+                    </xsl:element>                   
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:element name="premis:eventType">
+                      <xsl:value-of select="'ingestion'" />
+                    </xsl:element>
+                  </xsl:otherwise>
+                </xsl:choose>
                 <xsl:element name="premis:eventDateTime">
                   <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
                 </xsl:element>
@@ -235,19 +245,31 @@
                   <xsl:element name="premis:linkingAgentIdentifierType">
                     <xsl:value-of select="'URL'" />
                   </xsl:element>
-                  <xsl:element name="premis:linkingAgentIdentifierValue">
-                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getIngestAgentURL()" />
-                  </xsl:element>
-                  <xsl:element name="premis:linkingAgentRole">
-                    <xsl:value-of select="'Ingest'" />
-                  </xsl:element>
+                <xsl:choose>
+                  <xsl:when test="preservationMetadata/fields/warc_id">
+                    <xsl:element name="premis:linkingAgentIdentifierValue">
+                      <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getUpdateAgentURL()" />
+                    </xsl:element>
+                    <xsl:element name="premis:linkingAgentRole">
+                      <xsl:value-of select="'Update'" />
+                    </xsl:element>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:element name="premis:linkingAgentIdentifierValue">
+                      <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getIngestAgentURL()" />
+                    </xsl:element>
+                    <xsl:element name="premis:linkingAgentRole">
+                      <xsl:value-of select="'Ingest'" />
+                    </xsl:element>
+                  </xsl:otherwise>
+                </xsl:choose>
                 </xsl:element>
                 <xsl:element name="premis:linkingObjectIdentifier">
                   <xsl:element name="premis:linkingObjectIdentifierType">
                     <xsl:value-of select="'UUID'" />
                   </xsl:element>
                   <xsl:element name="premis:linkingObjectIdentifierValue">
-                    <xsl:value-of select="provenanceMetadata/fields/uuid" />
+                    <xsl:value-of select="provenanceMetadata/instance/uuid" />
                   </xsl:element>
                 </xsl:element>
               </premis:event>

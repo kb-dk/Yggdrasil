@@ -49,7 +49,11 @@ public class PreservationPackagingManager {
      */
     public void addToWarcFile(String collectionId, PreservationRequestState prs) throws YggdrasilException, 
             PreservationException {
-        getCreator(collectionId).writePreservationRecord(prs);
+        if(prs.getWarcId() == null || prs.getWarcId().isEmpty()) {
+            getCreator(collectionId).writePreservationRecord(prs);
+        } else {
+            getCreator(collectionId).writeUpdateRecord(prs);
+        }
         getCreator(collectionId).verifyConditions();
     }
 

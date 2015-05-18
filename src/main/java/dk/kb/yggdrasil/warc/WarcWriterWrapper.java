@@ -9,10 +9,12 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.List;
 
 import org.jwat.common.ContentType;
 import org.jwat.common.RandomAccessFileOutputStream;
 import org.jwat.common.Uri;
+import org.jwat.warc.WarcConcurrentTo;
 import org.jwat.warc.WarcConstants;
 import org.jwat.warc.WarcDigest;
 import org.jwat.warc.WarcHeader;
@@ -215,6 +217,52 @@ public class WarcWriterWrapper {
             throw new YggdrasilException("Exception while writing WARC metadata record!", e);
         }
         logger.debug("Written Metadata Record '" + uuid + "'.");
+
+        return warcRecordIdUri;
+    }
+
+    /**
+     * Append a update record to WARC file.
+     * @param in payload input stream
+     * @param len payload length
+     * @param contentType payload content-type
+     * @param refersTo The refers to header element.
+     * @param concurrentTo List of concurrentTo header elements.
+     * @param blockDigest optional block digest
+     * @param uuid The UUID for the record.
+     * @return WarcRecordId of newly created record
+     * @throws YggdrasilException if an exception occurs while writing record
+     */
+    public Uri writeUpdateRecord(InputStream in, long len, ContentType contentType, Uri refersTo, 
+            List<WarcConcurrentTo> concurrentTo, WarcDigest blockDigest, String uuid) throws YggdrasilException {
+        ArgumentCheck.checkNotNull(in, "in");
+        ArgumentCheck.checkNotNull(len, "len");
+        ArgumentCheck.checkNotNull(contentType, "contentType");
+        ArgumentCheck.checkNotNull(uuid, "uuid");
+        ArgumentCheck.checkNotNull(concurrentTo, "concurrentTo");
+        Uri warcRecordIdUri = null;
+        try {
+            warcRecordIdUri = new Uri("urn:uuid:" + uuid);
+            WarcRecord record = WarcRecord.createRecord(writer);
+            WarcHeader header = record.header;
+            header.warcTypeStr = "update";
+            header.warcDate = new Date();
+            header.warcWarcinfoIdUri = warcinfoRecordId;
+            header.warcRecordIdUri = warcRecordIdUri;
+            header.warcConcurrentToList.addAll(concurrentTo);
+            header.warcRefersToUri = refersTo;
+            header.warcBlockDigest = blockDigest;
+            header.contentType = contentType;
+            header.contentLength = len;
+            writer.writeHeader(record);
+            writer.streamPayload(in);
+            writer.closeRecord();
+        } catch (URISyntaxException e) {
+            throw new YggdrasilException("Exception while writing WARC metadata record!", e);
+        } catch (IOException e) {
+            throw new YggdrasilException("Exception while writing WARC metadata record!", e);
+        }
+        logger.debug("Written Update Record '" + uuid + "'.");
 
         return warcRecordIdUri;
     }

@@ -331,8 +331,8 @@ public class PreservationRequestHandlerTest {
         PreservationRequest request = new PreservationRequest();
         request.Content_URI = null;
         request.File_UUID = null;
-        request.metadata = MetadataContentUtils.getExampleMetadata();
-        request.Model = "work";
+        request.metadata = MetadataContentUtils.getExampleInstanceMetadata();
+        request.Model = "instance";
         request.Preservation_profile = DEFAULT_COLLECTION;
         request.UUID = NON_RANDOM_UUID;
         request.Valhal_ID = "ID";

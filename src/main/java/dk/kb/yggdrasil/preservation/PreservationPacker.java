@@ -5,12 +5,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.jwat.common.ContentType;
 import org.jwat.common.Uri;
+import org.jwat.warc.WarcConcurrentTo;
 import org.jwat.warc.WarcDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,6 +139,69 @@ public class PreservationPacker {
                     "Error while writing WARC record!", e);
         }
     }
+    
+    /**
+     * Write the contentPaylod and transformed of the preservation record.
+     * @param prs The record of the preservation request to write.
+     * @throws YggdrasilException If it fails to write the preservation request state.
+     */
+    public synchronized void writeUpdateRecord(PreservationRequestState prs) throws YggdrasilException,
+            PreservationException {
+        checkInitialize();
+        metadataRequests.add(prs);
+        try {
+            Uri resourceId = null;
+            Digest digestor = new Digest("SHA-1");
+            File resource = prs.getContentPayload();
+            File metadata = prs.getMetadataPayload();
+            InputStream in = null;
+            if (resource != null) {
+                try {
+                    WarcConcurrentTo concurrentTo = new WarcConcurrentTo();
+                    concurrentTo.warcConcurrentToStr = prs.getRequest().file_warc_id + ":" 
+                            + prs.getRequest().File_UUID;
+                    in = new FileInputStream(resource);
+                    WarcDigest blockDigest = digestor.getDigestOfFile(resource);
+                    resourceId = writer.writeUpdateRecord(in, resource.length(), 
+                            ContentType.parseContentType("application/binary"), null, 
+                            Arrays.asList(concurrentTo), blockDigest, prs.getRequest().File_UUID);
+                } finally {
+                    if(in != null) {
+                        in.close();
+                        in = null;
+                    }
+                }
+                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                        State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
+            }
+            if (metadata != null) {
+                try {
+                    WarcConcurrentTo concurrentTo = new WarcConcurrentTo();
+                    concurrentTo.warcConcurrentToStr = prs.getWarcId() + ":" + prs.getRequest().UUID;
+                    in = new FileInputStream(resource);
+                    WarcDigest blockDigest = digestor.getDigestOfFile(resource);
+                    resourceId = writer.writeUpdateRecord(in, metadata.length(), 
+                            ContentType.parseContentType("text/xml"), resourceId, 
+                            Arrays.asList(concurrentTo), blockDigest, prs.getRequest().UUID);
+                    in = new FileInputStream(metadata);
+                    in.close();
+                } finally {
+                    if(in != null) {
+                        in.close();
+                        in = null;
+                    }
+                }
+                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                        State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
+            }
+            prs.setMetadataWarcFile(writer.getWarcFile());
+            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                    State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
+        } catch (IOException e) {
+            throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
+                    "Error while writing WARC record!", e);
+        }
+    }
 
     /**
      * Initializes the WARC file in necessary.
@@ -201,8 +266,8 @@ public class PreservationPacker {
     protected void cleanUp() {
         metadataRequests.clear();
         if(writer != null) {
-            boolean deleteSuccess = writer.getWarcFile().delete();
-            logger.debug("Cleaned up file: succesfully removed from disc: " + deleteSuccess);
+            //boolean deleteSuccess = writer.getWarcFile().delete();
+            //logger.debug("Cleaned up file: succesfully removed from disc: " + deleteSuccess);
             try {
                 writer.close();
             } catch (YggdrasilException e) {

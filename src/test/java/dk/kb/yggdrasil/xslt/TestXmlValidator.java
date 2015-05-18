@@ -15,8 +15,10 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 public class TestXmlValidator {
 
     public static Object[][] xmlFiles = new Object[][] {
-        {2, 1, 1, 1, "valhal/xml/basic_file.xml"},
+        {1, 1, 1, 1, "valhal/xml/basic_file.xml"},
+        {1, 1, 1, 1, "valhal/xml/content_file_update.xml"},
         {1, 1, 1, 1, "valhal/xml/instance_with_unordered_multiple_files.xml"},
+        {1, 1, 1, 1, "valhal/xml/instance_update.xml"},
         {1, 1, 1, 1, "valhal/xml/namespaceless_mods.xml"}
     };
 
@@ -61,19 +63,19 @@ public class TestXmlValidator {
                 Assert.assertNull(result.systemId);
                 Assert.assertFalse(result.bDtdUsed);
                 if (expectedSchemas == 0) {
-                    Assert.assertFalse(result.bXsdUsed);
+                    Assert.assertFalse(xmlFilename, result.bXsdUsed);
                 } else {
-                    Assert.assertTrue(result.bXsdUsed);
+                    Assert.assertTrue(xmlFilename, result.bXsdUsed);
                 }
-                Assert.assertEquals(expectedNamespaces, result.xsiNamespaces.size());
-                Assert.assertEquals(expectedSchemas, result.schemas.size());
+                Assert.assertEquals(xmlFilename, expectedNamespaces, result.xsiNamespaces.size());
+                Assert.assertEquals(xmlFilename, expectedSchemas, result.schemas.size());
 
-                Assert.assertEquals(expectedErrors1, errorHandler.numberOfErrors);
-                Assert.assertEquals(0, errorHandler.numberOfFatalErrors);
-                Assert.assertEquals(0, errorHandler.numberOfWarnings);
+                Assert.assertEquals(xmlFilename, expectedErrors1, errorHandler.numberOfErrors);
+                Assert.assertEquals(xmlFilename, 0, errorHandler.numberOfFatalErrors);
+                Assert.assertEquals(xmlFilename, 0, errorHandler.numberOfWarnings);
 
-                Assert.assertTrue(result.bWellformed);
-                Assert.assertFalse(result.bValid);
+                Assert.assertTrue(xmlFilename, result.bWellformed);
+                Assert.assertFalse(xmlFilename, result.bValid);
                 /*
                  * Separated with ErrorHandler.
                  */
@@ -81,17 +83,17 @@ public class TestXmlValidator {
                 result = new XmlValidationResult();
                 bool = xmlValidator.testStructuralValidity(url.openStream(), entityResolver, errorHandler, result);
 
-                Assert.assertTrue(bool);
+                Assert.assertTrue(xmlFilename, bool);
 
-                Assert.assertNull(result.systemId);
-                Assert.assertFalse(result.bDtdUsed);
+                Assert.assertNull(xmlFilename, result.systemId);
+                Assert.assertFalse(xmlFilename, result.bDtdUsed);
                 if (expectedSchemas == 0) {
-                    Assert.assertFalse(result.bXsdUsed);
+                    Assert.assertFalse(xmlFilename, result.bXsdUsed);
                 } else {
-                    Assert.assertTrue(result.bXsdUsed);
+                    Assert.assertTrue(xmlFilename, result.bXsdUsed);
                 }
-                Assert.assertEquals(expectedNamespaces, result.xsiNamespaces.size());
-                Assert.assertEquals(expectedSchemas, result.schemas.size());
+                Assert.assertEquals(xmlFilename, expectedNamespaces, result.xsiNamespaces.size());
+                Assert.assertEquals(xmlFilename, expectedSchemas, result.schemas.size());
 
                 Assert.assertEquals(0, errorHandler.numberOfErrors);
                 Assert.assertEquals(0, errorHandler.numberOfFatalErrors);

@@ -1,7 +1,6 @@
 package dk.kb.yggdrasil.json;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PushbackInputStream;
 
 import org.slf4j.Logger;

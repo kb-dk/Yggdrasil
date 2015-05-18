@@ -226,9 +226,18 @@
                     <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.UUIDExtension.getRandomUUID()" />
                   </xsl:element>
                 </xsl:element>
-                <xsl:element name="premis:eventType">
-                  <xsl:value-of select="'ingestion'" />
-                </xsl:element>
+                <xsl:choose>
+                  <xsl:when test="preservationMetadata/fields/warc_id">
+                    <xsl:element name="premis:eventType">
+                      <xsl:value-of select="'update'" />
+                    </xsl:element>                   
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:element name="premis:eventType">
+                      <xsl:value-of select="'ingestion'" />
+                    </xsl:element>
+                  </xsl:otherwise>
+                </xsl:choose>
                 <xsl:element name="premis:eventDateTime">
                   <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Dates.getCurrentDate()" />
                 </xsl:element>
@@ -236,12 +245,24 @@
                   <xsl:element name="premis:linkingAgentIdentifierType">
                     <xsl:value-of select="'URL'" />
                   </xsl:element>
-                  <xsl:element name="premis:linkingAgentIdentifierValue">
-                    <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getIngestAgentURL()" />
-                  </xsl:element>
-                  <xsl:element name="premis:linkingAgentRole">
-                    <xsl:value-of select="'Ingest'" />
-                  </xsl:element>
+                <xsl:choose>
+                  <xsl:when test="preservationMetadata/fields/warc_id">
+                    <xsl:element name="premis:linkingAgentIdentifierValue">
+                      <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getUpdateAgentURL()" />
+                    </xsl:element>
+                    <xsl:element name="premis:linkingAgentRole">
+                      <xsl:value-of select="'Update'" />
+                    </xsl:element>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:element name="premis:linkingAgentIdentifierValue">
+                      <xsl:value-of select="java:dk.kb.yggdrasil.xslt.extension.Agent.getIngestAgentURL()" />
+                    </xsl:element>
+                    <xsl:element name="premis:linkingAgentRole">
+                      <xsl:value-of select="'Ingest'" />
+                    </xsl:element>
+                  </xsl:otherwise>
+                </xsl:choose>
                 </xsl:element>
                 <xsl:element name="premis:linkingObjectIdentifier">
                   <xsl:element name="premis:linkingObjectIdentifierType">

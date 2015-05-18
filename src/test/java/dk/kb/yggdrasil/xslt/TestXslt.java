@@ -19,11 +19,14 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 public class TestXslt {
 
     public static String[][] newXsltFiles = new String[][] {
-        {"valhal/xml/basic_file.xml", "xslt/file.xsl"},
+//        {"valhal/xml/basic_file.xml", "xslt/file.xsl"},
+        {"valhal/xml/content_file.xml", "xslt/file.xsl"},
+        {"valhal/xml/content_file_update.xml", "xslt/file.xsl"},
 //        {"valhal/xml/ordered_instance.xml", "xslt/instance.xsl"},
 //        {"valhal/xml/single_file_instance.xml", "xslt/instance.xsl"},
 //        {"valhal/xml/work.xml", "xslt/work.xslt"},
 //        {"valhal/xml/instance_with_unordered_multiple_files.xml", "xslt/instance.xsl"},
+        {"valhal/xml/instance_update.xml", "xslt/instance.xsl"},
         {"valhal/xml/namespaceless_mods.xml", "xslt/instance.xsl"}
     };
 

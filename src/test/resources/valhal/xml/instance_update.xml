@@ -1,0 +1,46 @@
+<metadata>
+  <provenanceMetadata>
+    <instance>
+      <uuid>9a999330-c658-0132-e08b-0050562881f4</uuid>
+    </instance>
+    <work>
+      <uuid>6ce012a0-c646-0132-e087-0050562881f4</uuid>
+    </work>
+  </provenanceMetadata>
+  <preservationMetadata>
+    <fields>
+      <preservation_profile>eternity</preservation_profile>
+      <preservation_state>PRESERVATION_REQUEST_SEND</preservation_state>
+      <preservation_details>The preservation button has been pushed.</preservation_details>
+      <preservation_bitsafety>Maximum Bitsafety (15 x copies: 10 in Bitrepository with daily integrity checks, 5 on open sites on the Internet, 1 on other the Moon and 1 in another galaxy)</preservation_bitsafety>
+      <preservation_confidentiality>Minimum confidentiality (public accessible through the Internet)</preservation_confidentiality>
+      <preservation_modify_date>2015-04-22T12:25:01.182+02:00</preservation_modify_date>
+      <warc_id>d13a5760-4f3d-4c4e-b82b-d948ffb3e412</warc_id>
+    </fields>
+  </preservationMetadata>
+  <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3        http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+    <!--We have found an instance! -->
+    <name authorityURI="http://localhost:3000/resources/changeme:2304">
+      <role>
+        <roleTerm>aut</roleTerm>
+      </role>
+    </name>
+    <titleInfo>
+      <title xml:lang="fr">Hverken eller</title>
+      <subTitle xml:lang="fr">Enten eller for pessimister</subTitle>
+    </titleInfo>
+    <relatedItem type="references" displayLabel="Work">
+      <identifier type="uuid">6ce012a0-c646-0132-e087-0050562881f4</identifier>
+    </relatedItem>
+    <originInfo>
+      <dateCreated encoding="w3cdtf">1234</dateCreated>
+    </originInfo>
+    <identifier type="isbn">978-0-123456-47-2</identifier>
+    <identifier type="uuid">9a999330-c658-0132-e08b-0050562881f4</identifier>
+    <identifier type="uri">http://localhost:3000/resources/changeme:2309</identifier>
+  </mods>
+  <file>
+    <name>fdsa asdf.txt</name>
+    <uuid>9a9c9a00-c658-0132-e08d-0050562881f4</uuid>
+  </file>
+</metadata>

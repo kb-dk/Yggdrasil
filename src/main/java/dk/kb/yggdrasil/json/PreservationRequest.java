@@ -24,11 +24,11 @@ public class PreservationRequest implements Serializable {
     /** ID for the element on Valhal. */
     public String Valhal_ID;
 
-    /** Optional content UUID. */
+    /** Optional content file UUID. */
     @JSONNullable
     public String File_UUID;
 
-    /** Optional content URI. */
+    /** Optional content file download URI. */
     @JSONNullable
     public String Content_URI;
 
@@ -37,6 +37,14 @@ public class PreservationRequest implements Serializable {
 
     /** Metadata data. */
     public String metadata;
+    
+    /** The id of the Warc file, where it has previously been stored. */
+    @JSONNullable
+    public String warc_id;
+    
+    /** The id of the warc file, where the content file has been stored.*/
+    @JSONNullable
+    public String file_warc_id;
 
     /**
      * Validates the message.
