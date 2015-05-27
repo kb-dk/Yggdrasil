@@ -301,8 +301,8 @@ public class PreservationRequestHandlerTest {
         // Setup for huge warc-size, low wait-limit and condition checking interval.
         Config spyConfig = spy(config);
         stub(spyConfig.getWarcSizeLimit()).toReturn(100000000L);
-//        stub(spyConfig.getUploadWaitLimit()).toReturn(100L);
-//        stub(spyConfig.getCheckWarcConditionInterval()).toReturn(100L);
+        stub(spyConfig.getUploadWaitLimit()).toReturn(100L);
+        stub(spyConfig.getCheckWarcConditionInterval()).toReturn(100L);
         
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
@@ -319,12 +319,12 @@ public class PreservationRequestHandlerTest {
         verify(bitrepository).getKnownCollections();
 
         // Wait for timeout
-//        verify(updater, timeout(1500)).updateRemotePreservationState(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS));
-//
-//        verify(states, times(2)).put(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
-//        verify(states, timeout(500)).delete(eq(NON_RANDOM_UUID));
-//
-//        verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
+        verify(updater, timeout(1500)).updateRemotePreservationState(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS));
+
+        verify(states, timeout(1500)).delete(eq(NON_RANDOM_UUID));
+        verify(states, times(2)).put(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
+
+        verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
     }
     
     public static PreservationRequest makeRequest() {
