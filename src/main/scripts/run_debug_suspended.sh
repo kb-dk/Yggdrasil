@@ -7,7 +7,7 @@ if [ -z "${JAVA_DEBUG_OPTS}" ]; then
 fi
 
 if [ -z "${JAVA_OPTS}" ]; then
-  JAVA_OPTS="-Xms256m -Xmx1024m -XX:PermSize=64M -XX:MaxPermSize=256M"
+  JAVA_OPTS="-Xms256m -Xmx1024m"
 fi
 
 "${JAVA}" ${JAVA_DEBUG_OPTS} ${JAVA_OPTS} -D${assembly.config.env.name}="${assembly.config.env.name.ref}" -D${assembly.runningmode.env.name}="${assembly.runningmode.env.name.ref}" -cp "$CP" ${assembly.main.class.name} "$@"

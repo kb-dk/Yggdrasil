@@ -112,9 +112,20 @@ function stop() {
 function status() {
     if [ -s $PIDFILE ]
     then
-      echo "$DNAM is running with pid: $(cat $PIDFILE)"
+      # check if PID is running:
+      PID=$(cat $PIDFILE)
+      if ps -p $PID > /dev/null
+      then
+        echo "$DNAM is running with pid:$PID"
+        RETVAL=0
+      else
+        echo "Error: $PIDFILE exists, but PID=$PID not running"
+        echo "removing $PIDFILE ..."
+        rm $PIDFILE
+        RETVAL=1
+      fi
     else
-      echo "$DNAM is not running"
+      echo "$DNAM is not running ($PIDFILE does not exist)"
     fi
     return 0
 }
