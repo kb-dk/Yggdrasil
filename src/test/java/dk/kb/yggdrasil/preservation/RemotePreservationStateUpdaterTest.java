@@ -39,7 +39,7 @@ public class RemotePreservationStateUpdaterTest {
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, NON_RANDOM_UUID);        
         RemotePreservationStateUpdater updater = new RemotePreservationStateUpdater(mq);
 
-        updater.updateRemotePreservationState(prs, State.PRESERVATION_REQUEST_FAILED);
+        updater.sendPreservationResponse(prs, State.PRESERVATION_REQUEST_FAILED);
 
         Mockito.verify(mq).publishPreservationResponse(Mockito.any(PreservationResponse.class));
     }
@@ -50,7 +50,7 @@ public class RemotePreservationStateUpdaterTest {
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, NON_RANDOM_UUID);        
         RemotePreservationStateUpdater updater = new RemotePreservationStateUpdater(mq);
 
-        updater.updateRemotePreservationStateWithSpecificDetails(prs, State.PRESERVATION_REQUEST_FAILED, "Test are test specific details.");
+        updater.sendPreservationResponseWithSpecificDetails(prs, State.PRESERVATION_REQUEST_FAILED, "Test are test specific details.");
 
         Mockito.verify(mq).publishPreservationResponse(Mockito.any(PreservationResponse.class));
     }
@@ -67,7 +67,7 @@ public class RemotePreservationStateUpdaterTest {
             prs.setResourceWarcFile(warc);
             RemotePreservationStateUpdater updater = new RemotePreservationStateUpdater(mq);
 
-            updater.updateRemotePreservationStateWithSpecificDetails(prs, State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA, "Test are test specific details.");
+            updater.sendPreservationResponseWithSpecificDetails(prs, State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA, "Test are test specific details.");
 
             ArgumentMatcher<PreservationResponse> matcher = new ArgumentMatcher<PreservationResponse>() {
                 @Override

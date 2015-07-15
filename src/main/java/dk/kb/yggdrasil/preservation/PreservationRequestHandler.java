@@ -84,7 +84,7 @@ public class PreservationRequestHandler {
         } catch (PreservationException e) {
             // Fault barrier to ensure, that failures will send update and remove stuff.
             logger.warn("Preservation message handling fault barrier caught exception.", e);
-            context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
+            context.getRemotePreservationStateUpdater().sendPreservationResponseWithSpecificDetails(prs, 
                     e.getState(), e.getMessage());
             context.getStateDatabase().delete(prs.getUUID());
             throw new YggdrasilException(e.getMessage(), e);
@@ -106,12 +106,12 @@ public class PreservationRequestHandler {
             String errMsg = "The given preservation profile '" + preservationProfile
                     + "' does not match a known collection ID. Expected one of: " + possibleCollections;
             logger.error(errMsg);
-            context.getRemotePreservationStateUpdater().updateRemotePreservationStateWithSpecificDetails(prs, 
+            context.getRemotePreservationStateUpdater().sendPreservationResponseWithSpecificDetails(prs, 
                     State.PRESERVATION_REQUEST_FAILED, errMsg);
             return false;
         } 
         
-        context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+        context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                 State.PRESERVATION_REQUEST_RECEIVED);
         context.getStateDatabase().put(prs.getUUID(), prs);
         return true;
@@ -219,7 +219,7 @@ public class PreservationRequestHandler {
                     throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg.toString());
                 } else {
                     prs.setMetadataPayload(outputFile);
-                    context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                    context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                             State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
                 }
             } finally {
@@ -255,11 +255,12 @@ public class PreservationRequestHandler {
             tmpFile = payload.writeToFile();
             prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
             prs.setContentPayload(tmpFile);
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+            context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
             context.getStateDatabase().put(prs.getUUID(), prs);
         } else {
-            throw new PreservationException(State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE, "Failed to download resource.");
+            throw new PreservationException(State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE, 
+                    "Failed to download resource.");
         }
     }
 }

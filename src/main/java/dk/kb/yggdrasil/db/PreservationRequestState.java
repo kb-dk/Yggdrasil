@@ -10,6 +10,7 @@ import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.Update;
 
 /**
  * This class is a container for the request from valhal, and its
@@ -37,6 +38,8 @@ public class PreservationRequestState implements Serializable {
     private String warcId;
     /** The id of the warc file containing the resource.*/
     private String fileWarcId;
+    /** The preservation update data. Default null, since it is only used for preservation updates.*/
+    private Update preservationUpdate = null;
 
     /**
      * The constructor of the PreservationRequestState.
@@ -152,6 +155,21 @@ public class PreservationRequestState implements Serializable {
      */
     public void resetUploadPackage() {
         this.warcId = null;
+        this.fileWarcId = null;
+    }
+
+    /**
+     * @return The update element containing data about the preservation update. 
+     */
+    public Update getUpdatePreservation() {
+        return preservationUpdate;        
+    }
+    
+    /**
+     * @param update The preservation update element to be set.
+     */
+    public void setUpdatePreservation(Update update) {
+        this.preservationUpdate = update;
     }
 
     /**

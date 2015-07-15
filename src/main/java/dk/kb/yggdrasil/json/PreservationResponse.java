@@ -1,5 +1,7 @@
 package dk.kb.yggdrasil.json;
 
+import com.antiaction.common.json.annotation.JSONNullable;
+
 
 /**
  * JSON preservation response object representation.
@@ -13,4 +15,7 @@ public class PreservationResponse {
     public String model;
     /** Preservation data. */
     public Preservation preservation;
+    /** The update element, when dealing with preservation updates.*/
+    @JSONNullable
+    public Update update;
 }

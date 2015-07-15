@@ -305,5 +305,4 @@ public class XmlValidator {
         }
         return result.bValid;
     }
-
 }

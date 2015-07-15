@@ -13,6 +13,7 @@ import dk.kb.yggdrasil.messaging.MQ;
 
 /**
  * Simple class for dealing with updating the remote preservation states.
+ * Thus creating and sending PreservationResponse messages.
  */
 public class RemotePreservationStateUpdater {
     /** Logging mechanism. */
@@ -36,7 +37,7 @@ public class RemotePreservationStateUpdater {
      * @param details The new details for the new state.
      * @throws YggdrasilException If an issue with sending the message occurs.
      */
-    public void updateRemotePreservationStateWithSpecificDetails(PreservationRequestState prs, State newState,
+    public void sendPreservationResponseWithSpecificDetails(PreservationRequestState prs, State newState,
             String details) throws YggdrasilException {
         ArgumentValidator.checkNotNull(prs, "PreservationRequestState prs");
         ArgumentValidator.checkNotNull(newState, "State newPreservationState");
@@ -44,7 +45,7 @@ public class RemotePreservationStateUpdater {
         Preservation preseravtionInfo = new Preservation();
         preseravtionInfo.preservation_state = newState.name();
         preseravtionInfo.preservation_details = details;
-        updateRemotePreservationState(prs, preseravtionInfo);
+        sendPreservationResponse(prs, preseravtionInfo);
 
         logger.info("Preservation status updated to '" + newState.name()
                 +  "' using the updateURI. Reason: " + details );
@@ -56,7 +57,7 @@ public class RemotePreservationStateUpdater {
      * @param newState The new Preservation State.
      * @throws YggdrasilException If an issue with sending the message occurs.
      */
-    public void updateRemotePreservationState(PreservationRequestState prs, State newState) 
+    public void sendPreservationResponse(PreservationRequestState prs, State newState) 
             throws YggdrasilException {
         ArgumentValidator.checkNotNull(prs, "PreservationRequestState prs");
         ArgumentValidator.checkNotNull(newState, "State newState");
@@ -64,7 +65,7 @@ public class RemotePreservationStateUpdater {
         Preservation preservationInfo = new Preservation();
         preservationInfo.preservation_state = newState.name();
         preservationInfo.preservation_details = newState.getDescription();
-        updateRemotePreservationState(prs, preservationInfo);
+        sendPreservationResponse(prs, preservationInfo);
 
         logger.info("Preservation status updated to '" + newState.name() +  "' using the updateURI.");
     }
@@ -76,7 +77,7 @@ public class RemotePreservationStateUpdater {
      * @param newState The new state.
      * @throws YggdrasilException If an issue with sending the message occurs.
      */
-    private void updateRemotePreservationState(PreservationRequestState prs, Preservation newState) 
+    private void sendPreservationResponse(PreservationRequestState prs, Preservation newState) 
             throws YggdrasilException {
         PreservationResponse response = new PreservationResponse();
         response.id = prs.getRequest().Valhal_ID;
@@ -88,7 +89,10 @@ public class RemotePreservationStateUpdater {
         if(prs.getFileWarcId() != null) {
             response.preservation.file_warc_id = prs.getFileWarcId();
         }
-
+        if(prs.getUpdatePreservation() != null) {
+            response.update = prs.getUpdatePreservation();
+        }
+        
         mq.publishPreservationResponse(response);
-    }
+    }    
 }

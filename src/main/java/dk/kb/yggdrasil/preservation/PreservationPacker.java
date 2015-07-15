@@ -21,6 +21,7 @@ import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.json.Update;
 import dk.kb.yggdrasil.warc.Digest;
 import dk.kb.yggdrasil.warc.WarcWriterWrapper;
 import dk.kb.yggdrasil.warc.YggdrasilWarcConstants;
@@ -111,7 +112,7 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
-                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                         State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
             if (metadata != null) {
@@ -128,11 +129,11 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
-                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                         State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
             prs.setMetadataWarcFile(writer.getWarcFile());
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+            context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
         } catch (IOException e) {
             throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
@@ -149,6 +150,7 @@ public class PreservationPacker {
             PreservationException {
         checkInitialize();
         metadataRequests.add(prs);
+        Update update = createUpdate(prs, writer.getWarcFile().getName());
         try {
             Uri resourceId = null;
             Digest digestor = new Digest("SHA-1");
@@ -158,31 +160,30 @@ public class PreservationPacker {
             if (resource != null) {
                 try {
                     WarcConcurrentTo concurrentTo = new WarcConcurrentTo();
-                    concurrentTo.warcConcurrentToStr = prs.getRequest().file_warc_id + ":" 
-                            + prs.getRequest().File_UUID;
+                    concurrentTo.warcConcurrentToStr = prs.getRequest().File_UUID;
                     in = new FileInputStream(resource);
                     WarcDigest blockDigest = digestor.getDigestOfFile(resource);
                     resourceId = writer.writeUpdateRecord(in, resource.length(), 
                             ContentType.parseContentType("application/binary"), null, 
-                            Arrays.asList(concurrentTo), blockDigest, prs.getRequest().File_UUID);
+                            Arrays.asList(concurrentTo), blockDigest, update.file_uuid);
                 } finally {
                     if(in != null) {
                         in.close();
                         in = null;
                     }
                 }
-                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                         State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
             if (metadata != null) {
                 try {
                     WarcConcurrentTo concurrentTo = new WarcConcurrentTo();
-                    concurrentTo.warcConcurrentToStr = prs.getWarcId() + ":" + prs.getRequest().UUID;
+                    concurrentTo.warcConcurrentToStr = prs.getRequest().UUID;
                     in = new FileInputStream(resource);
                     WarcDigest blockDigest = digestor.getDigestOfFile(resource);
                     resourceId = writer.writeUpdateRecord(in, metadata.length(), 
                             ContentType.parseContentType("text/xml"), resourceId, 
-                            Arrays.asList(concurrentTo), blockDigest, prs.getRequest().UUID);
+                            Arrays.asList(concurrentTo), blockDigest, update.uuid);
                     in = new FileInputStream(metadata);
                     in.close();
                 } finally {
@@ -191,11 +192,10 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
-                context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+                context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                         State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
-            prs.setMetadataWarcFile(writer.getWarcFile());
-            context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, 
+            context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
         } catch (IOException e) {
             throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
@@ -256,7 +256,7 @@ public class PreservationPacker {
     private void updateRequestState(State preservationState, PreservationRequestState prs) 
             throws YggdrasilException {
         prs.setState(preservationState);
-        context.getRemotePreservationStateUpdater().updateRemotePreservationState(prs, preservationState);
+        context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, preservationState);
         context.getStateDatabase().put(prs.getUUID(), prs);
     }
 
@@ -294,5 +294,24 @@ public class PreservationPacker {
         } catch (IOException e) {
             throw new YggdrasilException("Could not create the WARC info record.", e);
         }
-    }    
+    }
+    
+    /**
+     * @param prs The preservation request state to 
+     * @return The Update element for the preservation request state.
+     */
+    private Update createUpdate(PreservationRequestState prs, String warcId) {
+        Update res = new Update();
+        res.date = new Date().toString();
+
+        if(prs.getContentPayload() != null) {
+            res.file_uuid = UUID.randomUUID().toString();
+            res.file_warc_id = warcId;
+        }
+        if(prs.getMetadataPayload() != null) {
+            res.uuid = UUID.randomUUID().toString();
+            res.warc_id = warcId;
+        }
+        return res;
+    }
 }

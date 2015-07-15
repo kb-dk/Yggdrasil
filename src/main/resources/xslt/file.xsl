@@ -18,7 +18,7 @@
   </xsl:template>
   
   <xsl:template name="file_mets_generator">
-    <mets:mets xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version191/mets.xsd">
+    <mets:mets xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version110/mets.xsd">
       <xsl:attribute name="TYPE">
         <xsl:value-of select="'File'" />
       </xsl:attribute>
