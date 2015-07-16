@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.Update;
@@ -96,10 +97,9 @@ public class PreservationPacker {
         try {
             Uri resourceId = null;
             Digest digestor = new Digest("SHA-1");
-            File resource = prs.getContentPayload();
-            File metadata = prs.getMetadataPayload();
             InputStream in = null;
-            if (resource != null) {
+            if (prs.getContentPayload() != null) {
+                File resource = prs.getContentPayload();
                 try {
                     in = new FileInputStream(resource);
                     WarcDigest blockDigest = digestor.getDigestOfFile(resource);
@@ -112,10 +112,12 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
+                prs.setResourceWarcFile(writer.getWarcFile());
                 context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                        State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
+                        State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
-            if (metadata != null) {
+            if (prs.getMetadataPayload() != null) {
+                File metadata = prs.getMetadataPayload();
                 try {
                     in = new FileInputStream(metadata);
                     WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
@@ -130,7 +132,7 @@ public class PreservationPacker {
                     }
                 }
                 context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                        State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
+                        State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
             prs.setMetadataWarcFile(writer.getWarcFile());
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
@@ -150,14 +152,14 @@ public class PreservationPacker {
             PreservationException {
         checkInitialize();
         metadataRequests.add(prs);
-        Update update = createUpdate(prs, writer.getWarcFile().getName());
+        Update update = createUpdateElement(prs, writer.getWarcFile().getName());
+        prs.setUpdatePreservation(update);
         try {
             Uri resourceId = null;
             Digest digestor = new Digest("SHA-1");
-            File resource = prs.getContentPayload();
-            File metadata = prs.getMetadataPayload();
             InputStream in = null;
-            if (resource != null) {
+            if (prs.getContentPayload() != null) {
+                File resource = prs.getContentPayload();
                 try {
                     WarcConcurrentTo concurrentTo = new WarcConcurrentTo();
                     concurrentTo.warcConcurrentToStr = prs.getRequest().File_UUID;
@@ -173,14 +175,15 @@ public class PreservationPacker {
                     }
                 }
                 context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                        State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
+                        State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
-            if (metadata != null) {
+            if (prs.getMetadataPayload() != null) {
+                File metadata = prs.getMetadataPayload();
                 try {
                     WarcConcurrentTo concurrentTo = new WarcConcurrentTo();
                     concurrentTo.warcConcurrentToStr = prs.getRequest().UUID;
-                    in = new FileInputStream(resource);
-                    WarcDigest blockDigest = digestor.getDigestOfFile(resource);
+                    in = new FileInputStream(metadata);
+                    WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
                     resourceId = writer.writeUpdateRecord(in, metadata.length(), 
                             ContentType.parseContentType("text/xml"), resourceId, 
                             Arrays.asList(concurrentTo), blockDigest, update.uuid);
@@ -193,7 +196,7 @@ public class PreservationPacker {
                     }
                 }
                 context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                        State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
+                        State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
@@ -300,7 +303,9 @@ public class PreservationPacker {
      * @param prs The preservation request state to 
      * @return The Update element for the preservation request state.
      */
-    private Update createUpdate(PreservationRequestState prs, String warcId) {
+    private Update createUpdateElement(PreservationRequestState prs, String warcId) {
+        ArgumentCheck.checkTrue(prs.getContentPayload() != null || prs.getMetadataPayload() != null, 
+                "Cannot create an update element with neither content nor metadata.");
         Update res = new Update();
         res.date = new Date().toString();
 

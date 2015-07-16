@@ -139,6 +139,12 @@
       <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jwat</groupId>
+      <artifactId>jwat-warc</artifactId>
+      <version>1.0.3</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

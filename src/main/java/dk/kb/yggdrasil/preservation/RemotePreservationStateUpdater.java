@@ -66,7 +66,8 @@ public class RemotePreservationStateUpdater {
         preservationInfo.preservation_state = newState.name();
         preservationInfo.preservation_details = newState.getDescription();
         sendPreservationResponse(prs, preservationInfo);
-
+        
+        prs.setState(newState);
         logger.info("Preservation status updated to '" + newState.name() +  "' using the updateURI.");
     }
     

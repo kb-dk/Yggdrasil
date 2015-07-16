@@ -253,7 +253,6 @@ public class PreservationRequestHandler {
         HttpPayload payload = HttpCommunication.get(pr.Content_URI);
         if (payload != null) {
             tmpFile = payload.writeToFile();
-            prs.setState(State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
             prs.setContentPayload(tmpFile);
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
