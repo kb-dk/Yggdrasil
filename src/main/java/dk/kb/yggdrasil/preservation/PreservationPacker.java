@@ -86,9 +86,10 @@ public class PreservationPacker {
     }
 
     /**
-     * Write the contentPaylod and transformed of the preservation record.
+     * Write the contentPaylod and transformed of the preservation records.
      * @param prs The record of the preservation request to write.
      * @throws YggdrasilException If it fails to write the preservation request state.
+     * @throws PreservationException If it fails to perform the preservation.
      */
     public synchronized void writePreservationRecord(PreservationRequestState prs) throws YggdrasilException,
             PreservationException {
@@ -144,9 +145,10 @@ public class PreservationPacker {
     }
     
     /**
-     * Write the contentPaylod and transformed of the preservation record.
-     * @param prs The record of the preservation request to write.
+     * Write the contentPaylod and transformed of the preservation update records.
+     * @param prs The record of the preservation update request to write.
      * @throws YggdrasilException If it fails to write the preservation request state.
+     * @throws PreservationException If it fails to perform the preservation.
      */
     public synchronized void writeUpdateRecord(PreservationRequestState prs) throws YggdrasilException,
             PreservationException {

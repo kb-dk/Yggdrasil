@@ -45,7 +45,8 @@ public class PreservationPackagingManager {
      * Adds the preservation request state to the warc file for the given collection.
      * @param collectionId The id of the collection.
      * @param prs The preservation request to handle.
-     * @throws YggdrasilException 
+     * @throws YggdrasilException If it cannot communicate with other components.
+     * @throws PreservationException If it fails to perform the preservation.
      */
     public void addToWarcFile(String collectionId, PreservationRequestState prs) throws YggdrasilException, 
             PreservationException {
