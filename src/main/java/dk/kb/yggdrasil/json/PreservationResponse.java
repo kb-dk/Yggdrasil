@@ -2,7 +2,6 @@ package dk.kb.yggdrasil.json;
 
 import com.antiaction.common.json.annotation.JSONNullable;
 
-
 /**
  * JSON preservation response object representation.
  * The single containing object reflects the JSON structure.

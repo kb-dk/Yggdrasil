@@ -58,7 +58,8 @@ public class PreservationRequestHandlerTest {
         prh.handleRequest(request);
 
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_REQUEST_RECEIVED));
-        verify(updater, times(2)).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS));
         
         verify(states, times(2)).put(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
@@ -211,7 +212,8 @@ public class PreservationRequestHandlerTest {
         prh.handleRequest(request);
 
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_REQUEST_RECEIVED));
-        verify(updater, times(2)).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_UPLOAD_FAILURE));
         
         verify(states, times(2)).put(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
@@ -242,7 +244,8 @@ public class PreservationRequestHandlerTest {
         prh.handleRequest(request);
 
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_REQUEST_RECEIVED));
-        verify(updater, times(2)).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verify(bitrepository).getKnownCollections();
 
@@ -312,7 +315,8 @@ public class PreservationRequestHandlerTest {
         prh.handleRequest(request);
 
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_REQUEST_RECEIVED));
-        verify(updater, times(2)).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verify(bitrepository).getKnownCollections();
 

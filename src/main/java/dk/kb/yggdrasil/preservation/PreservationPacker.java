@@ -132,9 +132,9 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
-                context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                        State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
+            context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
+                    State.PRESERVATION_PACKAGE_COMPLETE);
             prs.setMetadataWarcFile(writer.getWarcFile());
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
@@ -197,9 +197,9 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
-                context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                        State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
             }
+            context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
+                    State.PRESERVATION_PACKAGE_COMPLETE);
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
         } catch (IOException e) {

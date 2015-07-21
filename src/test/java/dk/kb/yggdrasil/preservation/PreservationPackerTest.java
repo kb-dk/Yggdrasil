@@ -45,7 +45,8 @@ public class PreservationPackerTest {
     protected static Config config;
     protected static StateDatabase stateDatabase;
     
-    protected static File payloadFile;
+    protected static File metadataPayloadFile;
+    protected static File contentFilePayloadFile;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -58,13 +59,23 @@ public class PreservationPackerTest {
 
         stateDatabase = new StateDatabase(config.getDatabaseDir());
         
-        payloadFile = new File(config.getTemporaryDir(), "default.txt");
-        if(!payloadFile.isFile()) {
-            FileOutputStream fos = new FileOutputStream(payloadFile);
-            fos.write(new String("This is a test file").getBytes());
+        metadataPayloadFile = new File(config.getTemporaryDir(), "metadataPayloadFile.txt");
+        if(!metadataPayloadFile.isFile()) {
+            FileOutputStream fos = new FileOutputStream(metadataPayloadFile);
+            fos.write(new String("This is the metadata payload file").getBytes());
             fos.close();
         }
-        Assert.assertTrue(payloadFile.isFile());
+        Assert.assertTrue(metadataPayloadFile.isFile());
+        
+        contentFilePayloadFile = new File(config.getTemporaryDir(), "contentFilePayloadFile.txt");
+        if(!contentFilePayloadFile.isFile()) {
+            FileOutputStream fos = new FileOutputStream(contentFilePayloadFile);
+            fos.write(new String("This is the contentFile payload file").getBytes());
+            fos.close();
+        }
+        Assert.assertTrue(metadataPayloadFile.isFile());
+
+        Assert.assertTrue(metadataPayloadFile.length() != contentFilePayloadFile.length());
     }
 
     @Test
@@ -81,6 +92,7 @@ public class PreservationPackerTest {
 
         packer.writePreservationRecord(prs);
         
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
@@ -117,14 +129,14 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setMetadataPayload(payloadFile);
+        prs.setMetadataPayload(metadataPayloadFile);
 
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
 
         packer.writePreservationRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
@@ -140,7 +152,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setMetadataPayload(payloadFile);
+        prs.setMetadataPayload(metadataPayloadFile);
 
         packer.writePreservationRecord(prs);
         
@@ -157,6 +169,7 @@ public class PreservationPackerTest {
         Assert.assertTrue(records.containsKey(metadataRecordUUID));
         Assert.assertEquals(records.get(metadataRecordUUID).header.warcTypeStr, "metadata");
         Assert.assertNull(records.get(metadataRecordUUID).header.warcRefersToStr); 
+        Assert.assertEquals(records.get(metadataRecordUUID).header.contentLengthStr, "" + metadataPayloadFile.length());
     }
     
     @Test
@@ -167,7 +180,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setContentPayload(payloadFile);
+        prs.setContentPayload(contentFilePayloadFile);
 
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -175,6 +188,7 @@ public class PreservationPackerTest {
         packer.writePreservationRecord(prs);
         
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
@@ -191,7 +205,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setContentPayload(payloadFile);
+        prs.setContentPayload(contentFilePayloadFile);
 
         packer.writePreservationRecord(prs);
         
@@ -207,7 +221,8 @@ public class PreservationPackerTest {
         String fileRecordUUID = "urn:uuid:" + prs.getRequest().File_UUID;
         Assert.assertTrue(records.containsKey(fileRecordUUID));
         Assert.assertEquals(records.get(fileRecordUUID).header.warcTypeStr, "resource");
-        Assert.assertNull(records.get(fileRecordUUID).header.warcRefersToStr); 
+        Assert.assertNull(records.get(fileRecordUUID).header.warcRefersToStr);
+        Assert.assertEquals(records.get(fileRecordUUID).header.contentLengthStr, "" + contentFilePayloadFile.length());
     }
 
     @Test
@@ -218,8 +233,8 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setContentPayload(payloadFile);
-        prs.setMetadataPayload(payloadFile);
+        prs.setContentPayload(metadataPayloadFile);
+        prs.setMetadataPayload(contentFilePayloadFile);
 
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -227,7 +242,7 @@ public class PreservationPackerTest {
         packer.writePreservationRecord(prs);
         
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
@@ -243,8 +258,8 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setContentPayload(payloadFile);
-        prs.setMetadataPayload(payloadFile);
+        prs.setContentPayload(contentFilePayloadFile);
+        prs.setMetadataPayload(metadataPayloadFile);
 
         packer.writePreservationRecord(prs);
         
@@ -261,12 +276,14 @@ public class PreservationPackerTest {
         Assert.assertTrue(records.containsKey(fileRecordUUID));
         Assert.assertEquals(records.get(fileRecordUUID).header.warcTypeStr, "resource");
         Assert.assertNull(records.get(fileRecordUUID).header.warcRefersToStr); 
+        Assert.assertEquals(records.get(fileRecordUUID).header.contentLengthStr, "" + contentFilePayloadFile.length());
 
         // look at packaged metadata
         String metadataRecordUUID = "urn:uuid:" + prs.getUUID();
         Assert.assertTrue(records.containsKey(metadataRecordUUID));
         Assert.assertEquals(records.get(metadataRecordUUID).header.warcTypeStr, "metadata");
         Assert.assertEquals(records.get(metadataRecordUUID).header.warcRefersToStr, "<" + fileRecordUUID + ">"); 
+        Assert.assertEquals(records.get(metadataRecordUUID).header.contentLengthStr, "" + metadataPayloadFile.length());
     }
 
     @Test(expected = ArgumentCheck.class)
@@ -293,7 +310,7 @@ public class PreservationPackerTest {
         request.warc_id = WARC_FILE_ID;
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setMetadataPayload(payloadFile);
+        prs.setMetadataPayload(metadataPayloadFile);
         
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -301,7 +318,7 @@ public class PreservationPackerTest {
 
         packer.writeUpdateRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNull(prs.getWarcId());
@@ -323,7 +340,7 @@ public class PreservationPackerTest {
         request.warc_id = WARC_FILE_ID;
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setMetadataPayload(payloadFile);
+        prs.setMetadataPayload(metadataPayloadFile);
 
         packer.writeUpdateRecord(prs);
         
@@ -342,6 +359,7 @@ public class PreservationPackerTest {
         Assert.assertNull(records.get(metadataRecordUUID).header.warcRefersToStr); 
         Assert.assertEquals(records.get(metadataRecordUUID).header.warcConcurrentToList.size(), 1);
         Assert.assertEquals(records.get(metadataRecordUUID).header.warcConcurrentToList.get(0).warcConcurrentToStr, "<" + prs.getUUID() + ">");
+        Assert.assertEquals(records.get(metadataRecordUUID).header.contentLengthStr, "" + metadataPayloadFile.length());
     }
     
     @Test
@@ -353,7 +371,7 @@ public class PreservationPackerTest {
         request.warc_id = WARC_FILE_ID;
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setContentPayload(payloadFile);
+        prs.setContentPayload(metadataPayloadFile);
         
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -362,6 +380,7 @@ public class PreservationPackerTest {
         packer.writeUpdateRecord(prs);
         
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNull(prs.getWarcId());
@@ -383,7 +402,7 @@ public class PreservationPackerTest {
         request.warc_id = WARC_FILE_ID;
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setContentPayload(payloadFile);
+        prs.setContentPayload(contentFilePayloadFile);
         
         packer.writeUpdateRecord(prs);
         
@@ -402,6 +421,7 @@ public class PreservationPackerTest {
         Assert.assertNull(records.get(fileRecordUUID).header.warcRefersToStr); 
         Assert.assertEquals(records.get(fileRecordUUID).header.warcConcurrentToList.size(), 1);
         Assert.assertEquals(records.get(fileRecordUUID).header.warcConcurrentToList.get(0).warcConcurrentToStr, "<" + prs.getRequest().File_UUID + ">");
+        Assert.assertEquals(records.get(fileRecordUUID).header.contentLengthStr, "" + contentFilePayloadFile.length());
     }
     
     @Test
@@ -413,8 +433,8 @@ public class PreservationPackerTest {
         request.warc_id = WARC_FILE_ID;
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setContentPayload(payloadFile);
-        prs.setMetadataPayload(payloadFile);
+        prs.setContentPayload(contentFilePayloadFile);
+        prs.setMetadataPayload(metadataPayloadFile);
         
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -422,8 +442,8 @@ public class PreservationPackerTest {
 
         packer.writeUpdateRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNull(prs.getWarcId());
@@ -445,8 +465,8 @@ public class PreservationPackerTest {
         request.warc_id = WARC_FILE_ID;
         
         PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
-        prs.setContentPayload(payloadFile);
-        prs.setMetadataPayload(payloadFile);
+        prs.setContentPayload(contentFilePayloadFile);
+        prs.setMetadataPayload(metadataPayloadFile);
 
         packer.writeUpdateRecord(prs);
         
@@ -465,6 +485,7 @@ public class PreservationPackerTest {
         Assert.assertNull(records.get(fileRecordUUID).header.warcRefersToStr); 
         Assert.assertEquals(records.get(fileRecordUUID).header.warcConcurrentToList.size(), 1);
         Assert.assertEquals(records.get(fileRecordUUID).header.warcConcurrentToList.get(0).warcConcurrentToStr, "<" + prs.getRequest().File_UUID + ">");
+        Assert.assertEquals(records.get(fileRecordUUID).header.contentLengthStr, "" + contentFilePayloadFile.length());
 
         // look at packaged metadata
         String metadataRecordUUID = "urn:uuid:" + prs.getUpdatePreservation().uuid;
@@ -473,6 +494,7 @@ public class PreservationPackerTest {
         Assert.assertEquals(records.get(metadataRecordUUID).header.warcRefersToStr, "<" + fileRecordUUID + ">"); 
         Assert.assertEquals(records.get(metadataRecordUUID).header.warcConcurrentToList.size(), 1);
         Assert.assertEquals(records.get(metadataRecordUUID).header.warcConcurrentToList.get(0).warcConcurrentToStr, "<" + prs.getUUID() + ">");
+        Assert.assertEquals(records.get(metadataRecordUUID).header.contentLengthStr, "" + metadataPayloadFile.length());
     }
     
     public static PreservationRequest makeRequest() {
