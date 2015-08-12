@@ -1,14 +1,13 @@
-package dk.kb.yggdrasil.preservation;
+package dk.kb.yggdrasil;
 
-import dk.kb.yggdrasil.Bitrepository;
-import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
+import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 
 /**
  * A wrapper class around the different components needed for sending files to preservation.
  */
-public class PreservationContext {
+public class RequestHandlerContext {
     /** The bitrepository to upload the WARC files to, when they are ready. */
     private final Bitrepository bitrepository;
     /** The general settings used by Yggdrasil. */
@@ -25,7 +24,7 @@ public class PreservationContext {
      * @param sd The state database.
      * @param remotePreservationStateUpdater The remote preservation state updater.
      */
-    public PreservationContext(Bitrepository bitrepository, Config config, StateDatabase sd, 
+    public RequestHandlerContext(Bitrepository bitrepository, Config config, StateDatabase sd, 
             RemotePreservationStateUpdater remotePreservationStateUpdater) {
         ArgumentCheck.checkNotNull(bitrepository, "bitrepository");
         ArgumentCheck.checkNotNull(config, "config");

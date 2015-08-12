@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import dk.kb.yggdrasil.Bitrepository;
 import dk.kb.yggdrasil.Config;
+import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 
@@ -41,7 +42,7 @@ public class PreservationContextTest {
 
     @Test
     public void fullContext() throws Exception {
-        PreservationContext context = new PreservationContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
         
         Assert.assertEquals(context.getBitrepository(), bitrepository);
         Assert.assertEquals(context.getConfig(), config);
@@ -52,7 +53,7 @@ public class PreservationContextTest {
     @Test
     public void nullbitrepositoryArgumentTest() throws Exception {
         try {
-            new PreservationContext(null, config, stateDatabase, updater);
+            new RequestHandlerContext(null, config, stateDatabase, updater);
             Assert.fail("Must throw an ArgumentCheck exception here.");
         } catch (ArgumentCheck e) {
             // Expected
@@ -62,7 +63,7 @@ public class PreservationContextTest {
     @Test
     public void nullConfigArgumentTest() throws Exception {
         try {
-            new PreservationContext(bitrepository, null, stateDatabase, updater);
+            new RequestHandlerContext(bitrepository, null, stateDatabase, updater);
             Assert.fail("Must throw an ArgumentCheck exception here.");
         } catch (ArgumentCheck e) {
             // Expected
@@ -72,7 +73,7 @@ public class PreservationContextTest {
     @Test
     public void nullStateDatabaseArgumentTest() throws Exception {
         try {
-            new PreservationContext(bitrepository, config, null, updater);
+            new RequestHandlerContext(bitrepository, config, null, updater);
             Assert.fail("Must throw an ArgumentCheck exception here.");
         } catch (ArgumentCheck e) {
             // Expected
@@ -82,7 +83,7 @@ public class PreservationContextTest {
     @Test
     public void nullUpdaterArgumentTest() throws Exception {
         try {
-            new PreservationContext(bitrepository, config, stateDatabase, null);
+            new RequestHandlerContext(bitrepository, config, stateDatabase, null);
             Assert.fail("Must throw an ArgumentCheck exception here.");
         } catch (ArgumentCheck e) {
             // Expected

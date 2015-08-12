@@ -15,6 +15,10 @@ import com.antiaction.common.json.JSONStructure;
 import com.antiaction.common.json.JSONText;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.json.preservation.PreservationRequest;
+import dk.kb.yggdrasil.json.preservation.PreservationResponse;
+import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
+import dk.kb.yggdrasil.json.preservationimport.PreservationImportResponse;
 
 /**
  * Small class for marshalling JSON messages to/from Valhal.
@@ -42,6 +46,8 @@ public class JSONMessaging {
         try {
             JSON_OM.register(PreservationRequest.class);
             JSON_OM.register(PreservationResponse.class);
+            JSON_OM.register(PreservationImportRequest.class);
+            JSON_OM.register(PreservationImportResponse.class);
         } catch (JSONException e) {
             logger.error(e.toString(), e);
         }
@@ -60,6 +66,25 @@ public class JSONMessaging {
             JSONStructure json_object = JSON_TEXT.decodeJSONtext(in, json_decoder);
             PreservationRequest request = JSON_OM.getStructureUnmarshaller().toObject(json_object, 
                     PreservationRequest.class);
+            return request;
+        } catch (Exception e) {
+            throw new YggdrasilException("Error while unmarshalling preservation request.", e);
+        }
+    }
+
+    /**
+     * Convert JSON data into a preservation import request object.
+     * @param in <code>InputStream</code> containing JSON data
+     * @return preservation import request object representation
+     * @throws YggdrasilException if an I/O error occurs while unmashalling
+     */
+    public static PreservationImportRequest getPreservationImportRequest(PushbackInputStream in) throws YggdrasilException {
+        try {
+            int encoding = JSONEncoding.encoding(in);
+            JSONDecoder json_decoder = JSON_ENCODING.getJSONDecoder(encoding);
+            JSONStructure json_object = JSON_TEXT.decodeJSONtext(in, json_decoder);
+            PreservationImportRequest request = JSON_OM.getStructureUnmarshaller().toObject(json_object, 
+                    PreservationImportRequest.class);
             return request;
         } catch (Exception e) {
             throw new YggdrasilException("Error while unmarshalling preservation request.", e);
@@ -86,4 +111,24 @@ public class JSONMessaging {
         }
     }
 
+
+    /**
+     * Convert preservation import response object into JSON data.
+     * @param response preservation import response object
+     * @return preservation response as JSON data
+     * @throws YggdrasilException if an I/O error occurs while marshalling
+     */
+    public static byte[] getPreservationImportResponse(PreservationImportResponse response) throws YggdrasilException {
+        try {
+            JSONEncoder json_encoder = JSON_ENCODING.getJSONEncoder(JSONEncoding.E_UTF8);
+            JSONStructure json_object = JSON_OM.getStructureMarshaller().toJSON(response);
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            JSON_TEXT.encodeJSONtext(json_object, json_encoder, false, bout);
+            bout.close();
+            byte[] content = bout.toByteArray();
+            return content;
+        } catch (Exception e) {
+            throw new YggdrasilException("Error while marshalling preservation response.", e);
+        }
+    }
 }

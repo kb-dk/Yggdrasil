@@ -12,8 +12,8 @@ import org.mockito.Mockito;
 
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
-import dk.kb.yggdrasil.json.PreservationRequest;
-import dk.kb.yggdrasil.json.PreservationResponse;
+import dk.kb.yggdrasil.json.preservation.PreservationRequest;
+import dk.kb.yggdrasil.json.preservation.PreservationResponse;
 import dk.kb.yggdrasil.messaging.MQ;
 
 @RunWith(JUnit4.class)

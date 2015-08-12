@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.Preservation;
-import dk.kb.yggdrasil.json.PreservationResponse;
+import dk.kb.yggdrasil.json.preservation.Preservation;
+import dk.kb.yggdrasil.json.preservation.PreservationResponse;
 import dk.kb.yggdrasil.messaging.MQ;
 
 /**

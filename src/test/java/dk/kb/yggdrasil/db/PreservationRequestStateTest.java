@@ -13,7 +13,7 @@ import org.junit.runners.JUnit4;
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 
 @RunWith(JUnit4.class)
 public class PreservationRequestStateTest {

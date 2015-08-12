@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil.json;
+package dk.kb.yggdrasil.json.preservation;
 
 import com.antiaction.common.json.annotation.JSONNullable;
 

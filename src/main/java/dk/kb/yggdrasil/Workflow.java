@@ -11,12 +11,13 @@ import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.JSONMessaging;
-import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.preservation.PreservationRequest;
+import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MqResponse;
-import dk.kb.yggdrasil.preservation.PreservationContext;
 import dk.kb.yggdrasil.preservation.PreservationRequestHandler;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
+import dk.kb.yggdrasil.preservationimport.ImportRequestHandler;
 import dk.kb.yggdrasil.xslt.Models;
 
 /**
@@ -36,6 +37,8 @@ public class Workflow {
     
     /** The preservation request handler. */
     private final PreservationRequestHandler preservationRequestHandler;
+    /** */
+    private final ImportRequestHandler importRequestHandler;
     
     /**
      * Constructor for the Workflow class.
@@ -54,9 +57,10 @@ public class Workflow {
         ArgumentCheck.checkNotNull(models, "Models models");
         this.mq = rabbitconnector;
         
-        PreservationContext context = new PreservationContext(bitrepository, config, states, 
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, 
                 new RemotePreservationStateUpdater(mq));
         preservationRequestHandler = new PreservationRequestHandler(context, models);
+        importRequestHandler = new ImportRequestHandler(context);
     }
 
     /**
@@ -69,29 +73,22 @@ public class Workflow {
         while (!shutdown) {
             PreservationRequest request = null;
             try {
-                request = getNextRequest();
+                shutdown = handleNextRequest();
             } catch (YggdrasilException e) {
                 logger.error("Caught exception while retrieving message from rabbitmq. Skipping message", e);
                 continue;
             }
 
-            if (request == null) {
-                logger.info("Received shutdown message. Shutting down. ");
-                shutdown = true;
-                continue;
-            }
-
-            preservationRequestHandler.handleRequest(request);
         } 
     }
 
     /**
-     * Wait until the next request arrives on the queue, and then return the request.
-     * @return the next request from the queue (returns null, if shutdown message)
+     * Wait until the next request arrives on the queue and handle it responsively.
+     * @return whether the it handle another request.
      * @throws YggdrasilException If bad messagetype
      * @throws RabbitException When message queue connection fails.
      */
-    private PreservationRequest getNextRequest() throws YggdrasilException, RabbitException {
+    private boolean handleNextRequest() throws YggdrasilException, RabbitException {
         // TODO Should there be a timeout here?
         MqResponse requestContent = mq.receiveMessageFromQueue(
                 mq.getSettings().getPreservationDestination());
@@ -101,12 +98,19 @@ public class Workflow {
         } else if (messageType.equalsIgnoreCase(MQ.SHUTDOWN_MESSAGE_TYPE)) {
             logger.warn("Shutdown message received");
             // Shutdown message received
-            return null;
+            return false;
         } else if (messageType.equalsIgnoreCase(MQ.PRESERVATIONREQUEST_MESSAGE_TYPE)) {
             PreservationRequest request = JSONMessaging.getPreservationRequest(
                     new PushbackInputStream(new ByteArrayInputStream(requestContent.getPayload())
                     , PUSHBACKBUFFERSIZE));
-            return request;
+            preservationRequestHandler.handleRequest(request);
+            return true;
+        } else if (messageType.equalsIgnoreCase(MQ.IMPORTREQUEST_MESSAGE_TYPE)) {
+            PreservationImportRequest request = JSONMessaging.getPreservationImportRequest(
+                    new PushbackInputStream(new ByteArrayInputStream(requestContent.getPayload())
+                    , PUSHBACKBUFFERSIZE));
+            importRequestHandler.handleRequest(request);
+            return true;
         } else {
             throw new YggdrasilException("The message type '"
                     + messageType + "' is not handled by Yggdrasil.");

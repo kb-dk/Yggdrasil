@@ -8,6 +8,7 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
@@ -20,7 +21,7 @@ public class PreservationPackagingManager {
     /** Logging mechanism. */
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     /** The context for preserving warc files. */
-    private final PreservationContext context;
+    private final RequestHandlerContext context;
     /** Map of warc creators for each collection. */
     private Map<String, PreservationPacker> creators;
     /** The timer to schedule the preservation task. */
@@ -30,7 +31,7 @@ public class PreservationPackagingManager {
      * Constructor.
      * @param wpc The context for the preservation of warc files.
      */
-    public PreservationPackagingManager(PreservationContext wpc) {
+    public PreservationPackagingManager(RequestHandlerContext wpc) {
         this.context = wpc;
         this.creators = new HashMap<String, PreservationPacker>();
         

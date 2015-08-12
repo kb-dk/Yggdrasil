@@ -17,12 +17,13 @@ import org.jwat.warc.WarcDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.Update;
+import dk.kb.yggdrasil.json.preservation.Update;
 import dk.kb.yggdrasil.warc.Digest;
 import dk.kb.yggdrasil.warc.WarcWriterWrapper;
 import dk.kb.yggdrasil.warc.YggdrasilWarcConstants;
@@ -42,7 +43,7 @@ public class PreservationPacker {
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /** The context, containing settings, etc. */
-    private final PreservationContext context;
+    private final RequestHandlerContext context;
     /** The collection id for this manager.*/
     private final String collectionId;
     /** The writer of the WARC file.*/
@@ -57,7 +58,7 @@ public class PreservationPacker {
      * @param context The context for the preservation
      * @param collectionId The id of the collection.
      */
-    public PreservationPacker(PreservationContext context, String collectionId) {
+    public PreservationPacker(RequestHandlerContext context, String collectionId) {
         this.context = context;
         this.collectionId = collectionId;
     }

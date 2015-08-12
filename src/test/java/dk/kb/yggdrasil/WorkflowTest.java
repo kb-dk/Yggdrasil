@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.xslt.Models;
 

@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.PreservationRequest;
-import dk.kb.yggdrasil.json.Update;
+import dk.kb.yggdrasil.json.preservation.PreservationRequest;
+import dk.kb.yggdrasil.json.preservation.Update;
 
 /**
  * This class is a container for the request from valhal, and its

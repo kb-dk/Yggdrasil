@@ -27,7 +27,7 @@ import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.JSONMessaging;
-import dk.kb.yggdrasil.json.PreservationResponse;
+import dk.kb.yggdrasil.json.preservation.PreservationResponse;
 
 /**
  * Methods for publishing messages on a queue and receiving from a queue
@@ -56,11 +56,17 @@ public class MQ {
     /** exchange type direct means a message sent to only one recipient. */
     protected String exchangeType = "direct";
 
-    /** The only valid message type currently received. */ 
+    /** The message type for initiating the preservation. */ 
     public static final String PRESERVATIONREQUEST_MESSAGE_TYPE = "PreservationRequest";
 
     /** The message type for responding to preservation requests. */
     public static final String PRESERVATIONRESPONSE_MESSAGE_TYPE = "PreservationResponse";
+
+    /** The message type for request for importing preserved data. */
+    public static final String IMPORTREQUEST_MESSAGE_TYPE = "ImportRequest";
+
+    /** The message type for responding to import requests. */
+    public static final String IMPORTRESPONSE_MESSAGE_TYPE = "ImportResponse";
 
     /** The only valid message type, currently. */ 
     public static final String SHUTDOWN_MESSAGE_TYPE = "Shutdown";

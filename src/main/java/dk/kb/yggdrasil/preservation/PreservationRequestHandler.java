@@ -22,12 +22,13 @@ import org.xml.sax.EntityResolver;
 
 import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.HttpPayload;
+import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.PreservationRequest;
+import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.xslt.Models;
 import dk.kb.yggdrasil.xslt.XmlErrorHandler;
 import dk.kb.yggdrasil.xslt.XmlValidationResult;
@@ -46,7 +47,7 @@ public class PreservationRequestHandler {
     /** The class reading the mapping between models and xslt scripts used for the metadata transformation. */
     private final Models metadataModel;
     /** Context for this preservation. */
-    private final PreservationContext context;
+    private final RequestHandlerContext context;
     /** Preservation packaging manager. */
     private final PreservationPackagingManager preservationManager;
 
@@ -55,7 +56,7 @@ public class PreservationRequestHandler {
      * @param context The context for the preservation.
      * @param models The metadatamodel mapper.
      */
-    public PreservationRequestHandler(PreservationContext context, Models models) {
+    public PreservationRequestHandler(RequestHandlerContext context, Models models) {
         ArgumentCheck.checkNotNull(context, "PreservationContext context");
         ArgumentCheck.checkNotNull(models, "Models models");
         this.metadataModel = models;

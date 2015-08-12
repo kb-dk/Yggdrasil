@@ -9,6 +9,7 @@ import com.antiaction.common.json.JSONException;
 import com.antiaction.common.json.JSONStructure;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.json.preservation.PreservationResponse;
 
 public class JSONMessagingTestUtils extends JSONMessaging {
     public static PreservationResponse getPreservationResponse(PushbackInputStream in) throws YggdrasilException {
