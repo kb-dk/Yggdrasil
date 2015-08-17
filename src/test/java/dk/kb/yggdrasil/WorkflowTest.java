@@ -54,7 +54,7 @@ public class WorkflowTest extends MqFixtureTestAPI {
 
     @Test
     public void handlingRequestMessage() throws NoSuchMethodException, SecurityException, YggdrasilException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Method getNextRequest = Workflow.class.getDeclaredMethod("getNextRequest");
+        Method getNextRequest = Workflow.class.getDeclaredMethod("handleNextRequest");
         getNextRequest.setAccessible(true);
 
         String uuid = UUID.randomUUID().toString();

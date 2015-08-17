@@ -10,10 +10,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
+import dk.kb.yggdrasil.preservation.PreservationState;
 
 @RunWith(JUnit4.class)
 public class PreservationRequestStateTest {
@@ -22,7 +22,7 @@ public class PreservationRequestStateTest {
     public void testConstructor() {
         PreservationRequest pr = new PreservationRequest();
         String uuid = UUID.randomUUID().toString();
-        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationState preservationState = PreservationState.PRESERVATION_REQUEST_RECEIVED;
         PreservationRequestState prs 
             = new PreservationRequestState(pr, preservationState, uuid);
         assertTrue(pr.equals(prs.getRequest()));
@@ -34,12 +34,12 @@ public class PreservationRequestStateTest {
     public void testSetState() throws YggdrasilException {
         PreservationRequest pr = new PreservationRequest();
         String uuid = UUID.randomUUID().toString();
-        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationState preservationState = PreservationState.PRESERVATION_REQUEST_RECEIVED;
         PreservationRequestState prs 
             = new PreservationRequestState(pr, preservationState, uuid);
         assertTrue(preservationState.equals(prs.getState()));
-        prs.setState(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
-        assertTrue(State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY.equals(
+        prs.setState(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
+        assertTrue(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY.equals(
                 prs.getState()));
     }
     
@@ -47,7 +47,7 @@ public class PreservationRequestStateTest {
     public void testSetAndGetFileMethods() throws YggdrasilException, IOException {
         PreservationRequest pr = new PreservationRequest();
         String uuid = UUID.randomUUID().toString();
-        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationState preservationState = PreservationState.PRESERVATION_REQUEST_RECEIVED;
         PreservationRequestState prs 
             = new PreservationRequestState(pr, preservationState, uuid);
         assertTrue(preservationState.equals(prs.getState()));
@@ -107,7 +107,7 @@ public class PreservationRequestStateTest {
     public void testCleanupWhenNoFiles() throws Exception {
         PreservationRequest pr = new PreservationRequest();
         String uuid = UUID.randomUUID().toString();
-        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationState preservationState = PreservationState.PRESERVATION_REQUEST_RECEIVED;
         PreservationRequestState prs = new PreservationRequestState(pr, preservationState, uuid);
 
         prs.cleanup();
@@ -117,7 +117,7 @@ public class PreservationRequestStateTest {
     public void testCleanupOfBothFiles() throws Exception {
         PreservationRequest pr = new PreservationRequest();
         String uuid = UUID.randomUUID().toString();
-        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationState preservationState = PreservationState.PRESERVATION_REQUEST_RECEIVED;
         PreservationRequestState prs = new PreservationRequestState(pr, preservationState, uuid);
 
         File contentFile = File.createTempFile("contentFile", null);
@@ -139,7 +139,7 @@ public class PreservationRequestStateTest {
     public void testCleanupWhenFilesAreAlreadyRemoved() throws Exception {
         PreservationRequest pr = new PreservationRequest();
         String uuid = UUID.randomUUID().toString();
-        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationState preservationState = PreservationState.PRESERVATION_REQUEST_RECEIVED;
         PreservationRequestState prs = new PreservationRequestState(pr, preservationState, uuid);
 
         File contentFile = File.createTempFile("contentFile", null);
@@ -165,7 +165,7 @@ public class PreservationRequestStateTest {
     public void testCleanupOfDirectories() throws Exception {
         PreservationRequest pr = new PreservationRequest();
         String uuid = UUID.randomUUID().toString();
-        State preservationState = State.PRESERVATION_REQUEST_RECEIVED;
+        PreservationState preservationState = PreservationState.PRESERVATION_REQUEST_RECEIVED;
         PreservationRequestState prs = new PreservationRequestState(pr, preservationState, uuid);
 
         File contentFile = File.createTempFile("contentFile", null);

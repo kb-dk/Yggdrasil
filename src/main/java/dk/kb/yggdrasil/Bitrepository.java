@@ -292,7 +292,7 @@ public class Bitrepository {
      * @return the file if found. Otherwise an exception is thrown
      * @throws YggdrasilException If not found or an error occurred during the fetch process.
      */
-    public File getFile(final String fileId, final String collectionId) throws YggdrasilException {
+    public File getFile(final String fileId, final String collectionId, final FilePart filePart) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentCheck.checkNotNullOrEmpty(collectionId, "String collectionId");
         // Does collection exists? If not throw exception
@@ -304,7 +304,6 @@ public class Bitrepository {
         // Note that this eventHandler is blocking
         CompleteEventAwaiter eventHandler = new GetFileEventHandler(this.bitmagSettings, output);
         output.debug("Initiating the GetFile conversation.");
-        FilePart filePart = null; // Means whole file (otherwise the filepart is specified by offset and length
         String auditTrailInformation = "Retrieving package '" + fileId + "' from collection '" + collectionId + "'";
         bitMagGetClient.getFileFromFastestPillar(collectionId, fileId, filePart, fileUrl, eventHandler,
                 auditTrailInformation);
@@ -511,5 +510,12 @@ public class Bitrepository {
             collectionIDs.add(c.getID());
         }
         return collectionIDs;
+    }
+    
+    /**
+     * @return The default checksum spec from the settings.
+     */
+    public ChecksumSpecTYPE getDefaultChecksum() {
+        return ChecksumUtils.getDefault(bitmagSettings);
     }
 }

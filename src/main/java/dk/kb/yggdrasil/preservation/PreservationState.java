@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.preservation;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  *      PRESERVATION_PACKAGE_UPLOAD_FAILURE or final OK-state PRESERVATION_PACKAGE_UPLOAD_SUCCESS.
  *
  */
-public enum State implements Serializable {
+public enum PreservationState implements Serializable {
     /** Preservation request received and understood (i.e. the message is complete). */
     PRESERVATION_REQUEST_RECEIVED("Preservation request received and validated"),
     
@@ -81,7 +81,7 @@ public enum State implements Serializable {
     /** Preservation request failed */
     PRESERVATION_REQUEST_FAILED("The preservation request failed");
     
-    private State(String description) {
+    private PreservationState(String description) {
         this.defaultDescription = description;
     }
     
@@ -97,7 +97,7 @@ public enum State implements Serializable {
     
     
     /** Set with the failstates in this enum class. */
-    private static final Set<State> FAIL_STATES = new HashSet<State>(Arrays.asList(
+    private static final Set<PreservationState> FAIL_STATES = new HashSet<PreservationState>(Arrays.asList(
             PRESERVATION_PACKAGE_UPLOAD_FAILURE,
             PRESERVATION_METADATA_PACKAGED_FAILURE, 
             PRESERVATION_REQUEST_RECEIVED_BUT_INCOMPLETE,
@@ -107,7 +107,7 @@ public enum State implements Serializable {
     /**
      * @return set of failure states.
      */
-    public static Set<State> getFailStates() {
+    public static Set<PreservationState> getFailStates() {
         return FAIL_STATES;
     }
 
@@ -125,7 +125,7 @@ public enum State implements Serializable {
      * @param newState the new state
      * @throws YggdrasilException If not a valid state change.
      */
-    public static void verifyIfValidStateChange(State oldState, State newState) throws YggdrasilException {
+    public static void verifyIfValidStateChange(PreservationState oldState, PreservationState newState) throws YggdrasilException {
         ArgumentCheck.checkNotNull(oldState, "State oldState");
         ArgumentCheck.checkNotNull(newState, "State newState");
         
@@ -146,7 +146,7 @@ public enum State implements Serializable {
      * @param newState The new state
      * @return true, if the transition from oldState to newState is valid; otherwise false is returned.
      */
-    public static boolean isValidStateChange(State oldState, State newState){
+    public static boolean isValidStateChange(PreservationState oldState, PreservationState newState){
         ArgumentCheck.checkNotNull(oldState, "State oldState");
         ArgumentCheck.checkNotNull(newState, "State newState");
         try {
@@ -162,7 +162,7 @@ public enum State implements Serializable {
      * @param aState A given state
      * @return true, if the current state equals the given state, otherwise false.
      */
-    public boolean hasState(State aState) {
+    public boolean hasState(PreservationState aState) {
         return this.equals(aState);
     }
 }

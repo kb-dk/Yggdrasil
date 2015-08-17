@@ -4,7 +4,6 @@ import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.preservation.Preservation;
@@ -37,7 +36,7 @@ public class RemotePreservationStateUpdater {
      * @param details The new details for the new state.
      * @throws YggdrasilException If an issue with sending the message occurs.
      */
-    public void sendPreservationResponseWithSpecificDetails(PreservationRequestState prs, State newState,
+    public void sendPreservationResponseWithSpecificDetails(PreservationRequestState prs, PreservationState newState,
             String details) throws YggdrasilException {
         ArgumentValidator.checkNotNull(prs, "PreservationRequestState prs");
         ArgumentValidator.checkNotNull(newState, "State newPreservationState");
@@ -57,7 +56,7 @@ public class RemotePreservationStateUpdater {
      * @param newState The new Preservation State.
      * @throws YggdrasilException If an issue with sending the message occurs.
      */
-    public void sendPreservationResponse(PreservationRequestState prs, State newState) 
+    public void sendPreservationResponse(PreservationRequestState prs, PreservationState newState) 
             throws YggdrasilException {
         ArgumentValidator.checkNotNull(prs, "PreservationRequestState prs");
         ArgumentValidator.checkNotNull(newState, "State newState");

@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.RequestHandlerContext;
-import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.PreservationException;
@@ -116,7 +115,7 @@ public class PreservationPacker {
                 }
                 prs.setResourceWarcFile(writer.getWarcFile());
                 context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                        State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
+                        PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
             if (prs.getMetadataPayload() != null) {
                 File metadata = prs.getMetadataPayload();
@@ -135,12 +134,12 @@ public class PreservationPacker {
                 }
             }
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                    State.PRESERVATION_PACKAGE_COMPLETE);
+                    PreservationState.PRESERVATION_PACKAGE_COMPLETE);
             prs.setMetadataWarcFile(writer.getWarcFile());
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                    State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
+                    PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
         } catch (IOException e) {
-            throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
+            throw new PreservationException(PreservationState.PRESERVATION_METADATA_PACKAGED_FAILURE, 
                     "Error while writing WARC record!", e);
         }
     }
@@ -178,7 +177,7 @@ public class PreservationPacker {
                     }
                 }
                 context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                        State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
+                        PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
             if (prs.getMetadataPayload() != null) {
                 File metadata = prs.getMetadataPayload();
@@ -200,11 +199,11 @@ public class PreservationPacker {
                 }
             }
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                    State.PRESERVATION_PACKAGE_COMPLETE);
+                    PreservationState.PRESERVATION_PACKAGE_COMPLETE);
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                    State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
+                    PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA);
         } catch (IOException e) {
-            throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, 
+            throw new PreservationException(PreservationState.PRESERVATION_METADATA_PACKAGED_FAILURE, 
                     "Error while writing WARC record!", e);
         }
     }
@@ -235,12 +234,12 @@ public class PreservationPacker {
         try {
             for(PreservationRequestState prs : metadataRequests) {
                 if(success) {
-                    updateRequestState(State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS, prs);
+                    updateRequestState(PreservationState.PRESERVATION_PACKAGE_UPLOAD_SUCCESS, prs);
                     logger.info("Upload to bitrepository for UUID '" + prs.getUUID()
                             + "' of package '" + writer.getWarcFileId() + "' was successful.");
                 } else {
                     prs.resetUploadPackage(); // reset warcId to null
-                    updateRequestState(State.PRESERVATION_PACKAGE_UPLOAD_FAILURE, prs);
+                    updateRequestState(PreservationState.PRESERVATION_PACKAGE_UPLOAD_FAILURE, prs);
                     logger.warn("Upload to bitrepository for UUID '" + prs.getUUID() + "' of package '" 
                             + writer.getWarcFileId() + "' failed.");
                 }
@@ -259,11 +258,11 @@ public class PreservationPacker {
      * @param prs The request to update.
      * @throws YggdrasilException If something goes wrong.
      */
-    private void updateRequestState(State preservationState, PreservationRequestState prs) 
+    private void updateRequestState(PreservationState preservationState, PreservationRequestState prs) 
             throws YggdrasilException {
         prs.setState(preservationState);
         context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, preservationState);
-        context.getStateDatabase().put(prs.getUUID(), prs);
+        context.getStateDatabase().putPreservationRecord(prs.getUUID(), prs);
     }
 
     /**

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.UUID;
@@ -23,12 +24,13 @@ import org.xml.sax.EntityResolver;
 import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.HttpPayload;
 import dk.kb.yggdrasil.RequestHandlerContext;
-import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.PreservationException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
+import dk.kb.yggdrasil.messaging.MessageRequestHandler;
 import dk.kb.yggdrasil.xslt.Models;
 import dk.kb.yggdrasil.xslt.XmlErrorHandler;
 import dk.kb.yggdrasil.xslt.XmlValidationResult;
@@ -40,7 +42,7 @@ import dk.kb.yggdrasil.xslt.XslUriResolver;
 /**
  * The handler class for preservation requests.
  */
-public class PreservationRequestHandler {
+public class PreservationRequestHandler extends MessageRequestHandler<PreservationRequest> {
     /** Logging mechanism. */
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -63,6 +65,12 @@ public class PreservationRequestHandler {
         this.context = context;
         this.preservationManager = new PreservationPackagingManager(context);
     }
+    
+    @Override
+    public PreservationRequest extractRequest(byte[] b) throws YggdrasilException {
+        return JSONMessaging.getRequest(new PushbackInputStream(new ByteArrayInputStream(b), PUSHBACKBUFFERSIZE), 
+                PreservationRequest.class);
+    }
 
     /**
      * Handles the PreservationRequest.
@@ -76,11 +84,11 @@ public class PreservationRequestHandler {
             return;
         }
         PreservationRequestState prs = new PreservationRequestState(request,
-                State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+                PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
 
         try {
             if (validateMessage(prs)) {
-                preserveRequest(prs);
+                performPreservation(prs);
             }
         } catch (PreservationException e) {
             // Fault barrier to ensure, that failures will send update and remove stuff.
@@ -108,22 +116,24 @@ public class PreservationRequestHandler {
                     + "' does not match a known collection ID. Expected one of: " + possibleCollections;
             logger.error(errMsg);
             context.getRemotePreservationStateUpdater().sendPreservationResponseWithSpecificDetails(prs, 
-                    State.PRESERVATION_REQUEST_FAILED, errMsg);
+                    PreservationState.PRESERVATION_REQUEST_FAILED, errMsg);
             return false;
         } 
         
         context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                State.PRESERVATION_REQUEST_RECEIVED);
-        context.getStateDatabase().put(prs.getUUID(), prs);
+                PreservationState.PRESERVATION_REQUEST_RECEIVED);
+        context.getStateDatabase().putPreservationRecord(prs.getUUID(), prs);
         return true;
     }
 
     /**
-     * 
-     * @param prs
+     * Performs the preservation, thus transforming the metadata, retrieving the file, packaging all of it in a 
+     * Warc file, and sending the WARC file to the Bitrepository.
+     * @param prs The preservation request to be preserved.
+     * @throws PreservationException
      * @throws YggdrasilException
      */
-    private void preserveRequest(PreservationRequestState prs) throws PreservationException, YggdrasilException {
+    private void performPreservation(PreservationRequestState prs) throws PreservationException, YggdrasilException {
         if (prs.getRequest().Content_URI != null) {
             logger.info("Fetching content for preseravtion request with UUID '" + prs.getUUID() + "'");
             try {
@@ -131,7 +141,7 @@ public class PreservationRequestHandler {
             } catch (IOException e) {
                 String reason = "An issue occured when fetching the content for preservation request '" 
                         + prs.getUUID() + "'";
-                throw new PreservationException(State.PRESERVATION_REQUEST_FAILED, reason, e);
+                throw new PreservationException(PreservationState.PRESERVATION_REQUEST_FAILED, reason, e);
             }
         }
         
@@ -153,19 +163,19 @@ public class PreservationRequestHandler {
         if (!metadataModel.getMapper().containsKey(modelToUse)) {
             final String errMsg = "The given metadata-model'" + modelToUse
                     + "' is unknown. Expected one of: " + metadataModel.getMapper().keySet();
-            throw new PreservationException(State.PRESERVATION_REQUEST_FAILED, errMsg);
+            throw new PreservationException(PreservationState.PRESERVATION_REQUEST_FAILED, errMsg);
         }
         File xsltDir = new File(context.getConfig().getConfigDir(), "xslt");
         if (!xsltDir.isDirectory()) {
             final String errMsg = "The xslt directory '" + xsltDir.getAbsolutePath()
                     + "' does not exist!";
-            throw new PreservationException(State.PRESERVATION_REQUEST_FAILED, errMsg);
+            throw new PreservationException(PreservationState.PRESERVATION_REQUEST_FAILED, errMsg);
         }
         File xslFile = new File(xsltDir, metadataModel.getMapper().get(modelToUse));
         if (!xslFile.isFile()) {
             final String errMsg = "The needed xslt-script '" + xslFile.getAbsolutePath()
                     + "' does not exist!";
-            throw new PreservationException(State.PRESERVATION_REQUEST_FAILED, errMsg);
+            throw new PreservationException(PreservationState.PRESERVATION_REQUEST_FAILED, errMsg);
         }
 
         try {
@@ -217,11 +227,11 @@ public class PreservationRequestHandler {
                             }
                         }
                     }
-                    throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg.toString());
+                    throw new PreservationException(PreservationState.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg.toString());
                 } else {
                     prs.setMetadataPayload(outputFile);
                     context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                            State.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
+                            PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY);
                 }
             } finally {
                 if(xmlFileStream != null) {
@@ -231,11 +241,11 @@ public class PreservationRequestHandler {
         } catch (TransformerException e) {
             final String errMsg = "Error occurred during transformation of metadata for uuid '"
                     + prs.getUUID() + "'";
-            throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg, e);
+            throw new PreservationException(PreservationState.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg, e);
         } catch (IOException e) {
             final String errMsg = "Error occurred during transformation of metadata for uuid '"
                     + prs.getUUID() + "'";
-            throw new PreservationException(State.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg, e);
+            throw new PreservationException(PreservationState.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg, e);
         }
     }
 
@@ -256,10 +266,10 @@ public class PreservationRequestHandler {
             tmpFile = payload.writeToFile();
             prs.setContentPayload(tmpFile);
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-                    State.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
-            context.getStateDatabase().put(prs.getUUID(), prs);
+                    PreservationState.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS);
+            context.getStateDatabase().putPreservationRecord(prs.getUUID(), prs);
         } else {
-            throw new PreservationException(State.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE, 
+            throw new PreservationException(PreservationState.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE, 
                     "Failed to download resource.");
         }
     }

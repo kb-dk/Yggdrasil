@@ -1,18 +1,18 @@
 package dk.kb.yggdrasil.exceptions;
 
-import dk.kb.yggdrasil.State;
+import dk.kb.yggdrasil.preservation.PreservationState;
 
 @SuppressWarnings("serial")
 public class PreservationException extends Exception {
     /** The failure state, which should be reported.*/
-    private State state;
+    private PreservationState state;
     
     /**
      * Constructor.
      * @param state The failure state.
      * @param msg The message of the exception.
      */
-    public PreservationException(State state, String msg) {
+    public PreservationException(PreservationState state, String msg) {
         super(msg);
         this.state = state;
     }
@@ -23,7 +23,7 @@ public class PreservationException extends Exception {
      * @param msg The message of the exception.
      * @param e The exception to embed.
      */
-    public PreservationException(State state, String msg, Throwable e) {
+    public PreservationException(PreservationState state, String msg, Throwable e) {
         super(msg, e);
         this.state = state;
     }
@@ -31,7 +31,7 @@ public class PreservationException extends Exception {
     /**
      * @return The failure state for the exception.
      */
-    public State getState() {
+    public PreservationState getState() {
         return state;
     }
 }

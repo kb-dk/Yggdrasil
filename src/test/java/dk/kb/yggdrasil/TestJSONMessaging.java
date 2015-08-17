@@ -70,7 +70,7 @@ public class TestJSONMessaging {
             byte[] requestBytes = out.toByteArray();
 
             in = new PushbackInputStream(new ByteArrayInputStream(requestBytes), 4);
-            request = JSONMessaging.getPreservationRequest(in);
+            request = JSONMessaging.getRequest(in, PreservationRequest.class);
             in.close();
             Assert.assertNotNull(request);
             Assert.assertEquals("simple", request.Preservation_profile);

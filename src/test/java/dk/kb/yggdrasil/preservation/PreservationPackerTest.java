@@ -27,7 +27,6 @@ import dk.kb.yggdrasil.Bitrepository;
 import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.MetadataContentUtils;
 import dk.kb.yggdrasil.RequestHandlerContext;
-import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
@@ -86,15 +85,15 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
 
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
 
         packer.writePreservationRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -108,7 +107,7 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
 
         packer.writePreservationRecord(prs);
         
@@ -129,7 +128,7 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setMetadataPayload(metadataPayloadFile);
 
         Assert.assertNull(prs.getWarcId());
@@ -137,8 +136,8 @@ public class PreservationPackerTest {
 
         packer.writePreservationRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -152,7 +151,7 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setMetadataPayload(metadataPayloadFile);
 
         packer.writePreservationRecord(prs);
@@ -180,7 +179,7 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setContentPayload(contentFilePayloadFile);
 
         Assert.assertNull(prs.getWarcId());
@@ -188,9 +187,9 @@ public class PreservationPackerTest {
 
         packer.writePreservationRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
         Assert.assertNotNull(prs.getFileWarcId());
@@ -205,7 +204,7 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setContentPayload(contentFilePayloadFile);
 
         packer.writePreservationRecord(prs);
@@ -233,7 +232,7 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setContentPayload(metadataPayloadFile);
         prs.setMetadataPayload(contentFilePayloadFile);
 
@@ -242,9 +241,9 @@ public class PreservationPackerTest {
 
         packer.writePreservationRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
         Assert.assertNotNull(prs.getFileWarcId());
@@ -258,7 +257,7 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setContentPayload(contentFilePayloadFile);
         prs.setMetadataPayload(metadataPayloadFile);
 
@@ -294,7 +293,7 @@ public class PreservationPackerTest {
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
 
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -310,7 +309,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setMetadataPayload(metadataPayloadFile);
         
         Assert.assertNull(prs.getWarcId());
@@ -319,8 +318,8 @@ public class PreservationPackerTest {
 
         packer.writeUpdateRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -340,7 +339,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setMetadataPayload(metadataPayloadFile);
 
         packer.writeUpdateRecord(prs);
@@ -371,7 +370,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setContentPayload(metadataPayloadFile);
         
         Assert.assertNull(prs.getWarcId());
@@ -380,9 +379,9 @@ public class PreservationPackerTest {
 
         packer.writeUpdateRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -402,7 +401,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setContentPayload(contentFilePayloadFile);
         
         packer.writeUpdateRecord(prs);
@@ -433,7 +432,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setContentPayload(contentFilePayloadFile);
         prs.setMetadataPayload(metadataPayloadFile);
         
@@ -443,9 +442,9 @@ public class PreservationPackerTest {
 
         packer.writeUpdateRecord(prs);
         
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_COMPLETE));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(State.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verifyNoMoreInteractions(updater);
         Assert.assertNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
@@ -465,7 +464,7 @@ public class PreservationPackerTest {
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
         
-        PreservationRequestState prs = new PreservationRequestState(request, State.PRESERVATION_REQUEST_RECEIVED, request.UUID);
+        PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, request.UUID);
         prs.setContentPayload(contentFilePayloadFile);
         prs.setMetadataPayload(metadataPayloadFile);
 

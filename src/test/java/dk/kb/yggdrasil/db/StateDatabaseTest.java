@@ -13,9 +13,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import dk.kb.yggdrasil.Config;
-import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
+import dk.kb.yggdrasil.preservation.PreservationState;
 
 @RunWith(JUnit4.class)
 public class StateDatabaseTest {
@@ -32,9 +32,9 @@ public class StateDatabaseTest {
         pr.UUID = UUID_sample;
         pr.File_UUID = "dasdasdsdasd";
         PreservationRequestState prs = new PreservationRequestState(pr, 
-                    State.PRESERVATION_PACKAGE_COMPLETE, UUID_sample);
-        sd.put(UUID_sample, prs);
-        assertTrue(sd.hasEntry(UUID_sample));
+                    PreservationState.PRESERVATION_PACKAGE_COMPLETE, UUID_sample);
+        sd.putPreservationRecord(UUID_sample, prs);
+        assertTrue(sd.hasPreservationEntry(UUID_sample));
         sd.cleanup();
     }
     
@@ -51,9 +51,9 @@ public class StateDatabaseTest {
         pr.metadata = "Some technical metadata";
 
         PreservationRequestState prs = new PreservationRequestState(pr, 
-                State.PRESERVATION_REQUEST_RECEIVED, UUID_sample);
-        sd.put(UUID_sample, prs);
-        PreservationRequestState df = sd.getRecord(UUID_sample);
+                PreservationState.PRESERVATION_REQUEST_RECEIVED, UUID_sample);
+        sd.putPreservationRecord(UUID_sample, prs);
+        PreservationRequestState df = sd.getPreservationRecord(UUID_sample);
         assertEquals("dasdasdsdasd", df.getRequest().File_UUID);
         assertEquals("Some technical metadata", df.getRequest().metadata);
         sd.delete(UUID_sample);
@@ -71,9 +71,9 @@ public class StateDatabaseTest {
         pr.UUID = UUID_sample;
         
         PreservationRequestState prs = new PreservationRequestState(pr, 
-                State.PRESERVATION_PACKAGE_UPLOAD_SUCCESS, UUID_sample);
+                PreservationState.PRESERVATION_PACKAGE_UPLOAD_SUCCESS, UUID_sample);
        
-        sd.put(UUID_sample, prs);
+        sd.putPreservationRecord(UUID_sample, prs);
         List<String> list = sd.getOutstandingUUIDS();
         assertTrue("Should have one entry, but has " + list.size(),
                 list.size() == 1);

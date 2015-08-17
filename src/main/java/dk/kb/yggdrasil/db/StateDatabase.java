@@ -41,7 +41,6 @@ public class StateDatabase {
     /** The name of the class database. */
     private static final String CLASS_DATABASE_NAME = "classDb";
 
-
     /** The Database environment. */
     private Environment env;
     /** The request Database. */
@@ -110,7 +109,7 @@ public class StateDatabase {
      * @return a PreservationRequestState with the given uuid
      * @throws YggdrasilException If it fails to retrieve the record.
      */
-    public PreservationRequestState getRecord(String uuid) throws YggdrasilException {
+    public PreservationRequestState getPreservationRecord(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         Transaction nullTransaction = null;
         LockMode nullLockMode = null;
@@ -137,9 +136,9 @@ public class StateDatabase {
      * @return true, if database contains a PreservationRequest for the given uuid; otherwise false
      * @throws YggdrasilException If it fails.
      */
-    public boolean hasEntry(String uuid) throws YggdrasilException {
+    public boolean hasPreservationEntry(String uuid) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
-        return (getRecord(uuid) != null);
+        return (getPreservationRecord(uuid) != null);
     }
 
     /**
@@ -148,7 +147,7 @@ public class StateDatabase {
      * @param request The preservation request state to put.
      * @throws YggdrasilException If it fails.
      */
-    public void put(String uuid, PreservationRequestState request) throws YggdrasilException {
+    public void putPreservationRecord(String uuid, PreservationRequestState request) throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
         ArgumentCheck.checkNotNull(request, "PreservationRequestState request");
         Transaction txn = env.beginTransaction(null, null);
@@ -248,6 +247,14 @@ public class StateDatabase {
             } catch (DatabaseException e) {
                 log.warn("Unable to close class database. The error was :", e);
             }
+        }
+    }
+    
+    protected class RequestStateBinding {
+        
+        
+        public RequestStateBinding(Class objectClass) {
+            
         }
     }
 }

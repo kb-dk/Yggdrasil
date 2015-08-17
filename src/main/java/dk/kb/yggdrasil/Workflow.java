@@ -1,7 +1,7 @@
 package dk.kb.yggdrasil;
 
-import java.io.ByteArrayInputStream;
-import java.io.PushbackInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +10,9 @@ import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
-import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.messaging.MQ;
+import dk.kb.yggdrasil.messaging.MessageRequestHandler;
 import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.preservation.PreservationRequestHandler;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
@@ -21,24 +20,16 @@ import dk.kb.yggdrasil.preservationimport.ImportRequestHandler;
 import dk.kb.yggdrasil.xslt.Models;
 
 /**
- * The class handling the workflow, and the updates being sent back to Valhal.
- * We have currently two kind of workflows envisioned.
- *  - A content and metadata workflow, where we package metadata and content into one warcfile.
- *  - A metadata workflow, where the metadata is the only content.
+ * The class receiving and initiating the workflows for the different kinds of requests.
  */
 public class Workflow {
     /** The RabbitMQ connection used by this workflow. */
     private MQ mq;
-    /** Size of pushback buffer for determining the encoding of the json message. */
-    private static final int PUSHBACKBUFFERSIZE = 4;
 
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(Workflow.class.getName());
-    
-    /** The preservation request handler. */
-    private final PreservationRequestHandler preservationRequestHandler;
-    /** */
-    private final ImportRequestHandler importRequestHandler;
+    /** The mapping between message type and message request handlers.*/
+    private final Map<String, MessageRequestHandler> requestHandlers;
     
     /**
      * Constructor for the Workflow class.
@@ -59,8 +50,11 @@ public class Workflow {
         
         RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, 
                 new RemotePreservationStateUpdater(mq));
-        preservationRequestHandler = new PreservationRequestHandler(context, models);
-        importRequestHandler = new ImportRequestHandler(context);
+        requestHandlers = new HashMap<String, MessageRequestHandler>();
+        requestHandlers.put(MQ.PRESERVATIONREQUEST_MESSAGE_TYPE.toUpperCase(), 
+                new PreservationRequestHandler(context, models));
+        requestHandlers.put(MQ.IMPORTREQUEST_MESSAGE_TYPE.toUpperCase(), 
+                new ImportRequestHandler(context));
     }
 
     /**
@@ -78,13 +72,12 @@ public class Workflow {
                 logger.error("Caught exception while retrieving message from rabbitmq. Skipping message", e);
                 continue;
             }
-
         } 
     }
 
     /**
      * Wait until the next request arrives on the queue and handle it responsively.
-     * @return whether the it handle another request.
+     * @return whether a shutdown message was received.
      * @throws YggdrasilException If bad messagetype
      * @throws RabbitException When message queue connection fails.
      */
@@ -98,19 +91,11 @@ public class Workflow {
         } else if (messageType.equalsIgnoreCase(MQ.SHUTDOWN_MESSAGE_TYPE)) {
             logger.warn("Shutdown message received");
             // Shutdown message received
+            return true;
+        } else if (requestHandlers.containsKey(messageType.toUpperCase())) {
+            MessageRequestHandler mrh = requestHandlers.get(messageType.toUpperCase());
+            mrh.handleRequest(mrh.extractRequest(requestContent.getPayload()));
             return false;
-        } else if (messageType.equalsIgnoreCase(MQ.PRESERVATIONREQUEST_MESSAGE_TYPE)) {
-            PreservationRequest request = JSONMessaging.getPreservationRequest(
-                    new PushbackInputStream(new ByteArrayInputStream(requestContent.getPayload())
-                    , PUSHBACKBUFFERSIZE));
-            preservationRequestHandler.handleRequest(request);
-            return true;
-        } else if (messageType.equalsIgnoreCase(MQ.IMPORTREQUEST_MESSAGE_TYPE)) {
-            PreservationImportRequest request = JSONMessaging.getPreservationImportRequest(
-                    new PushbackInputStream(new ByteArrayInputStream(requestContent.getPayload())
-                    , PUSHBACKBUFFERSIZE));
-            importRequestHandler.handleRequest(request);
-            return true;
         } else {
             throw new YggdrasilException("The message type '"
                     + messageType + "' is not handled by Yggdrasil.");

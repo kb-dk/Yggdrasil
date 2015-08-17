@@ -6,11 +6,11 @@ import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.yggdrasil.State;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.json.preservation.Update;
+import dk.kb.yggdrasil.preservation.PreservationState;
 
 /**
  * This class is a container for the request from valhal, and its
@@ -25,7 +25,7 @@ public class PreservationRequestState implements Serializable {
     /** The preservationRequest received from Valhal. */ 
     private PreservationRequest request;
     /** The current preservationState */
-    private State state;
+    private PreservationState state;
 
     /** The uuid for the current  */
     private String uuid;
@@ -48,7 +48,7 @@ public class PreservationRequestState implements Serializable {
      * @param uuid The uuid of this request.
      */
     public PreservationRequestState(PreservationRequest request,
-            State preservationState, String uuid) {
+            PreservationState preservationState, String uuid) {
         ArgumentCheck.checkNotNull(request, "PreservationRequest request");
         ArgumentCheck.checkNotNull(preservationState, "State preservationState");
         ArgumentCheck.checkNotNullOrEmpty(uuid, "String uuid");
@@ -58,7 +58,7 @@ public class PreservationRequestState implements Serializable {
     }
 
     /** @return the preservation state of this request. */  
-    public State getState() {
+    public PreservationState getState() {
         return state;
     }
 
@@ -72,9 +72,9 @@ public class PreservationRequestState implements Serializable {
      * @param newState The new state
      * @throws YggdrasilException If it fails to validate the state change.
      */
-    public void setState(State newState) throws YggdrasilException {
+    public void setState(PreservationState newState) throws YggdrasilException {
         ArgumentCheck.checkNotNull(newState, "State newState");
-        State.verifyIfValidStateChange(this.state, newState);
+        PreservationState.verifyIfValidStateChange(this.state, newState);
         this.state = newState;
     }
 

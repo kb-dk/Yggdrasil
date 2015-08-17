@@ -63,10 +63,10 @@ public class MQ {
     public static final String PRESERVATIONRESPONSE_MESSAGE_TYPE = "PreservationResponse";
 
     /** The message type for request for importing preserved data. */
-    public static final String IMPORTREQUEST_MESSAGE_TYPE = "ImportRequest";
+    public static final String IMPORTREQUEST_MESSAGE_TYPE = "PreservationImportRequest";
 
     /** The message type for responding to import requests. */
-    public static final String IMPORTRESPONSE_MESSAGE_TYPE = "ImportResponse";
+    public static final String IMPORTRESPONSE_MESSAGE_TYPE = "PreservationImportResponse";
 
     /** The only valid message type, currently. */ 
     public static final String SHUTDOWN_MESSAGE_TYPE = "Shutdown";

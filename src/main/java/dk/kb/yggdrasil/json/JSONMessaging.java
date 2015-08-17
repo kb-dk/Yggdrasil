@@ -2,6 +2,8 @@ package dk.kb.yggdrasil.json;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PushbackInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.json.preservation.PreservationResponse;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportResponse;
+import dk.kb.yggdrasil.messaging.MQ;
 
 /**
  * Small class for marshalling JSON messages to/from Valhal.
@@ -55,42 +58,25 @@ public class JSONMessaging {
 
     /**
      * Convert JSON data into a preservation request object.
+     * @param <T>
      * @param in <code>InputStream</code> containing JSON data
      * @return preservation request object representation
      * @throws YggdrasilException if an I/O error occurs while unmashalling
      */
-    public static PreservationRequest getPreservationRequest(PushbackInputStream in) throws YggdrasilException {
+    public static <T> T getRequest(PushbackInputStream in, Class<T> requestType) 
+            throws YggdrasilException {
         try {
             int encoding = JSONEncoding.encoding(in);
             JSONDecoder json_decoder = JSON_ENCODING.getJSONDecoder(encoding);
             JSONStructure json_object = JSON_TEXT.decodeJSONtext(in, json_decoder);
-            PreservationRequest request = JSON_OM.getStructureUnmarshaller().toObject(json_object, 
-                    PreservationRequest.class);
+            T request = JSON_OM.getStructureUnmarshaller().toObject(json_object, 
+                    requestType);
             return request;
         } catch (Exception e) {
             throw new YggdrasilException("Error while unmarshalling preservation request.", e);
         }
     }
-
-    /**
-     * Convert JSON data into a preservation import request object.
-     * @param in <code>InputStream</code> containing JSON data
-     * @return preservation import request object representation
-     * @throws YggdrasilException if an I/O error occurs while unmashalling
-     */
-    public static PreservationImportRequest getPreservationImportRequest(PushbackInputStream in) throws YggdrasilException {
-        try {
-            int encoding = JSONEncoding.encoding(in);
-            JSONDecoder json_decoder = JSON_ENCODING.getJSONDecoder(encoding);
-            JSONStructure json_object = JSON_TEXT.decodeJSONtext(in, json_decoder);
-            PreservationImportRequest request = JSON_OM.getStructureUnmarshaller().toObject(json_object, 
-                    PreservationImportRequest.class);
-            return request;
-        } catch (Exception e) {
-            throw new YggdrasilException("Error while unmarshalling preservation request.", e);
-        }
-    }
-
+    
     /**
      * Convert preservation response object into JSON data.
      * @param response preservation response object
