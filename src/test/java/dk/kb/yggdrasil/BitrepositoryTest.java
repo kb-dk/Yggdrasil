@@ -146,7 +146,7 @@ public class BitrepositoryTest {
         }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         Bitrepository br = new Bitrepository(okConfigFile);
-        File fr = br.getFile("helloworld.txt", "books");
+        File fr = br.getFile("helloworld.txt", "books", null);
         byte[] payloadReturned = getPayload(fr);
         String helloWorldReturned = new String(payloadReturned, "UTF-8");
         assertEquals("Hello World", helloWorldReturned);
