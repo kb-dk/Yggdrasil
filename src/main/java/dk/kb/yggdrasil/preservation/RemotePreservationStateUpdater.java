@@ -94,5 +94,5 @@ public class RemotePreservationStateUpdater {
         }
         
         mq.publishPreservationResponse(response);
-    }    
+    }
 }

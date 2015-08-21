@@ -9,9 +9,14 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.jwat.common.Uri;
@@ -21,12 +26,14 @@ import org.jwat.warc.WarcRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
+import dk.kb.yggdrasil.json.preservationimport.Security;
 import dk.kb.yggdrasil.messaging.MessageRequestHandler;
 
 /**
@@ -39,6 +46,7 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
     /** Context for this preservation. */
     private final RequestHandlerContext context;
     
+    /** The size of the buffer. */
     private static final int BUFFER_SIZE = 16*1024;
 
     /**
@@ -55,6 +63,7 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
      * @param request The preservation import request to handle.
      * @throws YggdrasilException if anything goes wrong.
      */
+    @Override
     public void handleRequest(PreservationImportRequest request) throws YggdrasilException {
         logger.info("Preservation request received.");
         if (!request.isMessageValid()) {
@@ -98,14 +107,16 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
         }
 
         validateExtractedData(state);
-
+        
+        validateTokenDate(state);
+        
         // deliver data
         deliverData(state);
 
         // TODO send final success response.
         
         // cleanup
-
+        state.cleanup();
         logger.info("Finished processing the preservation import request");
 
     }
@@ -239,11 +250,51 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
     }
     
     /**
+     * Validate the token timeout date. 
+     * @param state The state containing the request with the token-timeout to validate.
+     * @throws YggdrasilException If the timeout has already been reached.
+     */
+    private void validateTokenDate(PreservationImportRequestState state) throws YggdrasilException {
+        Security s = state.getRequest().security;
+        if(s != null && s.token != null && s.token_timeout != null) {
+             try {
+                Date d = DateFormat.getInstance().parse(s.token_timeout);
+                if(d.getTime() > new Date().getTime()) {
+                    throw new YggdrasilException("Token timeout (" + d.toString() + ") exceeded.");
+                }
+            } catch (ParseException e) {
+                logger.warn("Could not parse the timeout date. Trying to continue anyway.", e);
+            }
+        } else {
+            logger.debug("No timeout of the token to validate.");
+        }
+    }
+    
+    /**
      * Sends the file to the given URL, though security demands a token, then also deliver the token.
      * @param state The state of the preservation import request message handling.
      * @throws YggdrasilException If the data fails to be delivered.
      */
     private void deliverData(PreservationImportRequestState state) throws YggdrasilException {
-        // TODO fix reality.
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        if(state.getRequest().security != null) {
+            String token = state.getRequest().security.token;
+            if(token != null && !token.isEmpty()) {
+                builder.addTextBody("token", token, ContentType.TEXT_PLAIN);                    
+            }
+        }
+        builder.addTextBody("uuid", state.getRequest().uuid);
+        builder.addTextBody("type", state.getRequest().type);
+
+        builder.addBinaryBody("file", state.getImportData());
+        HttpEntity multipart = builder.build();
+        boolean success = HttpCommunication.post(state.getRequest().url, multipart);
+
+        if(success) {
+            logger.info("Successfully delivered data for '" + state.getRequest().uuid + "'");
+        } else {
+            // TODO Send response telling about the error.
+            throw new YggdrasilException("Could not deliver the data to '" + state.getRequest().url);
+        }
     }
 }

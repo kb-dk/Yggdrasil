@@ -10,9 +10,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 
 /**
  * A small class to send a HTTP GET or PUT request to a given URL.
@@ -77,6 +81,53 @@ public class HttpCommunication {
         return httpResponse;
     }
 
+    /**
+     * Send a HTTP POST request with a given content and return the result
+     * of the operation to the caller.
+     * @param url the url to send a PUT request to
+     * @param content The content of the HTTP POST.
+     * @return boolean indicating success or failure
+     */
+    public static boolean post(String url, HttpEntity content) {
+        ArgumentCheck.checkNotNullOrEmpty(url, "String url");
+        ArgumentCheck.checkNotNull(content, "HttpEntity content");
+
+        boolean bSuccess = false;
+        try {
+            /*
+             * HTTP request.
+             */
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpPost postRequest = new HttpPost(url);
+            postRequest.setEntity(content);
+            
+            /*
+             * HTTP response.
+             */
+            HttpResponse response = httpClient.execute(postRequest);
+            if (response != null) {
+                int responseCode = response.getStatusLine().getStatusCode();
+                HttpEntity responseEntity = response.getEntity();
+                InputStream in = responseEntity.getContent();
+                if (responseCode == 200) {
+                    bSuccess = true;
+                } else {
+                    logger.warn("Http request resulted in status code '"
+                            + responseCode + "'. (" + url + ")");
+                }
+                if (in != null) {
+                    in.close();
+                    in = null;
+                }
+            } else {
+                logger.warn("Could not connect to '" + url + "'. No response received. ");
+            }
+        } catch (IOException e) {
+            logger.error(e.toString(), e);
+        }
+        return bSuccess;
+    }
+    
     /**
      * Send a HTTP PUT request including content body and return the result
      * of the operation to the caller.
