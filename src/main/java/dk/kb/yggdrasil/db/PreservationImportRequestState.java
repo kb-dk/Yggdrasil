@@ -53,7 +53,6 @@ public class PreservationImportRequestState implements Serializable {
     public void setState(PreservationImportState newState) throws YggdrasilException {
         ArgumentCheck.checkNotNull(newState, "PreservationImportState newState");
         
-        System.err.println("STATE - Changing from '" + this.state.name() + "' to '" + newState.name() + "'");
         PreservationImportState.verifyIfValidStateChange(this.state, newState);
         this.state = newState;
     }

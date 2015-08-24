@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doAnswer;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
+import dk.kb.yggdrasil.json.preservationimport.Security;
 import dk.kb.yggdrasil.json.preservationimport.Warc;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.xslt.Models;
@@ -45,7 +47,6 @@ public class PreservationImportRequestHandlerTest {
     protected static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
 
-    protected static PreservationImportRequest request;
     protected static Config config;
     protected static Models models;
 
@@ -55,8 +56,6 @@ public class PreservationImportRequestHandlerTest {
 
         config = new Config(generalConfigFile);
         models = new Models(modelsFile);
-
-        request = makeRequest();
     }
 
     @Test
@@ -65,6 +64,7 @@ public class PreservationImportRequestHandlerTest {
         Bitrepository bitrepository = mock(Bitrepository.class);
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
         HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
@@ -95,6 +95,7 @@ public class PreservationImportRequestHandlerTest {
         Bitrepository bitrepository = mock(Bitrepository.class);
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
         HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
@@ -118,6 +119,7 @@ public class PreservationImportRequestHandlerTest {
         Bitrepository bitrepository = mock(Bitrepository.class);
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
         HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(""));
         when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
@@ -143,6 +145,7 @@ public class PreservationImportRequestHandlerTest {
         Bitrepository bitrepository = mock(Bitrepository.class);
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
         HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
@@ -169,6 +172,7 @@ public class PreservationImportRequestHandlerTest {
         Bitrepository bitrepository = mock(Bitrepository.class);
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
         HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(BAD_WARC_FILE);
@@ -202,22 +206,16 @@ public class PreservationImportRequestHandlerTest {
         verifyZeroInteractions(httpCommunication);
     }
 
-    // TODO make this TEST!
-    //    @Test
-    //    public void testRetrievedValidationFailure() throws Exception {
-    //        // TODO set bad-checksum in 'security'.
-    //    }
-
-    // TODO make this TEST!
     @Test
-    public void testTokenTimeoutFailure() throws Exception {
+    public void testInvalidChecksumFormatFailure() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
         HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
-        when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(BAD_WARC_FILE);
+        when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
         when(httpCommunication.post(anyString(), any())).thenReturn(true);
 
         // Needed for setting of the preservation import state by the updater, when failing.
@@ -234,11 +232,173 @@ public class PreservationImportRequestHandlerTest {
         RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationImportRequestHandler prh = new PreservationImportRequestHandler(context);
 
+        request.security.checksum = "NOT_AN_ALGORITHM";
+        prh.handleRequest(request);
+
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_VALIDATION_FAILURE), any());
+        verifyNoMoreInteractions(updater);
+
+        verify(bitrepository).getKnownCollections();
+        verifyNoMoreInteractions(bitrepository);
+
+        verifyZeroInteractions(httpCommunication);
+    }
+
+    @Test
+    public void testInvalidChecksumAlgorithmFailure() throws Exception {
+        StateDatabase states = mock(StateDatabase.class);
+        Bitrepository bitrepository = mock(Bitrepository.class);
+        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
+
+        when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
+        when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
+        when(httpCommunication.post(anyString(), any())).thenReturn(true);
+
+        // Needed for setting of the preservation import state by the updater, when failing.
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                PreservationImportRequestState prs = (PreservationImportRequestState) invocation.getArguments()[0];
+                PreservationImportState newState = (PreservationImportState) invocation.getArguments()[1];
+                prs.setState(newState);
+                return null;
+            }
+        }).when(updater).sendPreservationImportResponse(any(), any(), any());
+
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
+        PreservationImportRequestHandler prh = new PreservationImportRequestHandler(context);
+
+        // The Verhoeff algorithm does exist, but it is not valid.
+        request.security.checksum = "Verhoeff:4c24916aa6280f784c40c28b53df9343f2efcecc";
+        prh.handleRequest(request);
+
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_VALIDATION_FAILURE), any());
+        verifyNoMoreInteractions(updater);
+
+        verify(bitrepository).getKnownCollections();
+        verifyNoMoreInteractions(bitrepository);
+
+        verifyZeroInteractions(httpCommunication);
+    }
+    
+    @Test
+    public void testRetrievedValidationWithChecksum() throws Exception {
+        StateDatabase states = mock(StateDatabase.class);
+        Bitrepository bitrepository = mock(Bitrepository.class);
+        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
+
+        when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
+        when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
+        when(httpCommunication.post(anyString(), any())).thenReturn(true);
+
+        // Needed for setting of the preservation import state by the updater, when failing.
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                PreservationImportRequestState prs = (PreservationImportRequestState) invocation.getArguments()[0];
+                PreservationImportState newState = (PreservationImportState) invocation.getArguments()[1];
+                prs.setState(newState);
+                return null;
+            }
+        }).when(updater).sendPreservationImportResponse(any(), any(), any());
+
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
+        PreservationImportRequestHandler prh = new PreservationImportRequestHandler(context);
+
+        request.security.checksum = "sha-1:5875f4d3fe7058ef89bcd28b6e11258e8ed2762b";
         prh.handleRequest(request);
 
         verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
         verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_DELIVERY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FINISHED), any());
+        verifyNoMoreInteractions(updater);
+
+        verify(bitrepository).getKnownCollections();
+        verify(bitrepository).getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any());
+        verifyNoMoreInteractions(bitrepository);
+
+        verify(httpCommunication).post(eq(DEFAULT_URL), any());
+        verifyNoMoreInteractions(httpCommunication);
+    }
+    
+    @Test
+    public void testRetrievedValidationWithIncorrectChecksum() throws Exception {
+        StateDatabase states = mock(StateDatabase.class);
+        Bitrepository bitrepository = mock(Bitrepository.class);
+        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
+
+        when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
+        when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
+        when(httpCommunication.post(anyString(), any())).thenReturn(true);
+
+        // Needed for setting of the preservation import state by the updater, when failing.
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                PreservationImportRequestState prs = (PreservationImportRequestState) invocation.getArguments()[0];
+                PreservationImportState newState = (PreservationImportState) invocation.getArguments()[1];
+                prs.setState(newState);
+                return null;
+            }
+        }).when(updater).sendPreservationImportResponse(any(), any(), any());
+
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
+        PreservationImportRequestHandler prh = new PreservationImportRequestHandler(context);
+
+        request.security.checksum = "sha-1:1111111111111111111111111111111111111111";
+        prh.handleRequest(request);
+
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FAILURE), any());
+        verifyNoMoreInteractions(updater);
+
+        verify(bitrepository).getKnownCollections();
+        verify(bitrepository).getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any());
+        verifyNoMoreInteractions(bitrepository);
+
+        verifyZeroInteractions(httpCommunication);
+    }
+    
+    @Test
+    public void testTokenTimeoutFailure() throws Exception {
+        StateDatabase states = mock(StateDatabase.class);
+        Bitrepository bitrepository = mock(Bitrepository.class);
+        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
+
+        when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
+        when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
+        when(httpCommunication.post(anyString(), any())).thenReturn(true);
+
+        // Needed for setting of the preservation import state by the updater, when failing.
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                PreservationImportRequestState prs = (PreservationImportRequestState) invocation.getArguments()[0];
+                PreservationImportState newState = (PreservationImportState) invocation.getArguments()[1];
+                prs.setState(newState);
+                return null;
+            }
+        }).when(updater).sendPreservationImportResponse(any(), any(), any());
+
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
+        PreservationImportRequestHandler prh = new PreservationImportRequestHandler(context);
+
+        request.security.token_timeout = new Date(0).toString();
+        prh.handleRequest(request);
+
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -254,6 +414,7 @@ public class PreservationImportRequestHandlerTest {
         Bitrepository bitrepository = mock(Bitrepository.class);
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
         HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
+        PreservationImportRequest request = makeRequest();
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), any())).thenReturn(WARC_FILE);
@@ -296,6 +457,9 @@ public class PreservationImportRequestHandlerTest {
         request.type = "FILE";
         request.url = DEFAULT_URL;
         request.uuid = NON_RANDOM_UUID;
+        request.security = new Security();
+        request.security.token = "ASDF";
+        request.security.token_timeout = new Date(9999999999999L).toString(); // unreasonable long time into the future
         request.warc = new Warc();
         request.warc.warc_file_id = NON_RANDOM_WARC_ID;
         request.warc.warc_record_id = NON_RANDOM_RECORD_UUID;

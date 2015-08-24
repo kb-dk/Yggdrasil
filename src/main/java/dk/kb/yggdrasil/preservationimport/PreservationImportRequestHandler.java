@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.jwat.common.Uri;
@@ -50,6 +52,9 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
     
     /** The size of the buffer. */
     private static final int BUFFER_SIZE = 16*1024;
+    
+    /** The format for the timeout date. */
+    private static final String DEFAULT_TIMEOUT_DATE_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
 
     /**
      * Constructor.
@@ -156,6 +161,25 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
             String errMsg = "Malformed URL: " + state.getRequest().url;
             logger.error(errMsg, e);
             errors.add(errMsg);
+        }
+        
+        // validate checksum format: 'algorithm':'checksum'
+        if(state.getRequest().security != null && state.getRequest().security.checksum != null
+                && !state.getRequest().security.checksum.isEmpty()) {
+            String checksum = state.getRequest().security.checksum;
+            System.err.println(checksum + " contains a ':'? " + checksum.contains(":"));
+            if(!checksum.contains(":")) {
+                String errMsg = "The checksum in the request does not comply with definition. No algorithm";
+                logger.error(errMsg);
+                errors.add(errMsg);
+            } else {
+                try {
+                    extractChecksumType(checksum);
+                } catch (IllegalArgumentException e) {
+                    logger.error(e.getMessage());
+                    errors.add(e.getMessage());
+                }
+            }
         }
         
         if(errors.isEmpty()) {
@@ -276,11 +300,14 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
             logger.debug("No checksum to validate ");
             return;
         }
-        String checksum = ChecksumUtils.generateChecksum(state.getImportData(), context.getBitrepository().getDefaultChecksum());
+        ChecksumType csType = extractChecksumType(state.getRequest().security.checksum);
+        String deliveredChecksum = state.getRequest().security.checksum.split(":")[1];
+        String calculatedChecksum = ChecksumUtils.generateChecksum(state.getImportData(), csType);
         
-        if(!checksum.equalsIgnoreCase(state.getRequest().security.checksum)) {
-            String errMsg = "Inconsistent checksum between retrieved file ('" + checksum 
-                    + "') and the expected checksum ('" + state.getRequest().security.checksum + "')";
+        if(!calculatedChecksum.equalsIgnoreCase(deliveredChecksum)) {
+            String errMsg = "Inconsistent checksum between retrieved file ('" + calculatedChecksum 
+                    + "') and the expected checksum ('" + deliveredChecksum + "') in the algorithm '" 
+                    + csType.name();
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
                     PreservationImportState.IMPORT_FAILURE, errMsg);
 
@@ -298,9 +325,10 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
     private void validateTokenDate(PreservationImportRequestState state) throws YggdrasilException {
         Security s = state.getRequest().security;
         if(s != null && s.token != null && s.token_timeout != null) {
-             try {
-                Date d = DateFormat.getInstance().parse(s.token_timeout);
-                if(d.getTime() > new Date().getTime()) {
+            try {
+                DateFormat formatter = new SimpleDateFormat(DEFAULT_TIMEOUT_DATE_FORMAT);
+                Date d = formatter.parse(s.token_timeout);
+                if(d.getTime() < new Date().getTime()) {
                     throw new YggdrasilException("Token timeout (" + d.toString() + ") exceeded.");
                 }
             } catch (ParseException e) {
@@ -343,5 +371,22 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
                     PreservationImportState.IMPORT_DELIVERY_FAILURE, errMsg);
             throw new YggdrasilException(errMsg);
         }
+    }
+    
+    private ChecksumType extractChecksumType(String checksum) {
+        if(!checksum.contains(":")) {
+            throw new IllegalArgumentException("The checksum in the request does not comply with definition. "
+                    + "No algorithm");
+        } else {
+            String checksumType = checksum.split(":")[0];
+            // Remove any '-' from the SHA algorithms, and makes it upper-case.
+            checksumType = checksumType.replaceFirst("-", "").toUpperCase();
+            try {
+                return ChecksumType.fromValue(checksumType);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(checksumType + " is not supported.", e);
+            }
+        }
+        
     }
 }
