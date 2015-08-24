@@ -2,8 +2,6 @@ package dk.kb.yggdrasil.json;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PushbackInputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,6 @@ import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.json.preservation.PreservationResponse;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportResponse;
-import dk.kb.yggdrasil.messaging.MQ;
 
 /**
  * Small class for marshalling JSON messages to/from Valhal.
@@ -58,8 +55,8 @@ public class JSONMessaging {
 
     /**
      * Convert JSON data into a preservation request object.
-     * @param <T>
      * @param in <code>InputStream</code> containing JSON data
+     * @param requestType The type of request.
      * @return preservation request object representation
      * @throws YggdrasilException if an I/O error occurs while unmashalling
      */

@@ -16,6 +16,8 @@ public class RequestHandlerContext {
     private final RemotePreservationStateUpdater remotePreservationStateUpdater;
     /** The StateDatase instance used by this workflow. */
     private final StateDatabase stateDatabase;
+    /** Deals with HTTP communications. */
+    private final HttpCommunication httpCommunication;
 
     /**
      * Constructor.
@@ -23,17 +25,21 @@ public class RequestHandlerContext {
      * @param config The configuration.
      * @param sd The state database.
      * @param remotePreservationStateUpdater The remote preservation state updater.
+     * @param httpCommunication The http communication.
      */
     public RequestHandlerContext(Bitrepository bitrepository, Config config, StateDatabase sd, 
-            RemotePreservationStateUpdater remotePreservationStateUpdater) {
-        ArgumentCheck.checkNotNull(bitrepository, "bitrepository");
-        ArgumentCheck.checkNotNull(config, "config");
-        ArgumentCheck.checkNotNull(sd, "state database");
-        ArgumentCheck.checkNotNull(remotePreservationStateUpdater, "remotePreservationStateUpdater");
+            RemotePreservationStateUpdater remotePreservationStateUpdater, HttpCommunication httpCommunication) {
+        ArgumentCheck.checkNotNull(bitrepository, "Bitrepository bitrepository");
+        ArgumentCheck.checkNotNull(config, "Config config");
+        ArgumentCheck.checkNotNull(sd, "StateDatabase sd");
+        ArgumentCheck.checkNotNull(remotePreservationStateUpdater, 
+                "RemotePreservationStateUpdater remotePreservationStateUpdater");
+        ArgumentCheck.checkNotNull(httpCommunication, "HttpCommunication httpCommunication");
         this.bitrepository = bitrepository;
         this.config = config;
         this.remotePreservationStateUpdater = remotePreservationStateUpdater;
         this.stateDatabase = sd;
+        this.httpCommunication = httpCommunication;
     }
     
     /**
@@ -62,5 +68,12 @@ public class RequestHandlerContext {
      */
     public StateDatabase getStateDatabase() {
         return stateDatabase;
-    }    
+    }
+    
+    /**
+     * @return The HTTP communication.
+     */
+    public HttpCommunication getHttpCommunication() {
+        return httpCommunication;
+    }
 }

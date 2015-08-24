@@ -1,11 +1,7 @@
 package dk.kb.yggdrasil.db;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.Serializable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
@@ -32,10 +28,9 @@ public class PreservationImportRequestState implements Serializable {
     private File importData = null;
 
     /**
-     * The constructor of the PreservationRequestState.
+     * The constructor of the PreservationImportRequestState.
      * @param request The request itself
      * @param preservationState Its current state in Yggdrasil
-     * @param uuid The uuid of this request.
      */
     public PreservationImportRequestState(PreservationImportRequest request,
             PreservationImportState preservationState) {
@@ -57,6 +52,8 @@ public class PreservationImportRequestState implements Serializable {
      */
     public void setState(PreservationImportState newState) throws YggdrasilException {
         ArgumentCheck.checkNotNull(newState, "PreservationImportState newState");
+        
+        System.err.println("STATE - Changing from '" + this.state.name() + "' to '" + newState.name() + "'");
         PreservationImportState.verifyIfValidStateChange(this.state, newState);
         this.state = newState;
     }

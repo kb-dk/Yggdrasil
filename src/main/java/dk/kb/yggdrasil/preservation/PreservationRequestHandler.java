@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
-import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.HttpPayload;
 import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationRequestState;
@@ -227,7 +226,8 @@ public class PreservationRequestHandler extends MessageRequestHandler<Preservati
                             }
                         }
                     }
-                    throw new PreservationException(PreservationState.PRESERVATION_METADATA_PACKAGED_FAILURE, errMsg.toString());
+                    throw new PreservationException(PreservationState.PRESERVATION_METADATA_PACKAGED_FAILURE, 
+                            errMsg.toString());
                 } else {
                     prs.setMetadataPayload(outputFile);
                     context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
@@ -261,7 +261,7 @@ public class PreservationRequestHandler extends MessageRequestHandler<Preservati
         PreservationRequest pr = prs.getRequest();
         logger.info("Attempting to download resource from '"
                 + pr.Content_URI + "'");
-        HttpPayload payload = HttpCommunication.get(pr.Content_URI);
+        HttpPayload payload = context.getHttpCommunication().get(pr.Content_URI);
         if (payload != null) {
             tmpFile = payload.writeToFile();
             prs.setContentPayload(tmpFile);

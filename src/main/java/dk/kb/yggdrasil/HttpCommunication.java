@@ -26,12 +26,17 @@ public class HttpCommunication {
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(HttpCommunication.class.getName());
 
+    /** 
+     * Constructor.
+     */
+    public HttpCommunication() {}
+    
     /**
      * Send a HTTP GET request and return the result, if any, to the caller.
      * @param url the url to send a GET request to
      * @return HTTP response content body or null
      */
-    public static HttpPayload get(String url) {
+    public HttpPayload get(String url) {
         if (url == null || url.length() == 0) {
             throw new IllegalArgumentException("'url' is null or empty.");
         }
@@ -88,7 +93,7 @@ public class HttpCommunication {
      * @param content The content of the HTTP POST.
      * @return boolean indicating success or failure
      */
-    public static boolean post(String url, HttpEntity content) {
+    public boolean post(String url, HttpEntity content) {
         ArgumentCheck.checkNotNullOrEmpty(url, "String url");
         ArgumentCheck.checkNotNull(content, "HttpEntity content");
 
@@ -136,7 +141,7 @@ public class HttpCommunication {
      * @param contentType content type of content body
      * @return boolean indicating success or failure
      */
-    public static boolean post(String url, byte[] contentBody, String contentType) {
+    public boolean post(String url, byte[] contentBody, String contentType) {
         if (url == null || url.length() == 0) {
             throw new IllegalArgumentException("'url' is null or empty.");
         }

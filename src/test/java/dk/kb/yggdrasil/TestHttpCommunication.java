@@ -26,6 +26,8 @@ import org.mortbay.jetty.servlet.ServletHandler;
 @RunWith(JUnit4.class)
 public class TestHttpCommunication {
 
+    private HttpCommunication httpCommunication = new HttpCommunication();
+    
     @Test
     public void test_httpcommunication() {
         HttpPayload httpPayload = null;
@@ -37,11 +39,11 @@ public class TestHttpCommunication {
             /*
              * Test invalid url. Assuming that port 65535 is not running a webserver.
              */
-            httpPayload = HttpCommunication.get("http://localhost:65535/get");
+            httpPayload = httpCommunication.get("http://localhost:65535/get");
             Assert.assertNull(httpPayload);
 
             contentBody = "the body".getBytes();
-            bSuccess = HttpCommunication.post("http://localhost:65535/post", contentBody, "text/plain");
+            bSuccess = httpCommunication.post("http://localhost:65535/post", contentBody, "text/plain");
             Assert.assertFalse(bSuccess);
             /*
              * Start webserver.
@@ -56,16 +58,16 @@ public class TestHttpCommunication {
             /*
              * Invalid requests.
              */
-            httpPayload = HttpCommunication.get("http://localhost:" + server.port + "/gett");
+            httpPayload = httpCommunication.get("http://localhost:" + server.port + "/gett");
             Assert.assertNull(httpPayload);
 
             contentBody = "the body".getBytes();
-            bSuccess = HttpCommunication.post("http://localhost:" + server.port + "/postt", contentBody, "text/plain");
+            bSuccess = httpCommunication.post("http://localhost:" + server.port + "/postt", contentBody, "text/plain");
             Assert.assertFalse(bSuccess);
             /*
              * Valid requests.
              */
-            httpPayload = HttpCommunication.get("http://localhost:" + server.port + "/get");
+            httpPayload = httpCommunication.get("http://localhost:" + server.port + "/get");
             Assert.assertNotNull(httpPayload);
 
             int read;
@@ -83,7 +85,7 @@ public class TestHttpCommunication {
             Assert.assertArrayEquals("I am Jettyman.".getBytes(), bout.toByteArray());
 
             contentBody = "the body".getBytes();
-            bSuccess = HttpCommunication.post("http://localhost:" + server.port + "/post", contentBody, "text/plain");
+            bSuccess = httpCommunication.post("http://localhost:" + server.port + "/post", contentBody, "text/plain");
             Assert.assertTrue(bSuccess);
         } catch (IOException e) {
             e.printStackTrace();

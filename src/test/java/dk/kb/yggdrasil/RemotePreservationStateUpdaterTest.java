@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil.preservation;
+package dk.kb.yggdrasil;
 
 import java.io.File;
 import java.util.UUID;
@@ -14,6 +14,8 @@ import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.json.preservation.PreservationResponse;
 import dk.kb.yggdrasil.messaging.MQ;
+import dk.kb.yggdrasil.preservation.PreservationState;
+import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 
 @RunWith(JUnit4.class)
 public class RemotePreservationStateUpdaterTest {

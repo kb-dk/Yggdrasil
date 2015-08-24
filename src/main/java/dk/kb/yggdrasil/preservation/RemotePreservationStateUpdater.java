@@ -1,14 +1,20 @@
 package dk.kb.yggdrasil.preservation;
 
+import java.util.Date;
+
 import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.preservation.Preservation;
 import dk.kb.yggdrasil.json.preservation.PreservationResponse;
+import dk.kb.yggdrasil.json.preservationimport.PreservationImportResponse;
+import dk.kb.yggdrasil.json.preservationimport.Response;
 import dk.kb.yggdrasil.messaging.MQ;
+import dk.kb.yggdrasil.preservationimport.PreservationImportState;
 
 /**
  * Simple class for dealing with updating the remote preservation states.
@@ -18,7 +24,7 @@ public class RemotePreservationStateUpdater {
     /** Logging mechanism. */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     /** The RabbitMQ connection used by this workflow. */
-    private final MQ mq;    
+    private final MQ mq;
 
     /**
      * Constructor.
@@ -94,5 +100,38 @@ public class RemotePreservationStateUpdater {
         }
         
         mq.publishPreservationResponse(response);
+    }
+    
+    /**
+     * Update remote preservation state with a non-default details about the state.
+     * Especially used for failures, where the details about the failure can be delivered.
+     * @param prs a given PreservationRequestState
+     * @param newState The new state.
+     * @param details The new details for the new state.
+     * @throws YggdrasilException If an issue with sending the message occurs.
+     */
+    public void sendPreservationImportResponse(PreservationImportRequestState prs, PreservationImportState newState, 
+            String details) throws YggdrasilException {
+        ArgumentValidator.checkNotNull(prs, "PreservationImportRequestState prs");
+        ArgumentValidator.checkNotNull(newState, "PreservationImportState newState");
+
+        prs.setState(newState);
+        
+        Response preservationImportResponse = new Response();
+        preservationImportResponse.date = new Date().toString();
+        preservationImportResponse.state = prs.getState().name();
+
+        if(details != null && !details.isEmpty()) {
+            preservationImportResponse.detail = details;
+        } else {
+            preservationImportResponse.detail = newState.getDescription();
+        }
+
+        PreservationImportResponse response = new PreservationImportResponse();
+        response.uuid = prs.getRequest().uuid;
+        response.type = prs.getRequest().type;
+        response.response = preservationImportResponse;
+        
+        mq.publishPreservationImportResponse(response);
     }
 }

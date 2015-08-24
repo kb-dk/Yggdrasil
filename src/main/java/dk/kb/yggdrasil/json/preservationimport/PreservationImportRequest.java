@@ -57,13 +57,12 @@ public class PreservationImportRequest implements Serializable {
         if (warc == null) {
             missingContent.append("Mandatory element 'warc' is undefined");
         }
-        if (warc.warc_file_id == null || warc.warc_file_id.isEmpty()) {
+        if (warc != null && (warc.warc_file_id == null || warc.warc_file_id.isEmpty())) {
             missingContent.append("Mandatory field 'warc_file_id' in the 'warc' element is undefined");
         }
-        if (warc.warc_record_id == null || warc.warc_record_id.isEmpty()) {
+        if (warc != null && (warc.warc_record_id == null || warc.warc_record_id.isEmpty())) {
             missingContent.append("Mandatory field 'warc_record_id' in the 'warc' element is undefined");
         }
-
 
         if (missingContent.length() > 0) {
             logger.warn(missingContent.toString());

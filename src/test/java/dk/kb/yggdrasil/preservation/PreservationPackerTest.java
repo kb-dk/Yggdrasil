@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 
 import dk.kb.yggdrasil.Bitrepository;
 import dk.kb.yggdrasil.Config;
+import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.MetadataContentUtils;
 import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationRequestState;
@@ -44,6 +45,7 @@ public class PreservationPackerTest {
     protected static Bitrepository bitrepository;
     protected static Config config;
     protected static StateDatabase stateDatabase;
+    protected static HttpCommunication httpCommunication;
     
     protected static File metadataPayloadFile;
     protected static File contentFilePayloadFile;
@@ -58,6 +60,7 @@ public class PreservationPackerTest {
         bitrepository = Mockito.mock(Bitrepository.class);
 
         stateDatabase = new StateDatabase(config.getDatabaseDir());
+        httpCommunication = new HttpCommunication();
         
         metadataPayloadFile = new File(config.getTemporaryDir(), "metadataPayloadFile.txt");
         if(!metadataPayloadFile.isFile()) {
@@ -81,7 +84,7 @@ public class PreservationPackerTest {
     @Test
     public void writePreservationRecordWithoutFiles() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -103,7 +106,7 @@ public class PreservationPackerTest {
     @Test
     public void writePreservationRecordWithoutFilesValidateWarcFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -124,7 +127,7 @@ public class PreservationPackerTest {
     @Test
     public void writePreservationRecordWithMetadataFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -147,7 +150,7 @@ public class PreservationPackerTest {
     @Test
     public void writePreservationRecordWithMetadataFileValidateWarcFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -175,7 +178,7 @@ public class PreservationPackerTest {
     @Test
     public void writePreservationRecordWithResourceFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -200,7 +203,7 @@ public class PreservationPackerTest {
     @Test
     public void writePreservationRecordWithResourceFileValidateWarcFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -228,7 +231,7 @@ public class PreservationPackerTest {
     @Test
     public void writePreservationRecordWithBothFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -253,7 +256,7 @@ public class PreservationPackerTest {
     @Test
     public void writePreservationRecordWithBothFileValidateWarcFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -289,7 +292,7 @@ public class PreservationPackerTest {
     @Test(expected = ArgumentCheck.class)
     public void writeUpdateRecordFailure() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         
@@ -304,7 +307,7 @@ public class PreservationPackerTest {
     @Test
     public void writeUpdateRecordWithMetadataFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
@@ -334,7 +337,7 @@ public class PreservationPackerTest {
     @Test
     public void writeUpdateRecordWithMetadataFileValidateWarcFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
@@ -365,7 +368,7 @@ public class PreservationPackerTest {
     @Test
     public void writeUpdateRecordWithContentFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
@@ -396,7 +399,7 @@ public class PreservationPackerTest {
     @Test
     public void writeUpdateRecordWithContentFileValidateWarcFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
@@ -427,7 +430,7 @@ public class PreservationPackerTest {
     @Test
     public void writeUpdateRecordWithBothFiles() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;
@@ -459,7 +462,7 @@ public class PreservationPackerTest {
     @Test
     public void writeUpdateRecordWithBothFilesValidateWarcFile() throws Exception {
         RemotePreservationStateUpdater updater = Mockito.mock(RemotePreservationStateUpdater.class);
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, stateDatabase, updater, httpCommunication);
         PreservationPacker packer = new PreservationPacker(context, "test-collection");
         PreservationRequest request = makeRequest();
         request.warc_id = WARC_FILE_ID;

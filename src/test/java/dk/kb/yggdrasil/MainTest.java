@@ -1,7 +1,5 @@
 package dk.kb.yggdrasil;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -39,17 +37,12 @@ public class MainTest {
         Main.main(new String[]{"test"});
     }
     
-    @Test
-    public void testMainMethodWithBadConfigDir() {
+    @Test(expected = YggdrasilException.class)
+    public void testMainMethodWithBadConfigDir() throws Exception {
         String userHome = System.getProperty("user.home");
         File badConfigDir = new File(userHome + "/configconfig");
         Assert.assertFalse(badConfigDir.exists());
         System.setProperty(Main.CONFIGURATION_DIRECTORY_PROPERTY, badConfigDir.getAbsolutePath());
-        try {
-            Main.main(new String[]{});
-            fail("Should throw Exception when given configuration directory was not found");
-        } catch (Exception e) {
-            // Expected
-        }
+        Main.main(new String[]{});
     }
 }

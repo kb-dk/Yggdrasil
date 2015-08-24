@@ -1,0 +1,120 @@
+WARC/1.0
+WARC-Type: warcinfo
+WARC-Record-ID: <urn:uuid:ff3bd2c0-dd64-4ec7-9371-63e01933e2a9>
+WARC-Date: 2015-08-24T11:05:11Z
+Content-Length: 166
+Content-Type: application/warc-fields
+WARC-Block-Digest: sha-1:c3bd826d9113efb6c1351eff4f5e3ef4a7bb3381
+WARC-Filename: ff3bd2c0-dd64-4ec7-9371-63e01933e2a9
+
+description: http://id.kb.dk/authorities/agents/kbDkYggdrasilIngest.xml
+revision: 1.0.0
+conformsTo: http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf
+
+
+WARC/1.0
+WARC-Type: metadata
+WARC-Record-ID: <urn:uuid:UUID-2>
+WARC-Date: 2015-08-24T11:05:11Z
+Content-Length: 7711
+Content-Type: text/xml
+WARC-Block-Digest: sha-1:4c24916aa6280f784c40c28b53df9343f2efcecc
+WARC-Warcinfo-ID: <urn:uuid:ff3bd2c0-dd64-4ec7-9371-63e01933e2a9>
+
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:premis="info:lc/xmlns/premis-v2" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version191/mets.xsd" TYPE="Instance" OBJID="" PROFILE="http://id.kb.dk/standards/mets/profiles/version_1/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2015-08-24T13:05:08.816+02:00">
+        <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
+            <mets:name>Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek</mets:name>
+        </mets:agent>
+        <mets:agent ID="kbDkYggdrasilnull" ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="API">
+            <mets:name>KB Yggdrasil v. null</mets:name>
+            <mets:note>dk.kb.yggdrasil.xslt.XslTransformer (null)</mets:note>
+        </mets:agent>
+        <mets:agent ID="kbDkNsa" ROLE="EDITOR" TYPE="OTHER" OTHERTYPE="DEPARTMENT">
+            <mets:name>NSA: Nationalsamlingsafdelingen</mets:name>
+        </mets:agent>
+    </mets:metsHdr>
+    <mets:dmdSec CREATED="2015-08-24T13:05:08.817+02:00" ID="Mods1">
+        <mets:mdWrap MDTYPE="MODS">
+            <mets:xmlData>
+                <mods:mods version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3        http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">  <!--We have found an instance! -->                <mods:name authorityURI="http://localhost:3000/resources/changeme:2">                             <mods:role>                        <mods:roleTerm>aut</mods:roleTerm>                        </mods:role>                </mods:name>                <mods:titleInfo>                        <mods:title>Andeby i Gamle Dage</mods:title>                </mods:titleInfo>                <mods:relatedItem displayLabel="The intellectual content, bummer">                        <mods:identifier type="uuid">ee825870-5846-0132-8e2d-000c29cc78f6                        </mods:identifier>                </mods:relatedItem>                <mods:originInfo>                        <mods:dateCreated encoding="w3cdtf">2009</mods:dateCreated>                </mods:originInfo>                <mods:identifier type="isbn">9780300144246</mods:identifier>                <mods:identifier type="uuid">00a36f50-5847-0132-8e30-000c29cc78f6                </mods:identifier>                <mods:identifier type="uri">http://localhost:3000/resources/changeme:5                </mods:identifier>        </mods:mods>
+            </mets:xmlData>
+        </mets:mdWrap>
+    </mets:dmdSec>
+    <mets:amdSec>
+        <mets:techMD CREATED="2015-08-24T13:05:08.830+02:00" ID="PremisObject1">
+            <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+                <mets:xmlData>
+                    <premis:object xsi:type="premis:representation" xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue/>
+                        </premis:objectIdentifier>
+                        <premis:linkingIntellectualEntityIdentifier>
+                            <premis:linkingIntellectualEntityIdentifierType>UUID</premis:linkingIntellectualEntityIdentifierType>
+                            <premis:linkingIntellectualEntityIdentifierValue/>
+                        </premis:linkingIntellectualEntityIdentifier>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:techMD>
+        <mets:rightsMD CREATED="2015-08-24T13:05:08.831+02:00" ID="ModsRights1">
+            <mets:mdWrap MDTYPE="MODS">
+                <mets:xmlData>
+                    <mods:mods version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+                        <mods:accessCondition>Det Kongelige Bibliotek, Nationalbibliotek og Københavns Universitetsbibliotek</mods:accessCondition>
+                    </mods:mods>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:rightsMD>
+        <mets:digiprovMD CREATED="2015-08-24T13:05:08.835+02:00" ID="Premis1">
+            <mets:mdWrap MDTYPE="PREMIS">
+                <mets:xmlData>
+                    <premis:preservationLevel xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
+                        <premis:preservationLevelValue>bitSafetyVeryHigh</premis:preservationLevelValue>
+                        <premis:preservationLevelDateAssigned>2014-12-16T15:07:36.201+01:00                        </premis:preservationLevelDateAssigned>
+                    </premis:preservationLevel>
+                    <premis:preservationLevel xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
+                        <premis:preservationLevelValue>confidentialityMedium                        </premis:preservationLevelValue>
+                        <premis:preservationLevelDateAssigned>2014-12-16T15:07:36.201+01:00                        </premis:preservationLevelDateAssigned>
+                    </premis:preservationLevel>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+        <mets:digiprovMD CREATED="2015-08-24T13:05:08.845+02:00" ID="PremisEvent1">
+            <mets:mdWrap MDTYPE="PREMIS:EVENT">
+                <mets:xmlData>
+                    <premis:event xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd">
+                        <premis:eventIdentifier>
+                            <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+                            <premis:eventIdentifierValue>fd883b1a-57a3-44cc-b0fb-6f15f1e5d9bb</premis:eventIdentifierValue>
+                        </premis:eventIdentifier>
+                        <premis:eventType>update</premis:eventType>
+                        <premis:eventDateTime>2015-08-24T13:05:08.846+02:00</premis:eventDateTime>
+                        <premis:linkingAgentIdentifier>
+                            <premis:linkingAgentIdentifierType>URL</premis:linkingAgentIdentifierType>
+                            <premis:linkingAgentIdentifierValue>http://id.kb.dk/authorities/agents/kbDkYggdrasilUpdate.xml</premis:linkingAgentIdentifierValue>
+                            <premis:linkingAgentRole>Update</premis:linkingAgentRole>
+                        </premis:linkingAgentIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue/>
+                        </premis:linkingObjectIdentifier>
+                    </premis:event>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+    </mets:amdSec>
+    <mets:structMap TYPE="logical">
+        <mets:div DMDID="Mods1" ADMID="ModsRights1 Premis1 PremisEvent1 PremisObject1">
+            <mets:div LABEL="Lav_gode_sogninger.pdf">
+                <mets:mptr LOCTYPE="URN" xlink:href="urn:uuid:ffedd290-5846-0132-8e2f-000c29cc78f6"/>
+            </mets:div>
+            <mets:div LABEL="000773452_X02.xml">
+                <mets:mptr LOCTYPE="URN" xlink:href="urn:uuid:1dace680-6759-0132-942e-000c29cc78f6"/>
+            </mets:div>
+        </mets:div>
+    </mets:structMap>
+</mets:mets>
+
+

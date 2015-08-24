@@ -43,40 +43,28 @@ public class BitrepositoryTest {
     	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
     }
     
-    @Test
-    public void testMissingYamlFile() {
+    @Test(expected = ArgumentCheck.class)
+    public void testMissingYamlFile() throws Exception {
         if (TravisUtils.runningOnTravis()) {
             return;
         }
         File missingConfigFile = new File(MISSING_YAML_FILE);
         assertFalse(missingConfigFile.exists());
-        try {
-            new Bitrepository(missingConfigFile);
-            fail("Should throw ArgumentCheck on missing config file");
-        } catch (ArgumentCheck e) {
-            // Expected
-        } catch (YggdrasilException e) {
-            fail("Should not throw YggdrasilException on missing config file");
-        }
+        new Bitrepository(missingConfigFile);
     }
 
-    @Test
-    public void testIncorrectYamlFile() {
+    @Test(expected = YggdrasilException.class)
+    public void testIncorrectYamlFile() throws Exception {
         if (TravisUtils.runningOnTravis()) {
             return;
         }
         File badConfigFile = new File(INCORRECT_YAML_FILE);
         assertTrue(badConfigFile.exists());
-        try {
-            new Bitrepository(badConfigFile);
-            fail("Should throw YggdrasilException on bad config file");
-        } catch (YggdrasilException e) {
-            // Expected
-        }
+        new Bitrepository(badConfigFile);
     }
 
     @Test
-    public void testOkYamlFile() {
+    public void testOkYamlFile() throws Exception {
         if (TravisUtils.runningOnTravis()) {
             return;
         }
@@ -84,11 +72,7 @@ public class BitrepositoryTest {
         // Assumes that Yggdrasil/config contains a directory "bitmag-development-settings"
         // containing bitrepository 1.0 settings and with a keyfile named "client-16.pem"
         assertTrue(okConfigFile.exists());
-        try {
-            new Bitrepository(okConfigFile);
-        } catch (YggdrasilException e) {
-            fail("Should now throw YggdrasilException on bad config file. Reason: " + e);
-        }
+        new Bitrepository(okConfigFile);
     }
 
     // Apparently some previous test closes connection.

@@ -125,7 +125,8 @@ public enum PreservationState implements Serializable {
      * @param newState the new state
      * @throws YggdrasilException If not a valid state change.
      */
-    public static void verifyIfValidStateChange(PreservationState oldState, PreservationState newState) throws YggdrasilException {
+    public static void verifyIfValidStateChange(PreservationState oldState, PreservationState newState) 
+            throws YggdrasilException {
         ArgumentCheck.checkNotNull(oldState, "State oldState");
         ArgumentCheck.checkNotNull(newState, "State newState");
         

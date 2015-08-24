@@ -16,7 +16,7 @@ import dk.kb.yggdrasil.messaging.MessageRequestHandler;
 import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.preservation.PreservationRequestHandler;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
-import dk.kb.yggdrasil.preservationimport.ImportRequestHandler;
+import dk.kb.yggdrasil.preservationimport.PreservationImportRequestHandler;
 import dk.kb.yggdrasil.xslt.Models;
 
 /**
@@ -49,12 +49,12 @@ public class Workflow {
         this.mq = rabbitconnector;
         
         RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, 
-                new RemotePreservationStateUpdater(mq));
+                new RemotePreservationStateUpdater(mq), new HttpCommunication());
         requestHandlers = new HashMap<String, MessageRequestHandler>();
         requestHandlers.put(MQ.PRESERVATIONREQUEST_MESSAGE_TYPE.toUpperCase(), 
                 new PreservationRequestHandler(context, models));
         requestHandlers.put(MQ.IMPORTREQUEST_MESSAGE_TYPE.toUpperCase(), 
-                new ImportRequestHandler(context));
+                new PreservationImportRequestHandler(context));
     }
 
     /**

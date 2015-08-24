@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +29,6 @@ import org.jwat.warc.WarcRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
@@ -39,7 +41,7 @@ import dk.kb.yggdrasil.messaging.MessageRequestHandler;
 /**
  * The handler class for preservation import requests.
  */
-public class ImportRequestHandler extends MessageRequestHandler<PreservationImportRequest>{
+public class PreservationImportRequestHandler extends MessageRequestHandler<PreservationImportRequest> {
     /** Logging mechanism. */
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -53,7 +55,7 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
      * Constructor.
      * @param context The context for the preservation import.
      */
-    public ImportRequestHandler(RequestHandlerContext context) {
+    public PreservationImportRequestHandler(RequestHandlerContext context) {
         ArgumentCheck.checkNotNull(context, "PreservationContext context");
         this.context = context;
     }
@@ -71,9 +73,10 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
             return;
         }
 
-        PreservationImportRequestState state = new PreservationImportRequestState(request, PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED);
+        PreservationImportRequestState state = new PreservationImportRequestState(request, 
+                PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED);
 
-        if(!validateRequest(request)) {
+        if(!validateRequest(state)) {
             logger.warn("The request is invalid: " + request.toString());
             return;
         }
@@ -88,37 +91,43 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
     }
     
     /**
-     * 
-     * @param state
-     * @throws YggdrasilException
+     * Performing the import operation.
+     * @param state The state for handling the preservation import request.
+     * @throws YggdrasilException If it fails.
      */
     public void performImport(PreservationImportRequestState state) throws YggdrasilException {
+        logger.info("Starting to import '" + state.getRequest().type + "' for uuid '" + state.getRequest().uuid + "'");
         try {
-            if(state.getImportData() == null || !state.getImportData().isFile()) {
-                retrieveData(state);
-                logger.info("Retrieved data from Bitrepository for '" + state.getRequest().uuid + "'.");
-            } else {
-                logger.warn("Already having retrieved the data. This must be recovery from "
-                        + "failure or unexpected shutdown.");
-            }
+            retrieveData(state);
+            logger.info("Retrieved data for import of '" + state.getRequest().type + "' for uuid '" 
+                    + state.getRequest().uuid + "'");
+
+            validateExtractedData(state);
+
+            validateTokenDate(state);
+            
+            logger.info("Starting to deliver data for import '" + state.getRequest().type + "' for uuid '" 
+                    + state.getRequest().uuid + "'");
+
+            deliverData(state);
+
+            // Send final success response.
+            context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                    PreservationImportState.IMPORT_FINISHED, null);
+
+            // cleanup
+            state.cleanup();
+            logger.info("Finished processing the preservation import request of '" + state.getRequest().type 
+                    + "' for uuid '" + state.getRequest().uuid + "'");
         } catch (YggdrasilException e) {
-            // TODO SEND RETRIEVAL FAILURE RESPONSE.
-            throw e;
+            // Send failure, if it is not a fail-state.
+            if(state.getState().isOkState()) {
+                System.err.println(state.getState().name() + " is in " + PreservationImportState.getFailStates());
+                context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                        PreservationImportState.IMPORT_FAILURE, e.getMessage());
+            }
+            logger.error("Failure", e);
         }
-
-        validateExtractedData(state);
-        
-        validateTokenDate(state);
-        
-        // deliver data
-        deliverData(state);
-
-        // TODO send final success response.
-        
-        // cleanup
-        state.cleanup();
-        logger.info("Finished processing the preservation import request");
-
     }
 
     /**
@@ -127,26 +136,39 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
      * @param request The preservation import request to validate.
      * @return Whether or not the request is valid.
      */
-    protected boolean validateRequest(PreservationImportRequest request) {
+    protected boolean validateRequest(PreservationImportRequestState state) throws YggdrasilException {
+        List<String> errors = new ArrayList<String>();
+
         // Add check about whether the profile is a known collectionID or not known
-        String preservationProfile = request.preservation_profile;
+        String preservationProfile = state.getRequest().preservation_profile;
         List<String> possibleCollections = context.getBitrepository().getKnownCollections();
         if (!possibleCollections.contains(preservationProfile)) {
             String errMsg = "The given preservation profile '" + preservationProfile
                     + "' does not match a known collection ID. Expected one of: " + possibleCollections;
             logger.error(errMsg);
-
-            // TODO Send the update about validation failure.
-            //            context.getRemotePreservationStateUpdater().sendPreservationResponseWithSpecificDetails(prs, 
-            //                    PreservationState.PRESERVATION_REQUEST_FAILED, errMsg);
+            errors.add(errMsg);
+        }
+        
+        // validate the delivery URL
+        try {
+            new URL(state.getRequest().url);
+        } catch (MalformedURLException e) {
+            String errMsg = "Malformed URL: " + state.getRequest().url;
+            logger.error(errMsg, e);
+            errors.add(errMsg);
+        }
+        
+        if(errors.isEmpty()) {
+            // Send update about success retrieval and validation.
+            context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                    PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED, null);
+            return true;
+        } else {
+            // Send the update about validation failure.
+            context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                    PreservationImportState.IMPORT_REQUEST_VALIDATION_FAILURE, errors.toString());
             return false;
-        } 
-
-        // TODO send update about success retrieval and validation.
-        //        context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
-        //                PreservationState.PRESERVATION_REQUEST_RECEIVED);
-        //        context.getStateDatabase().put(prs.getUUID(), prs);
-        return true;
+        }
     }
 
     /**
@@ -157,19 +179,33 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
      * @throws YggdrasilException If retrieving the warc file from the Bitrepository fails.
      */
     protected void retrieveData(PreservationImportRequestState state) throws YggdrasilException {
-        FilePart filePart = null;
-        PreservationImportRequest request = state.getRequest();
-        if(state.getRequest().warc.warc_offset != null && request.warc.warc_record_size != null) {
-            filePart = new FilePart();
-            filePart.setPartOffSet(BigInteger.valueOf(Long.parseLong(request.warc.warc_offset)));
-            filePart.setPartLength(BigInteger.valueOf(Long.parseLong(request.warc.warc_record_size)));
+        context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, null);
+        try {
+            if(state.getImportData() == null || !state.getImportData().isFile()) {
+                FilePart filePart = null;
+                PreservationImportRequest request = state.getRequest();
+                if(state.getRequest().warc.warc_offset != null && request.warc.warc_record_size != null) {
+                    filePart = new FilePart();
+                    filePart.setPartOffSet(BigInteger.valueOf(Long.parseLong(request.warc.warc_offset)));
+                    filePart.setPartLength(BigInteger.valueOf(Long.parseLong(request.warc.warc_record_size)));
+                }
+                File warcFile = context.getBitrepository().getFile(request.warc.warc_file_id, 
+                        request.preservation_profile, filePart);
+                
+                File record = extractData(warcFile, state);
+                state.setImportData(record);
+                logger.info("Retrieved data from Bitrepository for '" + state.getRequest().uuid + "'.");
+            } else {
+                logger.warn("Already having retrieved the data. This must be recovery from "
+                        + "failure or unexpected shutdown.");
+            }
+        } catch (YggdrasilException e) {
+            // Sending retrieval failure response.
+            context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                    PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE, e.getMessage());
+            throw e;
         }
-        File warcFile = context.getBitrepository().getFile(request.warc.warc_file_id, 
-                request.preservation_profile, filePart);
-        
-        File record = extractData(warcFile, state);
-        state.setImportData(record);
-        // TODO send update to tell, that retrieval is complete.
     }
     
     /**
@@ -180,13 +216,14 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
      * @throws YggdrasilException If the extraction of the warc-record fails.
      */
     protected File extractData(File warcFile, PreservationImportRequestState state) throws YggdrasilException {
+        ArgumentCheck.checkExistsNormalFile(warcFile, "File warcFile");
         try (InputStream in = new FileInputStream(warcFile);) {
             WarcRecord retrievedRecord = null;
             Uri uuid = new Uri("urn:uuid:" + state.getRequest().warc.warc_record_id);        
             WarcReader reader = WarcReaderFactory.getReader( in );
             WarcRecord record;
-            while ((record = reader.getNextRecord()) != null && retrievedRecord == null) {
-                if(record.header.warcRecordIdUri == uuid) {
+            while (retrievedRecord == null && (record = reader.getNextRecord()) != null) {
+                if(record.header.warcRecordIdUri.equals(uuid)) {
                     retrievedRecord = record;
                     state.setWarcHeaderChecksum(record.header.warcBlockDigestStr);
                 }
@@ -216,8 +253,9 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
         InputStream in = record.getPayloadContent();
         try (FileOutputStream out = new FileOutputStream(res);){
             byte[] read = new byte[BUFFER_SIZE];
-            while(in.read(read) > -1) {
-                out.write(read);            
+            int i;
+            while((i = in.read(read)) > -1) {
+                out.write(read, 0, i);
             }
             out.flush();
         } catch (IOException e) {
@@ -233,7 +271,8 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
      * @throws YggdrasilException If the extracted data is not valid.
      */
     private void validateExtractedData(PreservationImportRequestState state) throws YggdrasilException {
-        if(state.getRequest().security.checksum == null || state.getRequest().security.checksum.isEmpty()) {
+        if(state.getRequest().security == null || state.getRequest().security.checksum == null 
+                || state.getRequest().security.checksum.isEmpty()) {
             logger.debug("No checksum to validate ");
             return;
         }
@@ -242,7 +281,9 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
         if(!checksum.equalsIgnoreCase(state.getRequest().security.checksum)) {
             String errMsg = "Inconsistent checksum between retrieved file ('" + checksum 
                     + "') and the expected checksum ('" + state.getRequest().security.checksum + "')";
-            // TODO send failure update.
+            context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                    PreservationImportState.IMPORT_FAILURE, errMsg);
+
             throw new YggdrasilException(errMsg);
         }
         
@@ -276,6 +317,9 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
      * @throws YggdrasilException If the data fails to be delivered.
      */
     private void deliverData(PreservationImportRequestState state) throws YggdrasilException {
+        context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                PreservationImportState.IMPORT_DELIVERY_INITIATED, null);
+
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         if(state.getRequest().security != null) {
             String token = state.getRequest().security.token;
@@ -288,13 +332,16 @@ public class ImportRequestHandler extends MessageRequestHandler<PreservationImpo
 
         builder.addBinaryBody("file", state.getImportData());
         HttpEntity multipart = builder.build();
-        boolean success = HttpCommunication.post(state.getRequest().url, multipart);
+        boolean success = context.getHttpCommunication().post(state.getRequest().url, multipart);
 
         if(success) {
             logger.info("Successfully delivered data for '" + state.getRequest().uuid + "'");
         } else {
-            // TODO Send response telling about the error.
-            throw new YggdrasilException("Could not deliver the data to '" + state.getRequest().url);
+            // Failure. Send response telling about the error.
+            String errMsg = "Could not deliver the data to '" + state.getRequest().url;
+            context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                    PreservationImportState.IMPORT_DELIVERY_FAILURE, errMsg);
+            throw new YggdrasilException(errMsg);
         }
     }
 }

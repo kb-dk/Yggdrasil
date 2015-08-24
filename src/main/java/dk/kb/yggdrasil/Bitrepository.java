@@ -289,10 +289,12 @@ public class Bitrepository {
      * Get a file with a given fileId from a given collection.
      * @param fileId A fileId of a package known to exist in the repository
      * @param collectionId A given collection in the repository
+     * @param filePart The part of the file to 'get'. Set to null, if retrieving the whole file.
      * @return the file if found. Otherwise an exception is thrown
      * @throws YggdrasilException If not found or an error occurred during the fetch process.
      */
-    public File getFile(final String fileId, final String collectionId, final FilePart filePart) throws YggdrasilException {
+    public File getFile(final String fileId, final String collectionId, final FilePart filePart) 
+            throws YggdrasilException {
         ArgumentCheck.checkNotNullOrEmpty(fileId, "String fileId");
         ArgumentCheck.checkNotNullOrEmpty(collectionId, "String collectionId");
         // Does collection exists? If not throw exception

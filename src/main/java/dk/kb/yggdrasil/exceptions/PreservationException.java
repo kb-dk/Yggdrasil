@@ -2,6 +2,9 @@ package dk.kb.yggdrasil.exceptions;
 
 import dk.kb.yggdrasil.preservation.PreservationState;
 
+/**
+ * Exceptions for the preservation workflow.
+ */
 @SuppressWarnings("serial")
 public class PreservationException extends Exception {
     /** The failure state, which should be reported.*/

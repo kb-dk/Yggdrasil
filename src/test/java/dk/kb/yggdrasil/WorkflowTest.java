@@ -21,9 +21,6 @@
 //import dk.kb.yggdrasil.messaging.MQ;
 //import dk.kb.yggdrasil.xslt.Models;
 //
-///**
-// * Created by jatr on 2/24/14.
-// */
 //@RunWith(JUnit4.class)
 //public class WorkflowTest extends MqFixtureTestAPI {
 //

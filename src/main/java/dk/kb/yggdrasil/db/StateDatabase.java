@@ -249,12 +249,4 @@ public class StateDatabase {
             }
         }
     }
-    
-    protected class RequestStateBinding {
-        
-        
-        public RequestStateBinding(Class objectClass) {
-            
-        }
-    }
 }

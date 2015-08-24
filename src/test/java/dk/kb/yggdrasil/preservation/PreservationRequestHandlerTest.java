@@ -14,6 +14,7 @@ import org.junit.runners.JUnit4;
 
 import dk.kb.yggdrasil.Bitrepository;
 import dk.kb.yggdrasil.Config;
+import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.MetadataContentUtils;
 import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationRequestState;
@@ -32,6 +33,7 @@ public class PreservationRequestHandlerTest {
     protected static PreservationRequest request;
     protected static Config config;
     protected static Models models;
+    protected static HttpCommunication httpCommunication;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -39,6 +41,7 @@ public class PreservationRequestHandlerTest {
 
         config = new Config(generalConfigFile);
         models = new Models(modelsFile);
+        httpCommunication = new HttpCommunication();
         
         request = makeRequest();
     }
@@ -52,7 +55,7 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         prh.handleRequest(request);
@@ -78,7 +81,7 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         PreservationRequest badRequest = new PreservationRequest();
@@ -98,7 +101,7 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         PreservationRequest badRequest = makeRequest();
@@ -130,7 +133,7 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         PreservationRequest badRequest = makeRequest();
@@ -153,7 +156,7 @@ public class PreservationRequestHandlerTest {
         verifyNoMoreInteractions(states);
     }
     
-    @Test
+    @Test(expected = YggdrasilException.class)
     public void testBadFileURL() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
@@ -162,18 +165,13 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         PreservationRequest requestWithBadURI = makeRequest();
         requestWithBadURI.File_UUID = "Random File UUID";
         requestWithBadURI.Content_URI = "http://127.0.0.1/" + (new Date()).getTime();
-        try {
-            prh.handleRequest(requestWithBadURI);
-            Assert.fail("Should throw an exception");
-        } catch (YggdrasilException e) {
-            // Expected.
-        }
+        prh.handleRequest(requestWithBadURI);
     }
     
     @Test
@@ -185,7 +183,7 @@ public class PreservationRequestHandlerTest {
         // Do not return an array with the default collection in it.
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(""));
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         prh.handleRequest(request);
@@ -206,7 +204,7 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(false);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         prh.handleRequest(request);
@@ -238,7 +236,7 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, spyConfig, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, spyConfig, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         prh.handleRequest(request);
@@ -278,7 +276,7 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         prh.handleRequest(message);
@@ -309,7 +307,7 @@ public class PreservationRequestHandlerTest {
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
         
-        RequestHandlerContext context = new RequestHandlerContext(bitrepository, spyConfig, states, updater);
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, spyConfig, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
         prh.handleRequest(request);

@@ -1,0 +1,26 @@
+WARC/1.0
+WARC-Type: warcinfo
+WARC-Record-ID: <urn:uuid:fe271a89-6b19-4983-816f-90e23f137762>
+WARC-Date: 2015-07-22T11:21:30Z
+Content-Length: 166
+Content-Type: application/warc-fields
+WARC-Block-Digest: sha-1:c3bd826d9113efb6c1351eff4f5e3ef4a7bb3381
+WARC-Filename: fe271a89-6b19-4983-816f-90e23f137762
+
+description: http://id.kb.dk/authorities/agents/kbDkYggdrasilIngest.xml
+revision: 1.0.0
+conformsTo: http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf
+
+
+WARC/1.0
+WARC-Type: resource
+WARC-Record-ID: <urn:uuid:random-file-uuid>
+WARC-Date: 2015-07-22T11:21:30Z
+Content-Length: 36
+Content-Type: application/binary
+WARC-Block-Digest: sha-1:5875f4d3fe7058ef89bcd28b6e11258e8ed2762b
+WARC-Target-URI: urn:uuid:random-file-uuid
+WARC-Warcinfo-ID: <urn:uuid:fe271a89-6b19-4983-816f-90e23f137762>
+
+This is the contentFile payload file
+

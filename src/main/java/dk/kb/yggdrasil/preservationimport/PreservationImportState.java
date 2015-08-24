@@ -32,12 +32,12 @@ public enum PreservationImportState implements Serializable {
     /** Failed to deliver the data to Valhal. Failstate. */
     IMPORT_DELIVERY_FAILURE("Failed to deliver the data to Valhal"),
     
-    /** Finished the import operation. */
-    IMPORT_FINISHED("Finshed the import operation."),
-
     /** Generic failure, which does not fall into any of the other failures. Failstate. */
-    IMPORT_FAILURE("Unspecified failure.");
+    IMPORT_FAILURE("Unspecified failure."),
     
+    /** Finished the import operation. */
+    IMPORT_FINISHED("Finshed the import operation.");
+
     private PreservationImportState(String description) {
         this.defaultDescription = description;
     }
@@ -81,7 +81,8 @@ public enum PreservationImportState implements Serializable {
      * @param newState the new state
      * @throws YggdrasilException If not a valid state change.
      */
-    public static void verifyIfValidStateChange(PreservationImportState oldState, PreservationImportState newState) throws YggdrasilException {
+    public static void verifyIfValidStateChange(PreservationImportState oldState, PreservationImportState newState) 
+            throws YggdrasilException {
         ArgumentCheck.checkNotNull(oldState, "State oldState");
         ArgumentCheck.checkNotNull(newState, "State newState");
         

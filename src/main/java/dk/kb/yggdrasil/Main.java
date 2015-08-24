@@ -93,7 +93,7 @@ public class Main {
         }
         logger.info("Looking for configuration files in dir: " + configdir.getAbsolutePath());
 
-        for (String requiredSettingsFilename: REQUIRED_SETTINGS_FILES) {
+        for (String requiredSettingsFilename : REQUIRED_SETTINGS_FILES) {
             File reqFile = new File(configdir, requiredSettingsFilename);
             if (!reqFile.exists()) {
                 throw new YggdrasilException("Fatal error. Required configuration file '"
