@@ -513,11 +513,4 @@ public class Bitrepository {
         }
         return collectionIDs;
     }
-    
-    /**
-     * @return The default checksum spec from the settings.
-     */
-    public ChecksumSpecTYPE getDefaultChecksum() {
-        return ChecksumUtils.getDefault(bitmagSettings);
-    }
 }

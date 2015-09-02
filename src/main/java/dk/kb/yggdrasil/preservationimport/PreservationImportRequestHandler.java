@@ -127,7 +127,6 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
         } catch (YggdrasilException e) {
             // Send failure, if it is not a fail-state.
             if(state.getState().isOkState()) {
-                System.err.println(state.getState().name() + " is in " + PreservationImportState.getFailStates());
                 context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
                         PreservationImportState.IMPORT_FAILURE, e.getMessage());
             }
@@ -167,7 +166,6 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
         if(state.getRequest().security != null && state.getRequest().security.checksum != null
                 && !state.getRequest().security.checksum.isEmpty()) {
             String checksum = state.getRequest().security.checksum;
-            System.err.println(checksum + " contains a ':'? " + checksum.contains(":"));
             if(!checksum.contains(":")) {
                 String errMsg = "The checksum in the request does not comply with definition. No algorithm";
                 logger.error(errMsg);
@@ -304,17 +302,41 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
         String deliveredChecksum = state.getRequest().security.checksum.split(":")[1];
         String calculatedChecksum = ChecksumUtils.generateChecksum(state.getImportData(), csType);
         
+        // Validate against delivered checksum.
         if(!calculatedChecksum.equalsIgnoreCase(deliveredChecksum)) {
             String errMsg = "Inconsistent checksum between retrieved file ('" + calculatedChecksum 
-                    + "') and the expected checksum ('" + deliveredChecksum + "') in the algorithm '" 
-                    + csType.name();
+                    + "') and the delivered checksum ('" + deliveredChecksum + "') in the algorithm '" 
+                    + csType.name() + "'.";
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
                     PreservationImportState.IMPORT_FAILURE, errMsg);
 
             throw new YggdrasilException(errMsg);
         }
         
-        // TODO validate against header checksum!
+        // Validate against warc-header checksum
+        if(state.getWarcHeaderChecksum() == null || state.getWarcHeaderChecksum().isEmpty() 
+                || !state.getWarcHeaderChecksum().contains(":")) {
+            logger.warn("Cannot validate against header fields. Continuing anyway.");
+            return;
+        }
+        ChecksumType headerCsType = extractChecksumType(state.getWarcHeaderChecksum());
+        String headerChecksum = state.getWarcHeaderChecksum().split(":")[1];
+        String checksumForHeader;
+        if(headerCsType == csType) {
+            checksumForHeader = calculatedChecksum;             
+        } else {
+            checksumForHeader = ChecksumUtils.generateChecksum(state.getImportData(), headerCsType);
+        }
+        
+        if(!headerChecksum.equalsIgnoreCase(checksumForHeader)){
+            String errMsg = "Inconsistent checksum between retrieved file ('" + checksumForHeader 
+                    + "') and the header checksum ('" + headerChecksum + "') in the algorithm '" 
+                    + headerCsType.name() + "'.";
+            context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
+                    PreservationImportState.IMPORT_FAILURE, errMsg);
+
+            throw new YggdrasilException(errMsg);
+        }
     }
     
     /**
@@ -373,12 +395,17 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
         }
     }
     
-    private ChecksumType extractChecksumType(String checksum) {
-        if(!checksum.contains(":")) {
+    /**
+     * Extracts the checksum type from a digestBlock.
+     * @param digestBlock The digestBlock in format 'algorithm':'checksum'.
+     * @return The checksum type.
+     */
+    private ChecksumType extractChecksumType(String digestBlock) {
+        if(!digestBlock.contains(":")) {
             throw new IllegalArgumentException("The checksum in the request does not comply with definition. "
                     + "No algorithm");
         } else {
-            String checksumType = checksum.split(":")[0];
+            String checksumType = digestBlock.split(":")[0];
             // Remove any '-' from the SHA algorithms, and makes it upper-case.
             checksumType = checksumType.replaceFirst("-", "").toUpperCase();
             try {

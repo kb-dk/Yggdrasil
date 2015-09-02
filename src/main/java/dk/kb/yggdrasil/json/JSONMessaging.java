@@ -57,6 +57,7 @@ public class JSONMessaging {
      * Convert JSON data into a preservation request object.
      * @param in <code>InputStream</code> containing JSON data
      * @param requestType The type of request.
+     * @param <T> The type of class to retrieve.
      * @return preservation request object representation
      * @throws YggdrasilException if an I/O error occurs while unmashalling
      */

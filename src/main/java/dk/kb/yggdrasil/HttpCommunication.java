@@ -117,8 +117,8 @@ public class HttpCommunication {
                 if (responseCode == 200) {
                     bSuccess = true;
                 } else {
-                    logger.warn("Http request resulted in status code '"
-                            + responseCode + "'. (" + url + ")");
+                    logger.warn("Http post request (" + url + ") resulted in status code '" + responseCode + "', "
+                            + "with the following reason: " + response.getStatusLine().getReasonPhrase());
                 }
                 if (in != null) {
                     in.close();
