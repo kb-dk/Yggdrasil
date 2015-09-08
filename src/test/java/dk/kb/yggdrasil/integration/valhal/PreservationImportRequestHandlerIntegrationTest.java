@@ -64,7 +64,7 @@ public class PreservationImportRequestHandlerIntegrationTest {
     }
     
     @Test
-//    @Ignore // Should only be run manually for integration with Valhal.
+    @Ignore // Should only be run manually for integration with Valhal.
     public void testSuccessCase() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
