@@ -79,7 +79,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
         }
 
         PreservationImportRequestState state = new PreservationImportRequestState(request, 
-                PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED);
+                PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED);
 
         if(!validateRequest(state)) {
             logger.warn("The request is invalid: " + request.toString());
@@ -118,7 +118,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
 
             // Send final success response.
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                    PreservationImportState.IMPORT_FINISHED, null);
+                    PreservationImportState.PRESERVATION_IMPORT_FINISHED, null);
 
             // cleanup
             state.cleanup();
@@ -128,7 +128,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
             // Send failure, if it is not a fail-state.
             if(state.getState().isOkState()) {
                 context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                        PreservationImportState.IMPORT_FAILURE, e.getMessage());
+                        PreservationImportState.PRESERVATION_IMPORT_FAILURE, e.getMessage());
             }
             logger.error("Failure", e);
         }
@@ -183,12 +183,12 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
         if(errors.isEmpty()) {
             // Send update about success retrieval and validation.
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                    PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED, null);
+                    PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED, null);
             return true;
         } else {
             // Send the update about validation failure.
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                    PreservationImportState.IMPORT_REQUEST_VALIDATION_FAILURE, errors.toString());
+                    PreservationImportState.PRESERVATION_IMPORT_REQUEST_VALIDATION_FAILURE, errors.toString());
             return false;
         }
     }
@@ -202,7 +202,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
      */
     protected void retrieveData(PreservationImportRequestState state) throws YggdrasilException {
         context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, null);
+                PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, null);
         try {
             if(state.getImportData() == null || !state.getImportData().isFile()) {
                 FilePart filePart = null;
@@ -225,7 +225,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
         } catch (YggdrasilException e) {
             // Sending retrieval failure response.
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                    PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE, e.getMessage());
+                    PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE, e.getMessage());
             throw e;
         }
     }
@@ -308,7 +308,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
                     + "') and the delivered checksum ('" + deliveredChecksum + "') in the algorithm '" 
                     + csType.name() + "'.";
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                    PreservationImportState.IMPORT_FAILURE, errMsg);
+                    PreservationImportState.PRESERVATION_IMPORT_FAILURE, errMsg);
 
             throw new YggdrasilException(errMsg);
         }
@@ -333,7 +333,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
                     + "') and the header checksum ('" + headerChecksum + "') in the algorithm '" 
                     + headerCsType.name() + "'.";
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                    PreservationImportState.IMPORT_FAILURE, errMsg);
+                    PreservationImportState.PRESERVATION_IMPORT_FAILURE, errMsg);
 
             throw new YggdrasilException(errMsg);
         }
@@ -368,7 +368,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
      */
     private void deliverData(PreservationImportRequestState state) throws YggdrasilException {
         context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                PreservationImportState.IMPORT_DELIVERY_INITIATED, null);
+                PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED, null);
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         if(state.getRequest().security != null) {
@@ -390,7 +390,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
             // Failure. Send response telling about the error.
             String errMsg = "Could not deliver the data to '" + state.getRequest().url;
             context.getRemotePreservationStateUpdater().sendPreservationImportResponse(state, 
-                    PreservationImportState.IMPORT_DELIVERY_FAILURE, errMsg);
+                    PreservationImportState.PRESERVATION_IMPORT_DELIVERY_FAILURE, errMsg);
             throw new YggdrasilException(errMsg);
         }
     }

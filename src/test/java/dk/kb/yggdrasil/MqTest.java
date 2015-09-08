@@ -170,7 +170,8 @@ public class MqTest extends MqFixtureTestAPI {
         RabbitMqSettings settings = new RabbitMqSettings(f);
         String brokerUri = settings.getBrokerUri();
         String presDest = settings.getPreservationDestination();
-        RabbitMqSettings settingsCopy = new RabbitMqSettings(brokerUri, presDest);
+        String presRecDest = settings.getPreservationResponseDestination();
+        RabbitMqSettings settingsCopy = new RabbitMqSettings(brokerUri, presDest, presRecDest);
         assertEquals(brokerUri, settingsCopy.getBrokerUri());
         assertEquals(presDest, settingsCopy.getPreservationDestination());
     }

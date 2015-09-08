@@ -20,12 +20,14 @@ import org.junit.runners.JUnit4;
 import dk.kb.yggdrasil.Bitrepository;
 import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.HttpCommunication;
+import dk.kb.yggdrasil.RabbitMqSettings;
 import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.Security;
 import dk.kb.yggdrasil.json.preservationimport.Warc;
+import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservationimport.PreservationImportRequestHandler;
 import dk.kb.yggdrasil.preservationimport.PreservationImportState;
@@ -48,6 +50,7 @@ public class PreservationImportRequestHandlerIntegrationTest {
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
 
     protected static Config config;
+    protected static RabbitMqSettings mqSettings;
     protected static Models models;
 
     @BeforeClass
@@ -56,14 +59,17 @@ public class PreservationImportRequestHandlerIntegrationTest {
 
         config = new Config(generalConfigFile);
         models = new Models(modelsFile);
+        mqSettings = new RabbitMqSettings("amqp://localhost:5672", "preservation-dev-queue", 
+                "preservation-dev-response-queue");
     }
     
     @Test
-    @Ignore // Should only be run manually for integration with Valhal.
+//    @Ignore // Should only be run manually for integration with Valhal.
     public void testSuccessCase() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        MQ mq = new MQ(mqSettings);
+        RemotePreservationStateUpdater updater = new RemotePreservationStateUpdater(mq);
 //        HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
         HttpCommunication httpCommunication = new HttpCommunication();
         PreservationImportRequest request = makeRequestWithSecurity();
@@ -76,11 +82,11 @@ public class PreservationImportRequestHandlerIntegrationTest {
 
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_DELIVERY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FINISHED), any());
-        verifyNoMoreInteractions(updater);
+//        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+//        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+//        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_DELIVERY_INITIATED), any());
+//        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FINISHED), any());
+//        verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
         verify(bitrepository).getFile(eq(NON_RANDOM_WARC_ID), eq(DEFAULT_COLLECTION), eq(null));
@@ -104,7 +110,7 @@ public class PreservationImportRequestHandlerIntegrationTest {
     public static PreservationImportRequest makeRequestWithSecurity() {
         PreservationImportRequest request = makeRequest();
         request.security = new Security();
-        request.security.token = "ASDF";
+        request.security.token = "pyjMGSscvmOKiHsrNNYxqz8FfS66Jc0rcZ8ydXbS9hM=";
         request.security.token_timeout = new Date(9999999999999L).toString(); // unreasonable long time into the future
         return request;
     }

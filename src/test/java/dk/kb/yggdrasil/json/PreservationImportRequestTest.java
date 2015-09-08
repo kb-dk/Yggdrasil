@@ -128,7 +128,7 @@ public class PreservationImportRequestTest {
         response.type = defaultType;
         response.response = new Response();
         response.response.date = new Date().toString();
-        response.response.detail = PreservationImportState.IMPORT_FINISHED.getDescription();
-        response.response.state = PreservationImportState.IMPORT_FINISHED.name();
+        response.response.detail = PreservationImportState.PRESERVATION_IMPORT_FINISHED.getDescription();
+        response.response.state = PreservationImportState.PRESERVATION_IMPORT_FINISHED.name();
     }
 }

@@ -108,10 +108,10 @@ public class PreservationImportRequestHandlerTest {
 
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_DELIVERY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FINISHED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_FINISHED), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -143,10 +143,10 @@ public class PreservationImportRequestHandlerTest {
         request.warc.warc_record_size = recordSize.toString();
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_DELIVERY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FINISHED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_FINISHED), any());
         verifyNoMoreInteractions(updater);
 
         FilePart filePart = new FilePart();
@@ -201,7 +201,7 @@ public class PreservationImportRequestHandlerTest {
 
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_VALIDATION_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_VALIDATION_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -228,7 +228,7 @@ public class PreservationImportRequestHandlerTest {
         request.url = "NOT-A-PROPER-URL";
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_VALIDATION_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_VALIDATION_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -265,9 +265,9 @@ public class PreservationImportRequestHandlerTest {
 
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -306,7 +306,7 @@ public class PreservationImportRequestHandlerTest {
         request.security.checksum = "NOT_AN_ALGORITHM";
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_VALIDATION_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_VALIDATION_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -345,7 +345,7 @@ public class PreservationImportRequestHandlerTest {
         request.security.checksum = "Verhoeff:4c24916aa6280f784c40c28b53df9343f2efcecc";
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_VALIDATION_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_VALIDATION_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -383,10 +383,10 @@ public class PreservationImportRequestHandlerTest {
         request.security.checksum = SECURITY_CHECKSUM;
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_DELIVERY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FINISHED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_FINISHED), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -426,9 +426,9 @@ public class PreservationImportRequestHandlerTest {
         request.security.checksum = "sha-1:1111111111111111111111111111111111111111";
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -467,9 +467,9 @@ public class PreservationImportRequestHandlerTest {
         request.security.checksum = SECURITY_CHECKSUM;
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -509,9 +509,9 @@ public class PreservationImportRequestHandlerTest {
         request.security.token_timeout = new Date(0).toString();
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
@@ -549,10 +549,10 @@ public class PreservationImportRequestHandlerTest {
 
         prh.handleRequest(request);
 
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_DELIVERY_INITIATED), any());
-        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.IMPORT_DELIVERY_FAILURE), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED), any());
+        verify(updater).sendPreservationImportResponse(any(PreservationImportRequestState.class), eq(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_FAILURE), any());
         verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();

@@ -26,53 +26,53 @@ public class PreservationImportStateTest {
 
     @Test
     public void testSameState() {
-        assertFalse(PreservationImportState.IMPORT_FINISHED.hasState(PreservationImportState.IMPORT_FAILURE));
-        assertTrue(PreservationImportState.IMPORT_FINISHED.hasState(PreservationImportState.IMPORT_FINISHED));
+        assertFalse(PreservationImportState.PRESERVATION_IMPORT_FINISHED.hasState(PreservationImportState.PRESERVATION_IMPORT_FAILURE));
+        assertTrue(PreservationImportState.PRESERVATION_IMPORT_FINISHED.hasState(PreservationImportState.PRESERVATION_IMPORT_FINISHED));
     }
 
     @Test
     public void testVerifyStateChange() {
-        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED, PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED));
-        PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED, PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED);
+        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED, PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED));
+        PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED, PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED);
 
-        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, PreservationImportState.IMPORT_DELIVERY_INITIATED));
-        PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, PreservationImportState.IMPORT_DELIVERY_INITIATED);
+        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED));
+        PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED);
 
-        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_DELIVERY_INITIATED, PreservationImportState.IMPORT_FINISHED));
-        PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_DELIVERY_INITIATED, PreservationImportState.IMPORT_FINISHED);
+        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_FINISHED));
+        PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_FINISHED);
 
-        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED, PreservationImportState.IMPORT_FAILURE));
-        PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED, PreservationImportState.IMPORT_FAILURE);
+        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED, PreservationImportState.PRESERVATION_IMPORT_FAILURE));
+        PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED, PreservationImportState.PRESERVATION_IMPORT_FAILURE);
 
-        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, PreservationImportState.IMPORT_FAILURE));
-        PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, PreservationImportState.IMPORT_FAILURE);
+        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_FAILURE));
+        PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_FAILURE);
 
-        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_DELIVERY_INITIATED, PreservationImportState.IMPORT_FAILURE));
-        PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_DELIVERY_INITIATED, PreservationImportState.IMPORT_FAILURE);
+        assertTrue(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_FAILURE));
+        PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_FAILURE);
     }
 
     @Test(expected = ArgumentCheck.class)
     public void testVerifyStateChangeOldStateNull() throws YggdrasilException {
-        assertFalse(PreservationImportState.isValidStateChange(null, PreservationImportState.IMPORT_FINISHED));
-        PreservationImportState.verifyIfValidStateChange(null, PreservationImportState.IMPORT_FINISHED);
+        assertFalse(PreservationImportState.isValidStateChange(null, PreservationImportState.PRESERVATION_IMPORT_FINISHED));
+        PreservationImportState.verifyIfValidStateChange(null, PreservationImportState.PRESERVATION_IMPORT_FINISHED);
     }
 
     @Test(expected = ArgumentCheck.class)
     public void testVerifyStateChangeNewStateNull() throws YggdrasilException {
-        assertFalse(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_FINISHED, null));
-        PreservationImportState.verifyIfValidStateChange(PreservationImportState.IMPORT_FINISHED, null);
+        assertFalse(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_FINISHED, null));
+        PreservationImportState.verifyIfValidStateChange(PreservationImportState.PRESERVATION_IMPORT_FINISHED, null);
     }
 
     @Test(expected = YggdrasilException.class)
     public void testVerifyStateChangeOldStateFailure() throws YggdrasilException {
-        assertFalse(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_FAILURE, PreservationImportState.IMPORT_FINISHED));
-        PreservationImportState.verifyIfValidStateChange(PreservationImportState.IMPORT_FAILURE, PreservationImportState.IMPORT_FINISHED);
+        assertFalse(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_FAILURE, PreservationImportState.PRESERVATION_IMPORT_FINISHED));
+        PreservationImportState.verifyIfValidStateChange(PreservationImportState.PRESERVATION_IMPORT_FAILURE, PreservationImportState.PRESERVATION_IMPORT_FINISHED);
     }
 
     @Test(expected = YggdrasilException.class)
     public void testVerifyStateChangeNewStateLowerOrdinalThanOldState() throws YggdrasilException {
-        assertFalse(PreservationImportState.isValidStateChange(PreservationImportState.IMPORT_DELIVERY_INITIATED, PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED));
-        PreservationImportState.verifyIfValidStateChange(PreservationImportState.IMPORT_DELIVERY_INITIATED, PreservationImportState.IMPORT_REQUEST_RECEIVED_AND_VALIDATED);
+        assertFalse(PreservationImportState.isValidStateChange(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED));
+        PreservationImportState.verifyIfValidStateChange(PreservationImportState.PRESERVATION_IMPORT_DELIVERY_INITIATED, PreservationImportState.PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED);
     }
 
     @Test

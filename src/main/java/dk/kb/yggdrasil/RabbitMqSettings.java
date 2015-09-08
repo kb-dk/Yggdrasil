@@ -105,9 +105,11 @@ public final class RabbitMqSettings {
      * @param brokerUri The URI to connect to the broker.
      * @param preservationDestination The Queue for receiving messages from Valhal
      */
-    public RabbitMqSettings(String brokerUri, String preservationDestination)  {
+    public RabbitMqSettings(String brokerUri, String preservationDestination, 
+            String preservationResponseDestination) {
         this.brokerUri = brokerUri;
         this.preservationDestination = preservationDestination;
+        this.preservationResponseDestination = preservationResponseDestination;
     }
 
     /**

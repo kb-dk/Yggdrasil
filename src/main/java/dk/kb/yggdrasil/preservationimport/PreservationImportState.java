@@ -15,28 +15,29 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  */
 public enum PreservationImportState implements Serializable {
     /** Preservation request received and understood (i.e. the message is complete). */
-    IMPORT_REQUEST_RECEIVED_AND_VALIDATED("Preservation import request received and validated"),
+    PRESERVATION_IMPORT_REQUEST_RECEIVED_AND_VALIDATED("Preservation import request received and validated"),
     
     /** The preservation import request is incomplete. Something is missing. Failstate. */
-    IMPORT_REQUEST_VALIDATION_FAILURE("Preservation import request incomplete. Something is missing"),
+    PRESERVATION_IMPORT_REQUEST_VALIDATION_FAILURE("Preservation import request incomplete. Something is missing"),
     
     /** Start retrieving data from the Bitrepository. */
-    IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED("Initiating the retrieval of the data from the Bitrepository."),
+    PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_INITIATED("Initiating the retrieval of the data "
+            + "from the Bitrepository."),
     
     /** Failed to retrieve data from the Bitrepository. Failstate. */
-    IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE("Failed to retrieve data from the Bitrepository"),
+    PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE("Failed to retrieve data from the Bitrepository"),
     
     /** Starting to deliver the data to Valhal. */
-    IMPORT_DELIVERY_INITIATED("Initiating the delivery of data to Valhal."),
+    PRESERVATION_IMPORT_DELIVERY_INITIATED("Initiating the delivery of data to Valhal."),
 
     /** Failed to deliver the data to Valhal. Failstate. */
-    IMPORT_DELIVERY_FAILURE("Failed to deliver the data to Valhal"),
+    PRESERVATION_IMPORT_DELIVERY_FAILURE("Failed to deliver the data to Valhal"),
     
     /** Generic failure, which does not fall into any of the other failures. Failstate. */
-    IMPORT_FAILURE("Unspecified failure."),
+    PRESERVATION_IMPORT_FAILURE("Unspecified failure."),
     
     /** Finished the import operation. */
-    IMPORT_FINISHED("Finshed the import operation.");
+    PRESERVATION_IMPORT_FINISHED("Finshed the import operation.");
 
     private PreservationImportState(String description) {
         this.defaultDescription = description;
@@ -55,10 +56,10 @@ public enum PreservationImportState implements Serializable {
     
     /** Set with the failstates in this enum class. */
     private static final Set<PreservationImportState> FAIL_STATES = new HashSet<PreservationImportState>(Arrays.asList(
-            IMPORT_REQUEST_VALIDATION_FAILURE,
-            IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE, 
-            IMPORT_DELIVERY_FAILURE,
-            IMPORT_FAILURE));
+            PRESERVATION_IMPORT_REQUEST_VALIDATION_FAILURE,
+            PRESERVATION_IMPORT_RETRIEVAL_FROM_BITREPOSITORY_FAILURE, 
+            PRESERVATION_IMPORT_DELIVERY_FAILURE,
+            PRESERVATION_IMPORT_FAILURE));
 
     /**
      * @return set of failure states.
