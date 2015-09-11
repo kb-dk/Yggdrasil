@@ -145,6 +145,8 @@ public class PreservationPackerTest {
         Assert.assertNotNull(prs.getWarcId());
         Assert.assertNull(prs.getFileWarcId());
         Assert.assertNull(prs.getUpdatePreservation());
+        Assert.assertNotNull(prs.getOffset());
+        Assert.assertNull(prs.getFileOffset());
     }
 
     @Test
@@ -198,6 +200,8 @@ public class PreservationPackerTest {
         Assert.assertNotNull(prs.getFileWarcId());
         Assert.assertEquals(prs.getWarcId(), prs.getFileWarcId());
         Assert.assertNull(prs.getUpdatePreservation());
+        Assert.assertNull(prs.getOffset());
+        Assert.assertNotNull(prs.getFileOffset());
     }
     
     @Test
@@ -250,6 +254,8 @@ public class PreservationPackerTest {
         verifyNoMoreInteractions(updater);
         Assert.assertNotNull(prs.getWarcId());
         Assert.assertNotNull(prs.getFileWarcId());
+        Assert.assertNotNull(prs.getOffset());
+        Assert.assertNotNull(prs.getFileOffset());
         Assert.assertNull(prs.getUpdatePreservation());
     }
 

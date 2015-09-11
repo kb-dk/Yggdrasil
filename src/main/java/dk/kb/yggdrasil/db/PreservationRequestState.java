@@ -38,6 +38,10 @@ public class PreservationRequestState implements Serializable {
     private String warcId;
     /** The id of the warc file containing the resource.*/
     private String fileWarcId;
+    /** The offset of the warc record for the metadata record. */
+    private String offset;
+    /** The offset of the warc record for the file record. */
+    private String fileOffset; 
     /** The preservation update data. Default null, since it is only used for preservation updates.*/
     private Update preservationUpdate = null;
 
@@ -171,7 +175,37 @@ public class PreservationRequestState implements Serializable {
     public void setUpdatePreservation(Update update) {
         this.preservationUpdate = update;
     }
+    
+    /**
+     * @param start The start warc record. 
+     * @param end The end of the warc record.
+     */
+    public void setOffset(Long start, Long end) {
+        this.offset = start.toString() + "#" + end.toString();
+    }
+    
+    /**
+     * @return The offset.
+     */
+    public String getOffset() {
+        return offset;
+    }
 
+    /**
+     * @param start The start warc record of the file record. 
+     * @param end The end of the warc record of the file record.
+     */
+    public void setFileOffset(Long start, Long end) {
+        this.fileOffset = start.toString() + "#" + end.toString();
+    }
+    
+    /**
+     * @return The offset of the file record.
+     */
+    public String getFileOffset() {
+        return fileOffset;
+    }
+    
     /**
      * Remove the temporary files for the records referred to in this object, if they still exist.
      */

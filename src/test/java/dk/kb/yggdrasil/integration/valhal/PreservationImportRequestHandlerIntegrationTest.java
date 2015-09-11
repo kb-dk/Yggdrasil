@@ -22,7 +22,6 @@ import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.RabbitMqSettings;
 import dk.kb.yggdrasil.RequestHandlerContext;
-import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.Security;
@@ -30,7 +29,6 @@ import dk.kb.yggdrasil.json.preservationimport.Warc;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservationimport.PreservationImportRequestHandler;
-import dk.kb.yggdrasil.preservationimport.PreservationImportState;
 import dk.kb.yggdrasil.xslt.Models;
 
 @RunWith(JUnit4.class)
@@ -110,7 +108,7 @@ public class PreservationImportRequestHandlerIntegrationTest {
     public static PreservationImportRequest makeRequestWithSecurity() {
         PreservationImportRequest request = makeRequest();
         request.security = new Security();
-        request.security.token = "pyjMGSscvmOKiHsrNNYxqz8FfS66Jc0rcZ8ydXbS9hM=";
+        request.security.token = "trLcP8Ars7wqUE62BYuunHYDszXi8ab+KnZWhBYudxI=";
         request.security.token_timeout = new Date(9999999999999L).toString(); // unreasonable long time into the future
         return request;
     }

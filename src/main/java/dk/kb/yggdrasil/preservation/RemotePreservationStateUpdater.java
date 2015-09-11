@@ -91,9 +91,15 @@ public class RemotePreservationStateUpdater {
         response.preservation = newState;
         if (prs.getWarcId() != null) {
             response.preservation.warc_id = prs.getWarcId();
+            if(prs.getOffset() != null) {
+                response.preservation.warc_record_offset = prs.getOffset();
+            }
         }
         if(prs.getFileWarcId() != null) {
             response.preservation.file_warc_id = prs.getFileWarcId();
+            if(prs.getFileOffset() != null) {
+                response.preservation.warc_record_offset = prs.getFileOffset();
+            }
         }
         if(prs.getUpdatePreservation() != null) {
             response.update = prs.getUpdatePreservation();

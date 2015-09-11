@@ -101,6 +101,7 @@ public class PreservationPacker {
             InputStream in = null;
             if (prs.getContentPayload() != null) {
                 File resource = prs.getContentPayload();
+                Long offsetStart = writer.getWarcFileSize();
                 try {
                     in = new FileInputStream(resource);
                     WarcDigest blockDigest = digestor.getDigestOfFile(resource);
@@ -114,11 +115,14 @@ public class PreservationPacker {
                     }
                 }
                 prs.setResourceWarcFile(writer.getWarcFile());
+                Long offsetEnd = writer.getWarcFileSize();
+                prs.setFileOffset(offsetStart, offsetEnd);
                 context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                         PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
             if (prs.getMetadataPayload() != null) {
                 File metadata = prs.getMetadataPayload();
+                Long offsetStart = writer.getWarcFileSize();
                 try {
                     in = new FileInputStream(metadata);
                     WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
@@ -132,6 +136,9 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
+                prs.setMetadataWarcFile(writer.getWarcFile());
+                Long offsetEnd = writer.getWarcFileSize();
+                prs.setOffset(offsetStart, offsetEnd);
             }
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     PreservationState.PRESERVATION_PACKAGE_COMPLETE);
@@ -162,6 +169,7 @@ public class PreservationPacker {
             InputStream in = null;
             if (prs.getContentPayload() != null) {
                 File resource = prs.getContentPayload();
+                Long offsetStart = writer.getWarcFileSize();
                 try {
                     WarcConcurrentTo concurrentTo = new WarcConcurrentTo();
                     concurrentTo.warcConcurrentToStr = prs.getRequest().File_UUID;
@@ -176,11 +184,14 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
+                Long offsetEnd = writer.getWarcFileSize();
+                prs.setFileOffset(offsetStart, offsetEnd);
                 context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                         PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS);
             }
             if (prs.getMetadataPayload() != null) {
                 File metadata = prs.getMetadataPayload();
+                Long offsetStart = writer.getWarcFileSize();
                 try {
                     WarcConcurrentTo concurrentTo = new WarcConcurrentTo();
                     concurrentTo.warcConcurrentToStr = prs.getRequest().UUID;
@@ -197,6 +208,8 @@ public class PreservationPacker {
                         in = null;
                     }
                 }
+                Long offsetEnd = writer.getWarcFileSize();
+                prs.setOffset(offsetStart, offsetEnd);
             }
             context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, 
                     PreservationState.PRESERVATION_PACKAGE_COMPLETE);
@@ -314,10 +327,16 @@ public class PreservationPacker {
         if(prs.getContentPayload() != null) {
             res.file_uuid = UUID.randomUUID().toString();
             res.file_warc_id = warcId;
+            if(prs.getFileOffset() != null) {
+                res.file_warc_offset = prs.getFileOffset();
+            }
         }
         if(prs.getMetadataPayload() != null) {
             res.uuid = UUID.randomUUID().toString();
             res.warc_id = warcId;
+            if(prs.getOffset() != null) {
+                res.warc_offset = prs.getOffset();
+            }
         }
         return res;
     }

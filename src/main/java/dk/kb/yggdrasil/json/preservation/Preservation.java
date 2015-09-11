@@ -16,8 +16,18 @@ public class Preservation {
     /** WARC ID, optional. */
     @JSONNullable
     public String warc_id;
-        
+
+    /** The offset of the warc record of the metadata record. 
+     * Must be in the format: start#end. */
+    @JSONNullable
+    public String warc_record_offset;
+
     /** WARC ID for the file, optional. */
     @JSONNullable
-    public String file_warc_id; 
+    public String file_warc_id;
+    
+    /** The offset of the warc record for the file record. 
+     * Must be in the format: start#end. */
+    @JSONNullable
+    public String file_warc_record_offset;
 }
