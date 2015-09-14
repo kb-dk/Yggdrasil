@@ -1,6 +1,6 @@
-language: java
 before_install:
-  - pip install codecov
+  - pip install --user codecov
+language: java
 #services:
 #  - rabbitmq
 notifications:
