@@ -96,8 +96,6 @@ public class TestXslt {
             Assert.assertTrue(result.bWellformed);
             Assert.assertFalse(result.bValid);
 
-//            System.out.println(new String(bytes, "UTF8"));
-
             bool = xmlValidator.testDefinedValidity(new ByteArrayInputStream(bytes), entityResolver, errorHandler, result);
             Assert.assertTrue("Should create valid xml from file '" + xmlFilename + "' with xslt '" + xslFilename + "'", bool);
             Assert.assertNull(result.systemId);

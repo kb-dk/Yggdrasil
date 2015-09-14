@@ -21,7 +21,7 @@ public class YamlTools {
      * @return the loaded settings as a {@link LinkedHashMap}
      */
     public static LinkedHashMap<String, LinkedHashMap> loadYamlSettings(File ymlFile)
-                throws YggdrasilException {
+            throws YggdrasilException {
         InputStream input = null;
         Object loadedSettings = null;
         try {

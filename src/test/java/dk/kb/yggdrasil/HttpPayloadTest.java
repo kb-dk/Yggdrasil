@@ -26,6 +26,8 @@ public class HttpPayloadTest {
         String readContent = FileUtils.readFileToString(f);
         assertTrue(readContent.equals("helloWorld"));
         f.delete();
+        
+        hp.close();
+        hp.close();
     }
-    
 }

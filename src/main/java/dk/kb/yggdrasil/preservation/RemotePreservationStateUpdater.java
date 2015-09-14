@@ -2,12 +2,12 @@ package dk.kb.yggdrasil.preservation;
 
 import java.util.Date;
 
-import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.db.PreservationRequestState;
+import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.preservation.Preservation;
 import dk.kb.yggdrasil.json.preservation.PreservationResponse;
@@ -44,8 +44,8 @@ public class RemotePreservationStateUpdater {
      */
     public void sendPreservationResponseWithSpecificDetails(PreservationRequestState prs, PreservationState newState,
             String details) throws YggdrasilException {
-        ArgumentValidator.checkNotNull(prs, "PreservationRequestState prs");
-        ArgumentValidator.checkNotNull(newState, "State newPreservationState");
+        ArgumentCheck.checkNotNull(prs, "PreservationRequestState prs");
+        ArgumentCheck.checkNotNull(newState, "State newPreservationState");
 
         Preservation preseravtionInfo = new Preservation();
         preseravtionInfo.preservation_state = newState.name();
@@ -64,8 +64,8 @@ public class RemotePreservationStateUpdater {
      */
     public void sendPreservationResponse(PreservationRequestState prs, PreservationState newState) 
             throws YggdrasilException {
-        ArgumentValidator.checkNotNull(prs, "PreservationRequestState prs");
-        ArgumentValidator.checkNotNull(newState, "State newState");
+        ArgumentCheck.checkNotNull(prs, "PreservationRequestState prs");
+        ArgumentCheck.checkNotNull(newState, "State newState");
         
         Preservation preservationInfo = new Preservation();
         preservationInfo.preservation_state = newState.name();
@@ -118,8 +118,8 @@ public class RemotePreservationStateUpdater {
      */
     public void sendPreservationImportResponse(PreservationImportRequestState prs, PreservationImportState newState, 
             String details) throws YggdrasilException {
-        ArgumentValidator.checkNotNull(prs, "PreservationImportRequestState prs");
-        ArgumentValidator.checkNotNull(newState, "PreservationImportState newState");
+        ArgumentCheck.checkNotNull(prs, "PreservationImportRequestState prs");
+        ArgumentCheck.checkNotNull(newState, "PreservationImportState newState");
 
         prs.setState(newState);
         

@@ -10,7 +10,6 @@ import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MessageRequestHandler;
 import dk.kb.yggdrasil.messaging.MqResponse;
@@ -38,9 +37,11 @@ public class Workflow {
      * @param bitrepository the interface with bitrepository
      * @param config general configuration
      * @param models metadatamodelMapper
+     * @param httpCommunication The httpCommunication.
+     * @param updater The remote preservation state updater.
      */
     public Workflow(MQ rabbitconnector, StateDatabase states, Bitrepository bitrepository, Config config,
-            Models models) {
+            Models models, HttpCommunication httpCommunication, RemotePreservationStateUpdater updater) {
         ArgumentCheck.checkNotNull(rabbitconnector, "MQ rabbitconnector");
         ArgumentCheck.checkNotNull(states, "StateDatabase states");
         ArgumentCheck.checkNotNull(bitrepository, "Bitrepository bitrepository");
@@ -49,7 +50,7 @@ public class Workflow {
         this.mq = rabbitconnector;
         
         RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, 
-                new RemotePreservationStateUpdater(mq), new HttpCommunication());
+                updater, httpCommunication);
         requestHandlers = new HashMap<String, MessageRequestHandler>();
         requestHandlers.put(MQ.PRESERVATIONREQUEST_MESSAGE_TYPE.toUpperCase(), 
                 new PreservationRequestHandler(context, models));
@@ -65,7 +66,6 @@ public class Workflow {
     public void run() throws YggdrasilException, RabbitException {
         boolean shutdown = false;
         while (!shutdown) {
-            PreservationRequest request = null;
             try {
                 shutdown = handleNextRequest();
             } catch (YggdrasilException e) {

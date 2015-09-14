@@ -55,6 +55,6 @@ public class MetadataContentUtils {
                 + "                <name>000773452_X02.xml</name>"
                 + "                <uuid>1dace680-6759-0132-942e-000c29cc78f6</uuid>"
                 + "        </file>"
-                + "        </metadata>";
+                + "</metadata>";
     }
 }

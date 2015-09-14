@@ -525,7 +525,6 @@ public class PreservationPackerTest {
             WarcRecord record;
             while ( (record = reader.getNextRecord()) != null ) {
                 res.put(record.header.warcRecordIdUri.toString(), record);
-                System.out.println(record.header.warcRecordIdUri.toString() + " -> " + record.header.warcTypeStr);
             }
         } catch (IOException e) {
             Assert.fail(e.getMessage());

@@ -22,8 +22,29 @@ public class RunningModeTest extends TestCase {
     }
 
     @Test
-    public void testGetModeWithBadProperty() {
+    public void testGetModeWithEmptyProperty() {
         System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, "");
         assertTrue(RunningMode.getMode() == RunningMode.DEVELOPMENT);
     }
+    
+    @Test
+    public void testGetModeWithWhiteSpaceProperty() {
+        System.setProperty(RunningMode.RUNNINGMODE_PROPERTY, "   ");
+        assertTrue(RunningMode.getMode() == RunningMode.DEVELOPMENT);
+    }
+
+    @Test
+    public void testGetModeWithNullProperty() {
+        System.clearProperty(RunningMode.RUNNINGMODE_PROPERTY);
+        assertTrue(RunningMode.getMode() == RunningMode.DEVELOPMENT);
+    }
+    
+    @Test
+    public void testGetModeFromText() {
+        for(RunningMode r : RunningMode.values()) {
+            RunningMode extracted = RunningMode.valueOf(r.name());
+            assertEquals(extracted, r);
+        }
+    }
+
 }

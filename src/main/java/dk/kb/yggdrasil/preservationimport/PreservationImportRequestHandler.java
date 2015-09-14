@@ -153,6 +153,15 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
             errors.add(errMsg);
         }
         
+        // Check the type. Must be 'FILE' 
+        // TODO Handle other types than FILE.
+        if(!state.getRequest().type.equalsIgnoreCase("FILE")) {
+            String errMsg = "The given preservation profile '" + preservationProfile
+                    + "' does not match a known collection ID. Expected one of: " + possibleCollections;
+            logger.error(errMsg);
+            errors.add(errMsg);            
+        }
+        
         // validate the delivery URL
         try {
             new URL(state.getRequest().url);

@@ -104,6 +104,7 @@ public final class RabbitMqSettings {
      * Alternate constructor.
      * @param brokerUri The URI to connect to the broker.
      * @param preservationDestination The Queue for receiving messages from Valhal
+     * @param preservationResponseDestination The Queue for sending responses to Valhal.
      */
     public RabbitMqSettings(String brokerUri, String preservationDestination, 
             String preservationResponseDestination) {

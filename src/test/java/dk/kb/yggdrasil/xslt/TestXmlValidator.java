@@ -47,10 +47,6 @@ public class TestXmlValidator {
                 int expectedErrors1 = (Integer)xmlFiles[i][2];
                 int expectedErrors2 = (Integer)xmlFiles[i][3];
                 String xmlFilename = (String)xmlFiles[i][4];
-                //System.out.println(xmlFilename);
-                //System.out.println(result.xsiNamespaces.size());
-                //System.out.println(result.schemas.size());
-                //System.out.println(errorHandler.errors);
                 /*
                  * Combined.
                  */

@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,6 +90,15 @@ public class TestHttpCommunication {
             contentBody = "the body".getBytes();
             bSuccess = httpCommunication.post("http://localhost:" + server.port + "/post", contentBody, "text/plain");
             Assert.assertTrue(bSuccess);
+            
+
+            // Test the post with Http Entity element
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.addTextBody("uuid", "UUID");
+            builder.addTextBody("type", "RandomType");
+
+            builder.addBinaryBody("file", contentBody);
+            httpCommunication.post("http://localhost:" + server.port + "/post", builder.build());
         } catch (IOException e) {
             e.printStackTrace();
             Assert.fail("Unexpected exception!");
@@ -212,7 +224,5 @@ public class TestHttpCommunication {
                 throw new RuntimeException(e);
             }
         }
-
     }
-
 }
