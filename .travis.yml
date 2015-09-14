@@ -1,8 +1,8 @@
 before_install:
   - pip install --user codecov
 language: java
-#services:
-#  - rabbitmq
+services:
+  - rabbitmq
 notifications:
   email: true
 jdk:
