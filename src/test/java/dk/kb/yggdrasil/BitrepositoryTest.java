@@ -46,17 +46,18 @@ public class BitrepositoryTest {
     @Test(expected = ArgumentCheck.class)
     public void testMissingYamlFile() throws Exception {
         if (TravisUtils.runningOnTravis()) {
-            return;
+            throw new ArgumentCheck("Fail on travis");
         }
         File missingConfigFile = new File(MISSING_YAML_FILE);
         assertFalse(missingConfigFile.exists());
         new Bitrepository(missingConfigFile);
     }
 
+    @Ignore
     @Test(expected = YggdrasilException.class)
     public void testIncorrectYamlFile() throws Exception {
         if (TravisUtils.runningOnTravis()) {
-            return;
+            throw new YggdrasilException("Fail on travis");
         }
         File badConfigFile = new File(INCORRECT_YAML_FILE);
         assertTrue(badConfigFile.exists());
@@ -154,15 +155,7 @@ public class BitrepositoryTest {
             = br.getChecksums(null, "books");
         assertTrue(resultMap.entrySet().size() == 3);
     }
-//
-//    @Ignore
-//    @Test
-//    public void testGetFileIds() throws YggdrasilException {
-//        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
-//        Bitrepository br = new Bitrepository(okConfigFile);
-//        //br.shutdown();
-//    }
-//    
+
     @Test
     public void testGetCollections() throws YggdrasilException {
         if (TravisUtils.runningOnTravis()) {
