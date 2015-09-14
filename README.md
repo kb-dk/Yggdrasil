@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/Det-Kongelige-Bibliotek/Yggdrasil.png?branch=master)](https://travis-ci.org/Det-Kongelige-Bibliotek/Yggdrasil)
+[![codecov.io](https://codecov.io/github/Det-Kongelige-Bibliotek/Yggdrasil/coverage.svg?branch=master)](https://codecov.io/github/Det-Kongelige-Bibliotek/Yggdrasil?branch=master)
 
 Yggdrasil
 =========
