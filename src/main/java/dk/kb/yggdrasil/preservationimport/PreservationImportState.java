@@ -89,12 +89,12 @@ public enum PreservationImportState implements Serializable {
         
         if (!oldState.isOkState()) {
             throw new YggdrasilException("Cannot change from state '" 
-                    + oldState + "' to '" + newState + "'");
+                    + oldState + "' to '" + newState + "', since the current state is a fail-state.");
         }
         
         if (oldState.ordinal() > newState.ordinal()) {
             throw new YggdrasilException("Cannot change from state '" 
-                    + oldState + "' to '" + newState + "'");  
+                    + oldState + "' to '" + newState + "', since we cannot go back to previous states.");  
         }
     }
     

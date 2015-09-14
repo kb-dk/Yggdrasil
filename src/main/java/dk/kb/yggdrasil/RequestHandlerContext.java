@@ -14,7 +14,7 @@ public class RequestHandlerContext {
     private final Config config;
     /** The remote preservation state updater.*/
     private final RemotePreservationStateUpdater remotePreservationStateUpdater;
-    /** The StateDatase instance used by this workflow. */
+    /** The StateDatabase instance used by this workflow. */
     private final StateDatabase stateDatabase;
     /** Deals with HTTP communications. */
     private final HttpCommunication httpCommunication;

@@ -30,7 +30,6 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
  *      PRESERVATION_PACKAGE_UPLOAD_FAILURE.
  *  Step 6: Wait for Bitrepository upload to complete. This can result in the failstate 
  *      PRESERVATION_PACKAGE_UPLOAD_FAILURE or final OK-state PRESERVATION_PACKAGE_UPLOAD_SUCCESS.
- *
  */
 public enum PreservationState implements Serializable {
     /** Preservation request received and understood (i.e. the message is complete). */
@@ -95,7 +94,6 @@ public enum PreservationState implements Serializable {
     /** Default description. */
     private String defaultDescription; 
     
-    
     /** Set with the failstates in this enum class. */
     private static final Set<PreservationState> FAIL_STATES = new HashSet<PreservationState>(Arrays.asList(
             PRESERVATION_PACKAGE_UPLOAD_FAILURE,
@@ -132,12 +130,12 @@ public enum PreservationState implements Serializable {
         
         if (!oldState.isOkState()) {
             throw new YggdrasilException("Cannot change from state '" 
-                    + oldState + "' to '" + newState + "'");
+                    + oldState + "' to '" + newState + "', since the current state is a fail-state.");
         }
         
         if (oldState.ordinal() > newState.ordinal()) {
             throw new YggdrasilException("Cannot change from state '" 
-                    + oldState + "' to '" + newState + "'");  
+                    + oldState + "' to '" + newState + "', since we cannot go back to previous states.");  
         }
     }
     
@@ -159,7 +157,6 @@ public enum PreservationState implements Serializable {
     }
     
     /** 
-     * 
      * @param aState A given state
      * @return true, if the current state equals the given state, otherwise false.
      */

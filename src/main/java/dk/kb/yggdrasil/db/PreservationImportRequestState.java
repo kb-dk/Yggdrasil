@@ -13,10 +13,6 @@ import dk.kb.yggdrasil.preservationimport.PreservationImportState;
  * and to keep track of the progress.
  */
 public class PreservationImportRequestState implements Serializable {
-//
-//    /** Logging mechanism. */
-//    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     /** The preservationRequest received from Valhal. */ 
     private PreservationImportRequest request;
     /** The current preservationState */
@@ -76,7 +72,6 @@ public class PreservationImportRequestState implements Serializable {
     /**
      * @return The file with the import data (or null, if no such file has been retrieved).
      */
-    
     public File getImportData() {
         return importData;
     }

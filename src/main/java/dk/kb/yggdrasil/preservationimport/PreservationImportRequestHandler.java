@@ -182,7 +182,7 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
             } else {
                 try {
                     extractChecksumType(checksum);
-                } catch (IllegalArgumentException e) {
+                } catch (YggdrasilException e) {
                     logger.error(e.getMessage());
                     errors.add(e.getMessage());
                 }
@@ -409,9 +409,9 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
      * @param digestBlock The digestBlock in format 'algorithm':'checksum'.
      * @return The checksum type.
      */
-    private ChecksumType extractChecksumType(String digestBlock) {
+    private ChecksumType extractChecksumType(String digestBlock) throws YggdrasilException {
         if(!digestBlock.contains(":")) {
-            throw new IllegalArgumentException("The checksum in the request does not comply with definition. "
+            throw new YggdrasilException("The checksum in the request does not comply with definition. "
                     + "No algorithm");
         } else {
             String checksumType = digestBlock.split(":")[0];
@@ -420,9 +420,8 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
             try {
                 return ChecksumType.fromValue(checksumType);
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException(checksumType + " is not supported.", e);
+                throw new YggdrasilException(checksumType + " is not supported.", e);
             }
         }
-        
     }
 }

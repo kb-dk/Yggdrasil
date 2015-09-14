@@ -109,11 +109,11 @@ public class RemotePreservationStateUpdater {
     }
     
     /**
-     * Update remote preservation state with a non-default details about the state.
-     * Especially used for failures, where the details about the failure can be delivered.
-     * @param prs a given PreservationRequestState
+     * Update remote import from preservation state.
+     * @param prs The PreservationRequestImportState to respond to.
      * @param newState The new state.
-     * @param details The new details for the new state.
+     * @param details The new details for the new state. 
+     * If null or empty, then the default details for the state is used.
      * @throws YggdrasilException If an issue with sending the message occurs.
      */
     public void sendPreservationImportResponse(PreservationImportRequestState prs, PreservationImportState newState, 

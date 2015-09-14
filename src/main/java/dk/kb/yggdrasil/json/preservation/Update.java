@@ -38,7 +38,7 @@ public class Update {
 
     /** 
      * WARC ID for the file of the ContentFile. 
-     * Should onyl be present, if it is a preservation update for the file of a ContentFile.
+     * Should only be present, if it is a preservation update for the file of a ContentFile.
      */
     @JSONNullable
     public String file_warc_id; 

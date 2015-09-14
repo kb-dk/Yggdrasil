@@ -2,7 +2,6 @@ package dk.kb.yggdrasil.messaging;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
-
 /**
  * Abstract message request handler.
  * @param <T> The class for the message request to be handled.
