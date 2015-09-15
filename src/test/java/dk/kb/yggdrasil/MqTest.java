@@ -186,5 +186,4 @@ public class MqTest extends MqFixtureTestAPI {
         RabbitMqSettings settings = new RabbitMqSettings(f);
         return settings;
     }
-
 }
