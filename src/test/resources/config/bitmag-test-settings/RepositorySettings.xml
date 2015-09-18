@@ -77,7 +77,7 @@
     <AlarmDestination>topic://quick-start.alarms</AlarmDestination>
     <MessageBusConfiguration>
       <Name>Test ActiveMQ</Name>
-      <URL>failover:(tcp://localhost:61616)</URL>
+      <URL>tcp://localhost:61616?keepAlive=true</URL>
     </MessageBusConfiguration>
   </ProtocolSettings>
   <ClientSettings>
