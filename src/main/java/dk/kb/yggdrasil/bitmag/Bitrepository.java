@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.bitmag;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import javax.jms.JMSException;
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getchecksums.BlockingGetChecksumsClient;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfile.GetFileClient;
@@ -27,7 +26,6 @@ import org.bitrepository.client.eventhandler.BlockingEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
@@ -59,8 +57,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.ClientSettings;
 import org.bitrepository.settings.repositorysettings.Collection;
 
-import dk.kb.yggdrasil.bitmag.BitrepositoryUtils;
-import dk.kb.yggdrasil.bitmag.YggdrasilBlockingEventHandler;
+import dk.kb.yggdrasil.config.RunningMode;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.YamlTools;
@@ -85,19 +82,19 @@ public class Bitrepository {
     private final String componentId;
 
     /** The bitmag security manager.*/
-    private SecurityManager bitMagSecurityManager;
+    protected SecurityManager bitMagSecurityManager;
 
     /** The client for performing the PutFile operation.*/
-    private PutFileClient bitMagPutClient;
+    protected PutFileClient bitMagPutClient;
 
     /** The client for performing the GetFile operation.*/
-    private GetFileClient bitMagGetClient;
+    protected GetFileClient bitMagGetClient;
 
     /** The client for performing the GetFileID operation.*/
-    private GetFileIDsClient bitMagGetFileIDsClient;
+    protected GetFileIDsClient bitMagGetFileIDsClient;
 
     /** The client for performing the GetChecksums operation.*/
-    private GetChecksumsClient bitMagGetChecksumsClient;
+    protected GetChecksumsClient bitMagGetChecksumsClient;
 
     /** The client for performing the ReplaceFile operation.
     private ReplaceFileClient bitMagReplaceFileClient;
@@ -111,7 +108,7 @@ public class Bitrepository {
     private File privateKeyFile;
 
     /** The message bus used by the putfileClient. */
-    private MessageBus bitMagMessageBus;
+    protected MessageBus bitMagMessageBus;
 
     /** Name of YAML property used to find settings dir. */
     public static final String YAML_BITMAG_SETTINGS_DIR_PROPERTY = "settings_dir";
@@ -236,6 +233,7 @@ public class Bitrepository {
         } catch (Exception e) {
             logger.warning("Unexpected error while storing file '"
                     + file.getAbsolutePath() + "': " + e);
+            e.printStackTrace();
             success = false;
         }
         return success;
@@ -252,8 +250,8 @@ public class Bitrepository {
      */
     private OperationEventType putTheFile(PutFileClient client, File packageFile, String collectionID)
             throws IOException, URISyntaxException {
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(this.bitmagSettings);
-        BlockingPutFileClient bpfc = new BlockingPutFileClient(client);
+        FileExchange fileexchange = getFileExchange(bitmagSettings);
+//        BlockingPutFileClient bpfc = new BlockingPutFileClient(client);
         URL url = fileexchange.uploadToServer(packageFile);
         String fileId = packageFile.getName();
         ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(this.bitmagSettings);
@@ -267,15 +265,17 @@ public class Bitrepository {
         YggdrasilBlockingEventHandler putFileEventHandler = new YggdrasilBlockingEventHandler(collectionID, 
                 maxNumberOfFailingPillars);
         try {
-            bpfc.putFile(collectionID, url, fileId, packageFile.length(), validationChecksum, requestChecksum,
+            client.putFile(collectionID, url, fileId, packageFile.length(), validationChecksum, requestChecksum,
                     putFileEventHandler, putFileMessage);
-        } catch (OperationFailedException e) {
-            logger.log(Level.WARNING, "The putFile Operation was not a complete success (" + putFileMessage + ")."
-                    + " Checksum whether we accept anyway.", e);
-            if(putFileEventHandler.hasFailed()) {
-                return OperationEventType.FAILED;
-            } else {
-                return OperationEventType.COMPLETE;
+            OperationEvent finishEvent = putFileEventHandler.awaitFinished();
+            if(!finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
+                logger.log(Level.WARNING, "The putFile Operation was not a complete success (" + putFileMessage + ")."
+                        + " Checksum whether we accept anyway.");
+                if(putFileEventHandler.hasFailed()) {
+                    return OperationEventType.FAILED;
+                } else {
+                    return OperationEventType.COMPLETE;
+                }
             }
         } finally {
             // delete the uploaded file from server
@@ -321,8 +321,8 @@ public class Bitrepository {
             }
             return result;
         } else {
-            throw new YggdrasilException("Download of package w/ id '" + fileId + "' failed. Reason: "
-                    + finalEvent.getInfo());
+            throw new YggdrasilException("Retrieval of package w/ id '" + fileId + "' from BitRepository failed. "
+                    + "Reason: " + finalEvent.getInfo());
         }
     }
 
@@ -390,8 +390,7 @@ public class Bitrepository {
      * @return a map with the results from the pillars
      * @throws YggdrasilException If it fails to retrieve the checksums.
      */
-    public Map<String, ChecksumsCompletePillarEvent> getChecksums(String packageID, String collectionID) 
-            throws YggdrasilException {
+    public Map<String, ChecksumsCompletePillarEvent> getChecksums(String packageID, String collectionID) {
         ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");
         //If packageID = null, checksum is requested for all files in the collection.
         if (packageID != null) {
@@ -399,15 +398,10 @@ public class Bitrepository {
         } else {
             logger.info("Collecting checksums for all packages in collection '" + collectionID + "'");
         }
-        BlockingGetChecksumsClient client = new BlockingGetChecksumsClient(bitMagGetChecksumsClient);
         ChecksumSpecTYPE checksumSpec = ChecksumUtils.getDefault(bitmagSettings);
         BlockingEventHandler eventhandler = new BlockingEventHandler();
 
-        try {
-            client.getChecksums(collectionID, null, packageID, checksumSpec, null, eventhandler, null);
-        } catch (NegativeResponseException e) {
-            throw new YggdrasilException("Got bad feedback from the bitrepository " + e);
-        }
+        bitMagGetChecksumsClient.getChecksums(collectionID, null, packageID, checksumSpec, null, eventhandler, null);
 
         int failures = eventhandler.getFailures().size();
         int results = eventhandler.getResults().size();
@@ -496,7 +490,7 @@ public class Bitrepository {
                 + clSettings.getOperationTimeout().longValue();
     }
 
-    private FileExchange getFileExchange(Settings bitmagSettings) {
+    protected FileExchange getFileExchange(Settings bitmagSettings) {
         return ProtocolComponentFactory.getInstance().getFileExchange(
                 bitmagSettings);
     }

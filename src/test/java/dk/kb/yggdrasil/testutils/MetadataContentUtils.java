@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.testutils;
 
 public class MetadataContentUtils {
 

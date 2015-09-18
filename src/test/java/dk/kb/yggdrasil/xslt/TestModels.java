@@ -6,6 +6,7 @@ import java.io.File;
 
 import org.junit.Test;
 
+import dk.kb.yggdrasil.config.Models;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 public class TestModels {

@@ -23,6 +23,7 @@ import org.xml.sax.EntityResolver;
 
 import dk.kb.yggdrasil.HttpPayload;
 import dk.kb.yggdrasil.RequestHandlerContext;
+import dk.kb.yggdrasil.config.Models;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.PreservationException;
@@ -30,7 +31,6 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.messaging.MessageRequestHandler;
-import dk.kb.yggdrasil.xslt.Models;
 import dk.kb.yggdrasil.xslt.XmlErrorHandler;
 import dk.kb.yggdrasil.xslt.XmlValidationResult;
 import dk.kb.yggdrasil.xslt.XmlValidator;

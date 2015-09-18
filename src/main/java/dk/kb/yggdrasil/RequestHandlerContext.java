@@ -1,5 +1,7 @@
 package dk.kb.yggdrasil;
 
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
@@ -11,7 +13,7 @@ public class RequestHandlerContext {
     /** The bitrepository to upload the WARC files to, when they are ready. */
     private final Bitrepository bitrepository;
     /** The general settings used by Yggdrasil. */
-    private final Config config;
+    private final YggdrasilConfig config;
     /** The remote preservation state updater.*/
     private final RemotePreservationStateUpdater remotePreservationStateUpdater;
     /** The StateDatabase instance used by this workflow. */
@@ -27,7 +29,7 @@ public class RequestHandlerContext {
      * @param remotePreservationStateUpdater The remote preservation state updater.
      * @param httpCommunication The http communication.
      */
-    public RequestHandlerContext(Bitrepository bitrepository, Config config, StateDatabase sd, 
+    public RequestHandlerContext(Bitrepository bitrepository, YggdrasilConfig config, StateDatabase sd, 
             RemotePreservationStateUpdater remotePreservationStateUpdater, HttpCommunication httpCommunication) {
         ArgumentCheck.checkNotNull(bitrepository, "Bitrepository bitrepository");
         ArgumentCheck.checkNotNull(config, "Config config");
@@ -52,7 +54,7 @@ public class RequestHandlerContext {
     /**
      * @return The config.
      */
-    public Config getConfig() {
+    public YggdrasilConfig getConfig() {
         return config;
     }
     

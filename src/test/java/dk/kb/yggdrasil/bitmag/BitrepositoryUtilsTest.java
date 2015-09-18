@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /**
- * Tests for {@link dk.kb.yggdrasil.Bitrepository }
+ * Tests for {@link dk.kb.yggdrasil.bitmag.Bitrepository }
  * Named BitrepositoryTester and not BitrepositoryTest to avoid inclusion in
  * the set of unittests run by Maven.
  */

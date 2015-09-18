@@ -1,6 +1,5 @@
 package dk.kb.yggdrasil;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -9,13 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.Config;
+import dk.kb.yggdrasil.config.RabbitMqSettings;
+import dk.kb.yggdrasil.config.RunningMode;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.utils.RunState;
-import dk.kb.yggdrasil.xslt.Models;
 
 /**
  * Main class of the Yggdrasil Preservation service.
@@ -26,25 +28,7 @@ import dk.kb.yggdrasil.xslt.Models;
  *
  */
 public class Main {
-    /** The name of the Yggdrasil configuration file.*/
-    static final String YGGDRASIL_CONF_FILENAME = "yggdrasil.yml";
-    /** The name of the configuration for RabbitMQ.*/
-    static final String RABBITMQ_CONF_FILENAME = "rabbitmq.yml";
-    /** The name of the configuration for the BitRepository.*/
-    static final String BITMAG_CONF_FILENAME = "bitmag.yml";
-    /** The name of the configuration for the models.*/
-    static final String MODELS_CONF_FILENAME = "models.yml";
 
-    /**
-     * The list of configuration files that should be present in the configuration directory.
-     */
-    static final String[] REQUIRED_SETTINGS_FILES = new String[] {
-        RABBITMQ_CONF_FILENAME, BITMAG_CONF_FILENAME, MODELS_CONF_FILENAME};
-    /** Java Property to define Yggdrasil configuration directory. */
-    static final String CONFIGURATION_DIRECTORY_PROPERTY = "YGGDRASIL_CONF_DIR";
-
-    /** Java Property to define user.home. */
-    private static final String USER_HOME_PROPERTY = "user.home";
     /** Boolean for deciding whether to start main workflow (Normal mode) 
      * or just shutdown program after initialization (Unittest mode). */
     private static boolean isUnittestmode = false;
@@ -60,14 +44,11 @@ public class Main {
 
     /**
      * Constructor.
-     * TODO: why is this public?
      * @param sd The StateDatabase.
-     * @param mq The messagequeue
      * @param bitrepository The bitrepository interface.
      */
-    public Main(StateDatabase sd, MQ mq, Bitrepository bitrepository) {
+    protected Main(StateDatabase sd, Bitrepository bitrepository) {
         this.sd = sd;
-        this.mq = mq;
         this.bitrepository = bitrepository;
     }
 
@@ -87,56 +68,33 @@ public class Main {
             isUnittestmode = true;
         }
 
-        File configdir = getConfigDir();
-        logger.info("Looking for configuration files in dir: " + configdir.getAbsolutePath());
-        validateConfigDir(configdir);
+        Config config = new Config();
 
-        MQ mq = null;
-        Bitrepository bitrepository = null;
-        StateDatabase sd = null;
-        Config generalConfig = null;
-        Models modelsConfig = null;
-        HttpCommunication httpCommunication = null;
+        Bitrepository bitrepository = new Bitrepository(config.getBitmagConfigFile());
 
-        try {
-            File rabbitmqConfigFile = new File(configdir, RABBITMQ_CONF_FILENAME);
-            RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
+        // Initiate call of StateDatabase
+        StateDatabase sd = new StateDatabase(config.getYggdrasilConfig().getDatabaseDir());
+        HttpCommunication httpCommunication = new HttpCommunication();
 
-            File bitmagConfigFile = new File(configdir, BITMAG_CONF_FILENAME);
-            bitrepository = new Bitrepository(bitmagConfigFile);
+        RunState runnableRunState = new RunState();
+        Thread runstate = new Thread(runnableRunState);
+        runstate.start();
 
-            File yggrasilConfigFile = new File(configdir, YGGDRASIL_CONF_FILENAME);
-            generalConfig = new Config(yggrasilConfigFile);
-
-            File modelsConfigFile = new File(configdir, MODELS_CONF_FILENAME);
-            modelsConfig = new Models(modelsConfigFile);
-
-            // Initiate call of StateDatabase
-            sd = new StateDatabase(generalConfig.getDatabaseDir());
-            httpCommunication = new HttpCommunication();
-
-            RunState runnableRunState = new RunState();
-            Thread runstate = new Thread(runnableRunState);
-            runstate.start();
-
-            Main main = new Main(sd, mq, bitrepository);
-            if (!isUnittestmode) {
-                main.runWorkflow(sd, bitrepository, generalConfig, modelsConfig, rabbitMqSettings, httpCommunication);
-            } else {
-                logger.info("isUnittestmode = " + isUnittestmode);
-            }
-            logger.info("Shutting down the Yggdrasil Main program");
-            runstate.interrupt();
-            main.cleanup();
-
-        } catch (FileNotFoundException e) {
-            String errMsg = "Configuration file(s) missing!"; 
-            logger.error(errMsg, e);
-            throw new RuntimeException(errMsg, e);
+        Main main = new Main(sd, bitrepository);
+        if (!isUnittestmode) {
+            main.runWorkflow(config, httpCommunication);
+        } else {
+            logger.info("isUnittestmode = " + isUnittestmode);
         }
+        logger.info("Shutting down the Yggdrasil Main program");
+        runstate.interrupt();
+        main.cleanup();
     }
 
-    private void cleanup() {
+    /**
+     * Cleanup. Closes Bitrepository and MQ. 
+     */
+    protected void cleanup() {
         bitrepository.shutdown();
         try {
             if (!isUnittestmode) {this.mq.close();}
@@ -146,51 +104,11 @@ public class Main {
         sd.cleanup();
     }
 
-    /** 
-     * @return the configuration directory.
-     * @throws If the configuration directory does not exist.
-     */
-    public static File getConfigDir() throws YggdrasilException {
-        File configdir = null;
-        String configDirStr = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
-        if (configDirStr != null) {
-            configdir = new File(configDirStr);
-        } else {
-            configDirStr = System.getenv(CONFIGURATION_DIRECTORY_PROPERTY);
-            if (configDirStr != null) {
-                configdir = new File(configDirStr);
-            } else {
-                File userHomeDir = new File(System.getProperty(USER_HOME_PROPERTY));
-                configdir = new File(userHomeDir, "Yggdrasil/config");
-            }
-        }
-        return configdir;
-    }
-    
-    /**
-     * Validates that the configuration directory exists and contains the expected files.
-     * @param configdir The directory containing the configurations.
-     * @throws YggdrasilException If the directory or any of the configurations files does not exist.
-     */
-    protected static void validateConfigDir(File configdir) throws YggdrasilException {
-        if (!configdir.exists()) {
-            throw new YggdrasilException("Fatal error: The chosen configuration directory '"
-                    + configdir.getAbsolutePath() + "' does not exist. ");
-        }
-        for (String requiredSettingsFilename : REQUIRED_SETTINGS_FILES) {
-            File reqFile = new File(configdir, requiredSettingsFilename);
-            if (!reqFile.exists()) {
-                throw new YggdrasilException("Fatal error. Required configuration file '"
-                        + reqFile.getAbsolutePath() + "' does not exist. ");
-            }
-        }
-    }
-
     /**
      * Initialize message queue (RabbitMQ).
      * @throws YggdrasilException When unable to connect to message queue.
      */
-    private void initializeRabbitMQ(final RabbitMqSettings rabbitMqSettings) throws YggdrasilException {
+    protected void initializeRabbitMQ(final RabbitMqSettings rabbitMqSettings) throws YggdrasilException {
         logger.info("Initialising RabbitMQ");
         this.mq = null;
         try {
@@ -213,13 +131,12 @@ public class Main {
      * @throws YggdrasilException When unable to connect to message queue.
      * @throws FileNotFoundException Pass through from workflow run method.
      */
-    private void runWorkflow(final StateDatabase sd, final Bitrepository bitrepository, final Config generalConfig, 
-            final Models modelsConfig, final RabbitMqSettings rabbitMqSettings, 
-            final HttpCommunication httpCommunication) throws FileNotFoundException, YggdrasilException {
+    protected void runWorkflow(final Config config, final HttpCommunication httpCommunication) 
+            throws YggdrasilException {
         logger.info("Starting main workflow of Yggdrasil program");
-        this.initializeRabbitMQ(rabbitMqSettings);
-        final Workflow wf = new Workflow(this.mq, sd, bitrepository, generalConfig, modelsConfig, httpCommunication,
-                new RemotePreservationStateUpdater(mq));
+        this.initializeRabbitMQ(config.getMqSettings());
+        final Workflow wf = new Workflow(this.mq, sd, bitrepository, config.getYggdrasilConfig(), config.getModels(), 
+                httpCommunication, new RemotePreservationStateUpdater(mq));
         logger.info("Ready to run workflow");
         // Consider refactoring this at a time where the used rabbitmq.client.ConnectionFactory supports 
         // the setAutomaticRecoveryEnabled and setNetworkRecoveryInterval methods.
@@ -229,12 +146,12 @@ public class Main {
             String errMsg = "runWorkflow exception "; 
             logger.error(errMsg, e);
             try {
-                TimeUnit.MINUTES.sleep(rabbitMqSettings.getPollingIntervalInMinutes());
+                TimeUnit.MINUTES.sleep(config.getMqSettings().getPollingIntervalInMinutes());
             } catch (InterruptedException e1) {
                 errMsg = "Slowing down workfow exception "; 
                 throw new YggdrasilException(errMsg, e1);
             }
-            runWorkflow(sd, bitrepository, generalConfig, modelsConfig, rabbitMqSettings, httpCommunication);   
+            runWorkflow(config, httpCommunication);   
         }
     }
 }

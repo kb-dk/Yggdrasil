@@ -23,15 +23,15 @@ import org.jwat.warc.WarcReaderFactory;
 import org.jwat.warc.WarcRecord;
 import org.mockito.Mockito;
 
-import dk.kb.yggdrasil.Bitrepository;
-import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.HttpCommunication;
-import dk.kb.yggdrasil.MetadataContentUtils;
 import dk.kb.yggdrasil.RequestHandlerContext;
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
+import dk.kb.yggdrasil.testutils.MetadataContentUtils;
 
 @RunWith(JUnit4.class)
 public class PreservationPackerTest {
@@ -43,7 +43,7 @@ public class PreservationPackerTest {
     private static File generalConfigFile = new File("config/yggdrasil.yml");
     
     protected static Bitrepository bitrepository;
-    protected static Config config;
+    protected static YggdrasilConfig config;
     protected static StateDatabase stateDatabase;
     protected static HttpCommunication httpCommunication;
     
@@ -54,7 +54,7 @@ public class PreservationPackerTest {
     public static void beforeClass() throws Exception {
     	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
 
-        config = new Config(generalConfigFile);
+        config = new YggdrasilConfig(generalConfigFile);
         FileUtils.deleteDirectory(config.getDatabaseDir());
 
         bitrepository = Mockito.mock(Bitrepository.class);

@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.yggdrasil.Config;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
 /**
@@ -47,7 +47,7 @@ public class RunState implements Runnable {
             final String hname = hostname.getHostName();
 
             // Set port
-            final Config config = new Config(generalConfigFile);
+            final YggdrasilConfig config = new YggdrasilConfig(generalConfigFile);
             final int MONITOR_PORT = config.getMonitorPort();
             
             logger.info("RunState.initialize: " + hname + ":" + MONITOR_PORT);

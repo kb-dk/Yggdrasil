@@ -3,6 +3,7 @@ before_install:
 language: java
 services:
   - rabbitmq
+  - activemq
 notifications:
   email: true
 jdk:

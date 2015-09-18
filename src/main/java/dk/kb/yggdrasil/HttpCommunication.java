@@ -37,9 +37,8 @@ public class HttpCommunication {
      * @return HTTP response content body or null
      */
     public HttpPayload get(String url) {
-        if (url == null || url.length() == 0) {
-            throw new IllegalArgumentException("'url' is null or empty.");
-        }
+        ArgumentCheck.checkNotNullOrEmpty(url, "'url' is null or empty.");
+
         HttpPayload httpResponse = null;
         InputStream in = null;
         try {
@@ -142,15 +141,10 @@ public class HttpCommunication {
      * @return boolean indicating success or failure
      */
     public boolean post(String url, byte[] contentBody, String contentType) {
-        if (url == null || url.length() == 0) {
-            throw new IllegalArgumentException("'url' is null or empty.");
-        }
-        if (contentBody == null) {
-            throw new IllegalArgumentException("'contentBody' is null.");
-        }
-        if (contentType == null || contentType.length() == 0) {
-            throw new IllegalArgumentException("'contentType' is null or empty.");
-        }
+        ArgumentCheck.checkNotNullOrEmpty(url, "String url");
+        ArgumentCheck.checkNotNullOrEmpty(contentBody, "byte[] contentBody");
+        ArgumentCheck.checkNotNullOrEmpty(contentType, "String contentType");
+
         boolean bSuccess = false;
         try {
             /*

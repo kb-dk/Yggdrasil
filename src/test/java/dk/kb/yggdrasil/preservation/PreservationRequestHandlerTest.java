@@ -12,16 +12,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import dk.kb.yggdrasil.Bitrepository;
-import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.HttpCommunication;
-import dk.kb.yggdrasil.MetadataContentUtils;
 import dk.kb.yggdrasil.RequestHandlerContext;
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
-import dk.kb.yggdrasil.xslt.Models;
+import dk.kb.yggdrasil.testutils.MetadataContentUtils;
 
 @RunWith(JUnit4.class)
 public class PreservationRequestHandlerTest {
@@ -31,7 +31,7 @@ public class PreservationRequestHandlerTest {
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
 
     protected static PreservationRequest request;
-    protected static Config config;
+    protected static YggdrasilConfig config;
     protected static Models models;
     protected static HttpCommunication httpCommunication;
 
@@ -39,7 +39,7 @@ public class PreservationRequestHandlerTest {
     public static void beforeClass() throws Exception {
         System.setProperty("dk.kb.yggdrasil.runningmode", "test");
 
-        config = new Config(generalConfigFile);
+        config = new YggdrasilConfig(generalConfigFile);
         models = new Models(modelsFile);
         httpCommunication = new HttpCommunication();
         
@@ -228,7 +228,7 @@ public class PreservationRequestHandlerTest {
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
 
         // Setup for huge warc-size, low wait-limit and condition checking interval.
-        Config spyConfig = spy(config);
+        YggdrasilConfig spyConfig = spy(config);
         stub(spyConfig.getWarcSizeLimit()).toReturn(100000000L);
         stub(spyConfig.getUploadWaitLimit()).toReturn(100L);
         stub(spyConfig.getCheckWarcConditionInterval()).toReturn(100L);
@@ -299,7 +299,7 @@ public class PreservationRequestHandlerTest {
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
 
         // Setup for huge warc-size, low wait-limit and condition checking interval.
-        Config spyConfig = spy(config);
+        YggdrasilConfig spyConfig = spy(config);
         stub(spyConfig.getWarcSizeLimit()).toReturn(100000000L);
         stub(spyConfig.getUploadWaitLimit()).toReturn(100L);
         stub(spyConfig.getCheckWarcConditionInterval()).toReturn(100L);

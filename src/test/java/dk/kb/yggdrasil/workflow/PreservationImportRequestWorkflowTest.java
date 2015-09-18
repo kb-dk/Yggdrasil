@@ -23,12 +23,13 @@ import org.junit.runners.JUnit4;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import dk.kb.yggdrasil.Bitrepository;
-import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.MqFixtureTestAPI;
-import dk.kb.yggdrasil.RabbitMqSettings;
 import dk.kb.yggdrasil.Workflow;
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
+import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.RabbitException;
@@ -40,7 +41,6 @@ import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservationimport.PreservationImportState;
-import dk.kb.yggdrasil.xslt.Models;
 
 @RunWith(JUnit4.class)
 public class PreservationImportRequestWorkflowTest extends MqFixtureTestAPI {
@@ -49,7 +49,7 @@ public class PreservationImportRequestWorkflowTest extends MqFixtureTestAPI {
     private static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     private static RabbitMqSettings settings;
     private static Models models;
-    private static Config config;
+    private static YggdrasilConfig config;
     
     protected static final File WARC_FILE = new File("src/test/resources/warc/warcexample.warc");
     protected static final String SECURITY_CHECKSUM = "sha-1:5875f4d3fe7058ef89bcd28b6e11258e8ed2762b";
@@ -61,7 +61,7 @@ public class PreservationImportRequestWorkflowTest extends MqFixtureTestAPI {
     public static void beforeClass() throws YggdrasilException, IOException, RabbitException {
         System.setProperty("dk.kb.yggdrasil.runningmode", "test");
 
-        config = new Config(generalConfigFile);
+        config = new YggdrasilConfig(generalConfigFile);
         FileUtils.deleteDirectory(config.getDatabaseDir());
 
         File rabbitMQConfig = new File(RABBITMQ_CONF_FILE);

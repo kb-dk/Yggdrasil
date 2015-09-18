@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import dk.kb.yggdrasil.config.Config;
+import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
@@ -23,17 +25,10 @@ public class Shutdown {
      * @throws RabbitException 
      */
     public static void main(String[] args) throws IOException, YggdrasilException, RabbitException {
-        File configDir = Main.getConfigDir();
-        File rabbitmqConfigFile = new File(configDir, Main.RABBITMQ_CONF_FILENAME);
-        if (!rabbitmqConfigFile.exists()) {
-            throw new YggdrasilException(
-                    "Unable to shutdown Yggdrasil. Rabbitmq configuration is missing. "
-                            + "Looked here: " +  rabbitmqConfigFile.getAbsolutePath());
-        }
-        RabbitMqSettings rabbitMqSettings = new RabbitMqSettings(rabbitmqConfigFile);
-        MQ mq = new MQ(rabbitMqSettings);
+        Config config = new Config();
+        MQ mq = new MQ(config.getMqSettings());
         String message = "Shutdown Yggdrasil, please";
-        mq.publishOnQueue(rabbitMqSettings.getPreservationDestination(), 
+        mq.publishOnQueue(config.getMqSettings().getPreservationDestination(), 
                 message.getBytes(Charset.defaultCharset()), MQ.SHUTDOWN_MESSAGE_TYPE);
         mq.close();
     }

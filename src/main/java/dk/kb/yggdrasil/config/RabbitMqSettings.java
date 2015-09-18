@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.config;
 
 import java.io.File;
 import java.io.FileNotFoundException;

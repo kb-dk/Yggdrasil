@@ -24,10 +24,11 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import dk.kb.yggdrasil.Bitrepository;
-import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.RequestHandlerContext;
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.db.PreservationImportRequestState;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
@@ -35,7 +36,6 @@ import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.Security;
 import dk.kb.yggdrasil.json.preservationimport.Warc;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
-import dk.kb.yggdrasil.xslt.Models;
 
 @RunWith(JUnit4.class)
 public class PreservationImportRequestHandlerTest {
@@ -53,14 +53,14 @@ public class PreservationImportRequestHandlerTest {
     protected static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
 
-    protected static Config config;
+    protected static YggdrasilConfig config;
     protected static Models models;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
         System.setProperty("dk.kb.yggdrasil.runningmode", "test");
 
-        config = new Config(generalConfigFile);
+        config = new YggdrasilConfig(generalConfigFile);
         models = new Models(modelsFile);
     }
     

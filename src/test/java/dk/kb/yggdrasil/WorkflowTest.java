@@ -16,13 +16,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
+import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
-import dk.kb.yggdrasil.xslt.Models;
 
 @RunWith(JUnit4.class)
 public class WorkflowTest extends MqFixtureTestAPI {
@@ -31,13 +34,13 @@ public class WorkflowTest extends MqFixtureTestAPI {
     private static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     private static RabbitMqSettings settings;
     private static Models models;
-    private static Config config;
+    private static YggdrasilConfig config;
 
     @BeforeClass
     public static void beforeClass() throws YggdrasilException, IOException, RabbitException {
         System.setProperty("dk.kb.yggdrasil.runningmode", "test");
 
-        config = new Config(generalConfigFile);
+        config = new YggdrasilConfig(generalConfigFile);
         FileUtils.deleteDirectory(config.getDatabaseDir());
 
         File rabbitMQConfig = new File(RABBITMQ_CONF_FILE);

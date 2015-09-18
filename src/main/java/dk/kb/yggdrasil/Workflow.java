@@ -6,6 +6,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.RabbitException;
@@ -16,7 +19,6 @@ import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.preservation.PreservationRequestHandler;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservationimport.PreservationImportRequestHandler;
-import dk.kb.yggdrasil.xslt.Models;
 
 /**
  * The class receiving and initiating the workflows for the different kinds of requests.
@@ -40,7 +42,7 @@ public class Workflow {
      * @param httpCommunication The httpCommunication.
      * @param updater The remote preservation state updater.
      */
-    public Workflow(MQ rabbitconnector, StateDatabase states, Bitrepository bitrepository, Config config,
+    public Workflow(MQ rabbitconnector, StateDatabase states, Bitrepository bitrepository, YggdrasilConfig config,
             Models models, HttpCommunication httpCommunication, RemotePreservationStateUpdater updater) {
         ArgumentCheck.checkNotNull(rabbitconnector, "MQ rabbitconnector");
         ArgumentCheck.checkNotNull(states, "StateDatabase states");

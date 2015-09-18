@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.config;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -9,7 +9,7 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.utils.YamlTools;
 
 /** The class reading the yggdrasil.yml file. */
-public class Config {
+public class YggdrasilConfig {
 
     /** The configDir where the yggdrasilConfigFile was located. */
     private File configdir;
@@ -57,7 +57,7 @@ public class Config {
      * @param yggrasilConfigFile the config file.
      * @throws YggdrasilException If an issue occurs during loading the configuration.
      */
-    public Config(File yggrasilConfigFile) throws YggdrasilException {
+    public YggdrasilConfig(File yggrasilConfigFile) throws YggdrasilException {
         ArgumentCheck.checkExistsNormalFile(yggrasilConfigFile, "File yggrasilConfigFile");
         configdir = yggrasilConfigFile.getParentFile();
         Map<String, LinkedHashMap> settings = YamlTools.loadYamlSettings(yggrasilConfigFile);

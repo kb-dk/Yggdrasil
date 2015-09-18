@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.rabbitmq.client.Channel;
 
+import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;

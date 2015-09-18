@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import dk.kb.yggdrasil.Config;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.json.preservation.PreservationRequest;
 import dk.kb.yggdrasil.preservation.PreservationState;
@@ -24,7 +24,7 @@ public class StateDatabaseTest {
     
     @Test
     public void test() throws YggdrasilException, IOException {
-        Config config = new Config(generalConfigFile);
+        YggdrasilConfig config = new YggdrasilConfig(generalConfigFile);
         FileUtils.deleteDirectory(config.getDatabaseDir());
         StateDatabase sd = new StateDatabase(config.getDatabaseDir());
         PreservationRequest pr = new PreservationRequest();
@@ -40,7 +40,7 @@ public class StateDatabaseTest {
     
     @Test
     public void testGet() throws YggdrasilException, IOException {
-        Config config = new Config(generalConfigFile);
+        YggdrasilConfig config = new YggdrasilConfig(generalConfigFile);
         FileUtils.deleteDirectory(config.getDatabaseDir());
         StateDatabase sd = new StateDatabase(config.getDatabaseDir());
         
@@ -62,7 +62,7 @@ public class StateDatabaseTest {
 
     @Test
     public void testGetOutstanding() throws YggdrasilException, IOException {
-        Config config = new Config(generalConfigFile);
+        YggdrasilConfig config = new YggdrasilConfig(generalConfigFile);
         FileUtils.deleteDirectory(config.getDatabaseDir());
         StateDatabase sd = new StateDatabase(config.getDatabaseDir());
         PreservationRequest pr = new PreservationRequest();

@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +21,8 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.ServletHandler;
 
+import dk.kb.yggdrasil.exceptions.YggdrasilException;
+
 /**
  * Trivial tests to check if the put/get methods work as intended.
  */
@@ -32,7 +32,7 @@ public class TestHttpCommunication {
     private HttpCommunication httpCommunication = new HttpCommunication();
     
     @Test
-    public void test_httpcommunication() {
+    public void testAllSuccess() throws Exception{
         HttpPayload httpPayload = null;
         byte[] contentBody;
         boolean bSuccess;
@@ -99,9 +99,6 @@ public class TestHttpCommunication {
 
             builder.addBinaryBody("file", contentBody);
             httpCommunication.post("http://localhost:" + server.port + "/post", builder.build());
-        } catch (IOException e) {
-            e.printStackTrace();
-            Assert.fail("Unexpected exception!");
         } finally {
             if (httpPayload != null) {
                 try {
@@ -118,7 +115,7 @@ public class TestHttpCommunication {
             }
         }
     }
-
+    
     /**
      * Defines a simple <code>HttpServlet</code> to validate our get/put methods.
      */

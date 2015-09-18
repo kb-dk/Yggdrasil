@@ -17,11 +17,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import dk.kb.yggdrasil.Bitrepository;
-import dk.kb.yggdrasil.Config;
 import dk.kb.yggdrasil.HttpCommunication;
-import dk.kb.yggdrasil.RabbitMqSettings;
 import dk.kb.yggdrasil.RequestHandlerContext;
+import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
+import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.Security;
@@ -29,7 +30,6 @@ import dk.kb.yggdrasil.json.preservationimport.Warc;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservationimport.PreservationImportRequestHandler;
-import dk.kb.yggdrasil.xslt.Models;
 
 @RunWith(JUnit4.class)
 public class PreservationImportRequestHandlerIntegrationTest {
@@ -47,7 +47,7 @@ public class PreservationImportRequestHandlerIntegrationTest {
     protected static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
 
-    protected static Config config;
+    protected static YggdrasilConfig config;
     protected static RabbitMqSettings mqSettings;
     protected static Models models;
 
@@ -55,7 +55,7 @@ public class PreservationImportRequestHandlerIntegrationTest {
     public static void beforeClass() throws Exception {
         System.setProperty("dk.kb.yggdrasil.runningmode", "test");
 
-        config = new Config(generalConfigFile);
+        config = new YggdrasilConfig(generalConfigFile);
         models = new Models(modelsFile);
         mqSettings = new RabbitMqSettings("amqp://localhost:5672", "preservation-dev-queue", 
                 "preservation-dev-response-queue");

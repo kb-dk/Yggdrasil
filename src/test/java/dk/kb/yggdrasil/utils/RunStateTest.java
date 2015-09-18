@@ -13,7 +13,7 @@ import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.yggdrasil.Config;
+import dk.kb.yggdrasil.config.YggdrasilConfig;
 
 /**
  * Tests for the methods in the RunState class.
@@ -40,7 +40,7 @@ public class RunStateTest {
         String hn = hostname.getHostName();
 
         // Set port
-        Config config = new Config(generalConfigFile);
+        YggdrasilConfig config = new YggdrasilConfig(generalConfigFile);
         int MONITOR_PORT = config.getMonitorPort();
 
         logger.info("RunStateTest: " + hn + ":" + MONITOR_PORT);

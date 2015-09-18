@@ -22,7 +22,7 @@ import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 
-import dk.kb.yggdrasil.RabbitMqSettings;
+import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
@@ -37,7 +37,7 @@ import dk.kb.yggdrasil.json.preservationimport.PreservationImportResponse;
  * not available on maven repositories).
  * rabbitmq-javadoc: http://www.rabbitmq.com/releases/rabbitmq-java-client/v3.1.4/rabbitmq-java-client-javadoc-3.1.4/
  */
-public class MQ {
+public class MQ implements AutoCloseable {
 
     /** List of existing consumers in use by this class.
      * The key is the queueName.
