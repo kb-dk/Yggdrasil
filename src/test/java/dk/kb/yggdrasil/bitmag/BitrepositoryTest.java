@@ -68,11 +68,17 @@ public class BitrepositoryTest {
 
     public static String MISSING_YAML_FILE = "src/test/resources/config/rabbitmq.yaml2";
     public static String INCORRECT_YAML_FILE = "src/test/resources/config/rabbitmq.yml";
-    public static String OK_YAML_BITMAG_FILE = "src/test/resources/config/bitmag.yml";
+    public static String OK_YAML_BITMAG_FILE;
 
     @BeforeClass
     public static void beforeClass() throws YggdrasilException, IOException {
     	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
+        if (TravisUtils.runningOnTravis()) {
+            OK_YAML_BITMAG_FILE = "src/test/resources/config/bitmag-travis.yml";
+        } else {
+            OK_YAML_BITMAG_FILE = "src/test/resources/config/bitmag.yml";
+        }
+
     }
     
     @Test(expected = ArgumentCheck.class)
@@ -244,6 +250,39 @@ public class BitrepositoryTest {
     
     @Test(expected = YggdrasilException.class)
     public void testGetFileFailuredDownload() throws Exception {
+        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
+        BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
+
+        GetFileClient mockClient = mock(GetFileClient.class);
+        
+        // Set the Complete action, when the event is called.
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                String collectionID = (String) invocation.getArguments()[0];
+                EventHandler eh = (EventHandler) invocation.getArguments()[4];
+                eh.handleEvent(new CompleteEvent(collectionID, Arrays.asList()));
+                return null;
+            }
+        }).when(mockClient).getFileFromFastestPillar(anyString(), anyString(), any(), any(), any(), any());
+        br.setGetFileClient(mockClient);
+        
+        // mock file-exchange
+        FileExchange fe = mock(FileExchange.class);
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                throw new IOException("Fail downloading file.");
+            }
+        }).when(fe).downloadFromServer(any(File.class), anyString());
+        when(fe.getURL(anyString())).thenReturn(new URL("http://localhost:80/dav/test.txt"));
+        br.setFileExchange(fe);
+        
+        br.getFile("helloworld.txt", "books", null);
+    }
+    
+    @Test
+    public void getFileFailureBadURL() throws Exception {
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
 

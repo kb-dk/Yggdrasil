@@ -1,14 +1,11 @@
-before_install:
-  - pip install --user codecov
-before_script:
-  - scripts/activemq.sh
 language: java
 services:
   - rabbitmq
-notifications:
-  email: true
 jdk:
   - oraclejdk8
-#  - openjdk8
+notifications:
+  email: true
+before_install:
+  - pip install --user codecov
 after_success:
   - codecov

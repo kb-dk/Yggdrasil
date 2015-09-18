@@ -1,0 +1,18 @@
+development:
+  settings_dir: ./src/test/resources/config/bitmag-travis-settings
+  keyfile: ./src/test/resources/config/bitmag-travis-settings/webklient.pem    
+  client:
+    putfile_max_pillars_failures: 2  
+
+test:
+  settings_dir: ./src/test/resources/config/bitmag-travis-settings
+  keyfile: ./src/test/resources/config/bitmag-travis-settings/webklient.pem    
+  client:
+    putfile_max_pillars_failures: 1  
+
+production:
+  settings_dir: ./src/test/resources/config/bitmag-travis-settings
+  keyfile: ./src/test/resources/config/bitmag-travis-settings/webklient.pem    
+  client:
+    putfile_max_pillars_failures: 1  
+
