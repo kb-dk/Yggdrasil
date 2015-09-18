@@ -135,8 +135,7 @@ public class Bitrepository {
         readConfigFile(configFile);
         initBitmagSettings();
         initBitmagSecurityManager();
-        bitMagMessageBus = ProtocolComponentFactory.getInstance().getMessageBus(
-                bitmagSettings, bitMagSecurityManager);
+        initBitmagMessageBus();
         initBitMagClients();
     }
 
@@ -168,6 +167,14 @@ public class Bitrepository {
         bitMagGetFileIDsClient = acf.createGetFileIDsClient(bitmagSettings, bitMagSecurityManager, componentId);
 
         bitMagGetChecksumsClient = acf.createGetChecksumsClient(bitmagSettings, bitMagSecurityManager, componentId);
+    }
+    
+    /**
+     * Initializes the messagebus for the Bitrepository.
+     */
+    protected void initBitmagMessageBus() {
+        bitMagMessageBus = ProtocolComponentFactory.getInstance().getMessageBus(
+                bitmagSettings, bitMagSecurityManager);
     }
 
     /**
