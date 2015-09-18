@@ -142,7 +142,7 @@ public class Bitrepository {
     /**
      * Initialization of the various bitmag client.
      */
-    private void initBitMagClients() {
+    protected void initBitMagClients() {
         bitMagPutClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 bitmagSettings, bitMagSecurityManager, componentId);
         // Maybe needed later

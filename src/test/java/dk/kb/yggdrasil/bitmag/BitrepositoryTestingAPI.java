@@ -8,6 +8,8 @@ import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.mockito.Mockito;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
@@ -42,6 +44,14 @@ public class BitrepositoryTestingAPI extends Bitrepository {
     public void setFileExchange(FileExchange fe) {
         this.fileExchange = fe;
     }
+    
+    @Override
+    protected void initBitmagMessageBus() {
+        this.bitMagMessageBus = Mockito.mock(MessageBus.class);
+    }
+    
+    @Override
+    protected void initBitMagClients() {}
     
     @Override
     protected FileExchange getFileExchange(Settings bitmagSettings) {

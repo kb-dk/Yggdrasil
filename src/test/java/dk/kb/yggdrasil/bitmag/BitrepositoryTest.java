@@ -95,28 +95,25 @@ public class BitrepositoryTest {
 
     @Test
     public void testOkYamlFile() throws Exception {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         // Assumes that Yggdrasil/config contains a directory "bitmag-development-settings"
         // containing bitrepository 1.0 settings and with a keyfile named "client-16.pem"
         assertTrue(okConfigFile.exists());
-        new Bitrepository(okConfigFile);
+        new BitrepositoryTestingAPI(okConfigFile);
     }
     
     // Apparently we cannot mock the PutFileClient.
     @Ignore
     @Test
     public void testUpload() throws YggdrasilException, IOException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
 
         PutFileClient mockClient = mock(PutFileClient.class);
-     // Set the Complete action, when the event is called.
+
         doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -149,11 +146,8 @@ public class BitrepositoryTest {
 
     @Test
     public void testUploadOnUnknownCollection() throws YggdrasilException, IOException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
-        Bitrepository br = new Bitrepository(okConfigFile);
+        Bitrepository br = new BitrepositoryTestingAPI(okConfigFile);
         String generatedName = "helloworld" + System.currentTimeMillis() + ".txt";
         File payloadFile = getFileWithContents(generatedName, "Hello World".getBytes());
         boolean success = br.uploadFile(payloadFile, "cars");
@@ -163,9 +157,9 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetFileSuccess() throws Exception {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
 
@@ -216,9 +210,9 @@ public class BitrepositoryTest {
 
     @Test(expected = YggdrasilException.class)
     public void testGetFileFailureOperation() throws Exception {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
 
@@ -246,9 +240,9 @@ public class BitrepositoryTest {
     
     @Test(expected = YggdrasilException.class)
     public void testGetFileFailuredDownload() throws Exception {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
 
@@ -282,9 +276,9 @@ public class BitrepositoryTest {
     
     @Test(expected = YggdrasilException.class)
     public void getFileFailureBadURL() throws Exception {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
 
@@ -318,9 +312,9 @@ public class BitrepositoryTest {
     
     @Test
     public void testGetChecksumsSuccessEmptyResults() throws YggdrasilException, IOException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         String fileid = "The ID of the file";
         BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
@@ -350,9 +344,9 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetChecksumsSuccessFullResults() throws YggdrasilException, IOException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         String fileid = "The ID of the file";
         String collectionID = "books";
@@ -401,9 +395,9 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetChecksumsFailure() throws YggdrasilException, IOException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         String fileid = "The ID of the file";
         String collectionID = "books";
@@ -442,9 +436,9 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetFileIDsSuccess() throws YggdrasilException, IOException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         String fileid = "The ID of the file";
         String collectionID = "books";
@@ -471,9 +465,9 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetFileIDsResponseFailure() throws YggdrasilException, IOException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         String fileid = "The ID of the file";
         String collectionID = "books";
@@ -507,9 +501,9 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetFileIDsCollectionFailure() throws YggdrasilException, IOException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         String fileid = "The ID of the file";
         String collectionID = "NonExistingCollection";
@@ -521,11 +515,11 @@ public class BitrepositoryTest {
 
     @Test
     public void testGetCollections() throws YggdrasilException {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
+//        if (TravisUtils.runningOnTravis()) {
+//            return;
+//        }
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
-        Bitrepository br = new Bitrepository(okConfigFile);
+        Bitrepository br = new BitrepositoryTestingAPI(okConfigFile);
         List<String> knownCols = br.getKnownCollections();
         assertEquals(knownCols.size(), 5);
     }

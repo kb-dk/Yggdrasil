@@ -57,6 +57,9 @@ public class MainTest {
     
     @Test
     public void testRunningWorkflow() throws Exception {
+        if (TravisUtils.runningOnTravis()) {
+            return;
+        }
         StateDatabase stateDatabase = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
         HttpCommunication httpCommunication = mock(HttpCommunication.class);
