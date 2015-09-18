@@ -1,7 +1,7 @@
 before_install:
   - pip install --user codecov
 before_script:
-  - src/test/resources/activemq.sh
+  - scripts/activemq.sh
 language: java
 services:
   - rabbitmq
