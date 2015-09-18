@@ -1,5 +1,8 @@
 before_install:
   - pip install --user codecov
+  - sudo apt-get update
+  - sudo apt-get install activemq
+  - sudo /etc/init.d/activemq start
 language: java
 services:
   - rabbitmq

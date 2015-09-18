@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfile.GetFileClient;
+import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -388,7 +389,77 @@ public class BitrepositoryTest {
 
         assertTrue("Should be empty.", res.isEmpty());
     }
-    
+
+    @Test
+    public void testGetFileIDsSuccess() throws YggdrasilException, IOException {
+        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
+        String fileid = "The ID of the file";
+        String collectionID = "books";
+        BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
+
+        GetFileIDsClient mockClient = mock(GetFileIDsClient.class);
+        
+        // Set the Complete action, when the event is called.
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                String collectionID = (String) invocation.getArguments()[0];
+                EventHandler eh = (EventHandler) invocation.getArguments()[4];
+
+                eh.handleEvent(new CompleteEvent(collectionID, Arrays.asList()));
+                return null;
+            }
+        }).when(mockClient).getFileIDs(anyString(), any(), anyString(), any(URL.class), any(EventHandler.class));
+        br.setGetFileIDsClient(mockClient);
+
+        boolean success = br.existsInCollection(fileid, collectionID);
+        assertTrue(success);
+    }
+
+    @Test
+    public void testGetFileIDsResponseFailure() throws YggdrasilException, IOException {
+        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
+        String fileid = "The ID of the file";
+        String collectionID = "books";
+        BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
+
+        GetFileIDsClient mockClient = mock(GetFileIDsClient.class);
+        
+        // Set the Complete action, when the event is called.
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                String collectionID = (String) invocation.getArguments()[0];
+                EventHandler eh = (EventHandler) invocation.getArguments()[4];
+
+                List<ContributorEvent> events = new ArrayList<ContributorEvent>();
+                for(String pillarID : SettingsUtils.getPillarIDsForCollection(collectionID)) {
+                    ContributorEvent ce = new ContributorFailedEvent(pillarID, collectionID, ResponseCode.FAILURE);
+                    events.add(ce);
+                    eh.handleEvent(ce);
+                }
+
+                eh.handleEvent(new OperationFailedEvent(collectionID, "Failure intended", events));
+                return null;
+            }
+        }).when(mockClient).getFileIDs(anyString(), any(), anyString(), any(URL.class), any(EventHandler.class));
+        br.setGetFileIDsClient(mockClient);
+
+        boolean success = br.existsInCollection(fileid, collectionID);
+        assertFalse(success);
+    }
+
+    @Test
+    public void testGetFileIDsCollectionFailure() throws YggdrasilException, IOException {
+        File okConfigFile = new File(OK_YAML_BITMAG_FILE);
+        String fileid = "The ID of the file";
+        String collectionID = "NonExistingCollection";
+        BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
+
+        boolean success = br.existsInCollection(fileid, collectionID);
+        assertFalse(success);
+    }
+
     @Test
     public void testGetCollections() throws YggdrasilException {
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
