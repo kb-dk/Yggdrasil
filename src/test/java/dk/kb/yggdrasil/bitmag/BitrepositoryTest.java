@@ -281,7 +281,7 @@ public class BitrepositoryTest {
         br.getFile("helloworld.txt", "books", null);
     }
     
-    @Test
+    @Test(expected = YggdrasilException.class)
     public void getFileFailureBadURL() throws Exception {
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
         BitrepositoryTestingAPI br = new BitrepositoryTestingAPI(okConfigFile);
