@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.preservation;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

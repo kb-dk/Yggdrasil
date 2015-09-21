@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.bitmag.Bitrepository;
 import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.RequestHandlerContext;
 import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
@@ -16,8 +17,8 @@ import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MessageRequestHandler;
 import dk.kb.yggdrasil.messaging.MqResponse;
+import dk.kb.yggdrasil.messaging.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservation.PreservationRequestHandler;
-import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservationimport.PreservationImportRequestHandler;
 
 /**
@@ -74,7 +75,7 @@ public class Workflow {
                 logger.error("Caught exception while retrieving message from rabbitmq. Skipping message", e);
                 continue;
             }
-        } 
+        }
     }
 
     /**

@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
 import dk.kb.yggdrasil.HttpPayload;
-import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.PreservationException;

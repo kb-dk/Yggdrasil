@@ -39,7 +39,7 @@ import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.Warc;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MqResponse;
-import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
+import dk.kb.yggdrasil.messaging.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservationimport.PreservationImportState;
 
 @RunWith(JUnit4.class)

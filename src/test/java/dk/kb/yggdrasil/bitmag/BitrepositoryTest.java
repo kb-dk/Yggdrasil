@@ -2,6 +2,7 @@ package dk.kb.yggdrasil.bitmag;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -24,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
@@ -56,7 +55,6 @@ import org.mockito.stubbing.Answer;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.utils.TravisUtils;
 
 /**
  * Tests for {@link dk.kb.yggdrasil.bitmag.Bitrepository }

@@ -25,7 +25,7 @@ import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
 import dk.kb.yggdrasil.messaging.MqResponse;
-import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
+import dk.kb.yggdrasil.messaging.RemotePreservationStateUpdater;
 
 @RunWith(JUnit4.class)
 public class WorkflowTest extends MqFixtureTestAPI {

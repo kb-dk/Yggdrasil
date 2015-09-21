@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil.preservation;
+package dk.kb.yggdrasil.messaging;
 
 import java.util.Date;
 
@@ -13,7 +13,7 @@ import dk.kb.yggdrasil.json.preservation.Preservation;
 import dk.kb.yggdrasil.json.preservation.PreservationResponse;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportResponse;
 import dk.kb.yggdrasil.json.preservationimport.Response;
-import dk.kb.yggdrasil.messaging.MQ;
+import dk.kb.yggdrasil.preservation.PreservationState;
 import dk.kb.yggdrasil.preservationimport.PreservationImportState;
 
 /**

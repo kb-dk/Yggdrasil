@@ -16,7 +16,7 @@ import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
-import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
+import dk.kb.yggdrasil.messaging.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.utils.RunState;
 
 /**

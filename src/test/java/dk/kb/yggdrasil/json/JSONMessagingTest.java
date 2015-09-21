@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.json;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +29,7 @@ import dk.kb.yggdrasil.json.preservationimport.Security;
 import dk.kb.yggdrasil.json.preservationimport.Warc;
 
 @RunWith(JUnit4.class)
-public class TestJSONMessaging {
+public class JSONMessagingTest {
     protected static JSONEncoding json_encoding = JSONEncoding.getJSONEncoding();
     protected static JSONObjectMappings json_om = new JSONObjectMappings();
     protected static JSONText json_text = new JSONText();

@@ -17,7 +17,7 @@ import org.jwat.warc.WarcDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.yggdrasil.RequestHandlerContext;
+import dk.kb.yggdrasil.config.RequestHandlerContext;
 import dk.kb.yggdrasil.db.PreservationRequestState;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.PreservationException;

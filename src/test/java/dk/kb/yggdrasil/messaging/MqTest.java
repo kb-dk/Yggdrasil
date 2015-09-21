@@ -1,4 +1,4 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.messaging;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -24,6 +24,7 @@ import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 
+import dk.kb.yggdrasil.MqFixtureTestAPI;
 import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.config.RunningMode;
 import dk.kb.yggdrasil.exceptions.RabbitException;

@@ -1,6 +1,7 @@
 package dk.kb.yggdrasil;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,10 +17,8 @@ import dk.kb.yggdrasil.bitmag.Bitrepository;
 import dk.kb.yggdrasil.config.Config;
 import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.db.StateDatabase;
-import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
-import dk.kb.yggdrasil.messaging.MqResponse;
 import dk.kb.yggdrasil.utils.TravisUtils;
 
 /**
@@ -57,9 +56,6 @@ public class MainTest {
     
     @Test
     public void testRunningWorkflow() throws Exception {
-        if (TravisUtils.runningOnTravis()) {
-            return;
-        }
         StateDatabase stateDatabase = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
         HttpCommunication httpCommunication = mock(HttpCommunication.class);
@@ -73,5 +69,9 @@ public class MainTest {
         mq.close();
                 
         m.runWorkflow(config, httpCommunication);
+        
+        verifyNoMoreInteractions(bitrepository);
+        verifyNoMoreInteractions(stateDatabase);
+        verifyNoMoreInteractions(httpCommunication);
     }
 }

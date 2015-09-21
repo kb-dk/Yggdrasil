@@ -21,13 +21,11 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.ServletHandler;
 
-import dk.kb.yggdrasil.exceptions.YggdrasilException;
-
 /**
  * Trivial tests to check if the put/get methods work as intended.
  */
 @RunWith(JUnit4.class)
-public class TestHttpCommunication {
+public class HttpCommunicationTest {
 
     private HttpCommunication httpCommunication = new HttpCommunication();
     
@@ -39,7 +37,7 @@ public class TestHttpCommunication {
         WebServer server = null;
 
         try {
-            /*
+            /*  
              * Test invalid url. Assuming that port 65535 is not running a webserver.
              */
             httpPayload = httpCommunication.get("http://localhost:65535/get");

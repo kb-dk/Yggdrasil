@@ -1,10 +1,10 @@
-package dk.kb.yggdrasil;
+package dk.kb.yggdrasil.config;
 
+import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.bitmag.Bitrepository;
-import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.db.StateDatabase;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
-import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
+import dk.kb.yggdrasil.messaging.RemotePreservationStateUpdater;
 
 /**
  * A wrapper class around the different components needed for sending files to preservation.

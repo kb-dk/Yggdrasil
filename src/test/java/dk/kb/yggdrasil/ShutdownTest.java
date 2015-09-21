@@ -19,6 +19,7 @@ public class ShutdownTest {
 
     File goodConfigDir = new File("src/test/resources/config");
 
+    @SuppressWarnings("static-access")
     @Test
     public void testRunningWorkflow() throws Exception {
         System.setProperty(Config.CONFIGURATION_DIRECTORY_PROPERTY, goodConfigDir.getAbsolutePath());

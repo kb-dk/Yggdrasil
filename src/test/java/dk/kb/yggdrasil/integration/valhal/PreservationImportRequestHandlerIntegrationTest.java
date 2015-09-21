@@ -18,9 +18,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import dk.kb.yggdrasil.HttpCommunication;
-import dk.kb.yggdrasil.RequestHandlerContext;
 import dk.kb.yggdrasil.bitmag.Bitrepository;
 import dk.kb.yggdrasil.config.Models;
+import dk.kb.yggdrasil.config.RequestHandlerContext;
 import dk.kb.yggdrasil.config.YggdrasilConfig;
 import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.db.StateDatabase;
@@ -28,7 +28,7 @@ import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.Security;
 import dk.kb.yggdrasil.json.preservationimport.Warc;
 import dk.kb.yggdrasil.messaging.MQ;
-import dk.kb.yggdrasil.preservation.RemotePreservationStateUpdater;
+import dk.kb.yggdrasil.messaging.RemotePreservationStateUpdater;
 import dk.kb.yggdrasil.preservationimport.PreservationImportRequestHandler;
 
 @RunWith(JUnit4.class)
