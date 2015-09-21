@@ -73,9 +73,6 @@ public class BitrepositoryTest {
     @BeforeClass
     public static void beforeClass() throws YggdrasilException, IOException {
     	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
-        if (TravisUtils.runningOnTravis()) {
-            OK_YAML_BITMAG_FILE = "src/test/resources/config/bitmag-travis.yml";
-        }
     }
     
     @Test(expected = ArgumentCheck.class)
