@@ -12,6 +12,7 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.mockito.Mockito;
 
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
+import dk.kb.yggdrasil.utils.TravisUtils;
 
 /**
  * Testing API for the Bitrepository.
@@ -51,7 +52,11 @@ public class BitrepositoryTestingAPI extends Bitrepository {
     }
     
     @Override
-    protected void initBitMagClients() {}
+    protected void initBitMagClients() {
+        if (!TravisUtils.runningOnTravis()) {
+            super.initBitMagClients();
+        }
+    }
     
     @Override
     protected FileExchange getFileExchange(Settings bitmagSettings) {
