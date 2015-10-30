@@ -6,7 +6,7 @@
 #
 
 DUSER=yggdrasil
-CTLSCRIPT=/home/yggdrasil/Yggdrasil-current/yggdrasil_ctl.sh
+CTLSCRIPT=/home/yggdrasil/Yggdrasil-current/bin/yggdrasil_ctl.sh
 
 case "$1" in
     start)

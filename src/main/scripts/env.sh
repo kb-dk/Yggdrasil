@@ -19,7 +19,7 @@ while [ -h "$PRG" ] ; do
     fi
 done
 
-${assembly.home.env.name}=`dirname "$PRG"`
+${assembly.home.env.name}=`dirname "$PRG"`/..
 
 # make it fully qualified
 ${assembly.home.env.name}=`cd "${assembly.home.env.name.ref}" && pwd`

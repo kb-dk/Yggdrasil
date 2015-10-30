@@ -7,7 +7,7 @@ if "%JAVA_HOME%" == "" (
 )
 
 REM ${assembly.home.env.name} must point to home directory.
-SET ${assembly.home.env.name}=%~dp0
+SET ${assembly.home.env.name}=%~dp0\..
 
 if "%${assembly.config.env.name}%" == "" (
    set ${assembly.config.env.name}=%${assembly.home.env.name}%config

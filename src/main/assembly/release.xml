@@ -15,7 +15,7 @@
 				<include>*.sh</include>
 			</includes>
 			<lineEnding>lf</lineEnding>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/bin/</outputDirectory>
 			<fileMode>0755</fileMode>
 			<filtered>true</filtered>
 		</fileSet>
@@ -25,7 +25,18 @@
 				<include>*.cmd</include>
 			</includes>
 			<lineEnding>crlf</lineEnding>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/bin/</outputDirectory>
+			<fileMode>0755</fileMode>
+			<filtered>true</filtered>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/main/scripts</directory>
+			<excludes>
+				<exclude>*.sh</exclude>
+				<exclude>*.cmd</exclude>
+			</excludes>
+			<lineEnding>lf</lineEnding>
+			<outputDirectory>/bin/</outputDirectory>
 			<fileMode>0755</fileMode>
 			<filtered>true</filtered>
 		</fileSet>

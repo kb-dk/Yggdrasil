@@ -2,6 +2,7 @@ package dk.kb.yggdrasil.preservation;
 
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import dk.kb.yggdrasil.HttpCommunication;
+import dk.kb.yggdrasil.HttpPayload;
 import dk.kb.yggdrasil.bitmag.Bitrepository;
 import dk.kb.yggdrasil.config.Models;
 import dk.kb.yggdrasil.config.RequestHandlerContext;
@@ -27,6 +29,7 @@ import dk.kb.yggdrasil.testutils.MetadataContentUtils;
 @RunWith(JUnit4.class)
 public class PreservationRequestHandlerTest {
     protected static final String NON_RANDOM_UUID = "random-uuid";
+    protected static final String NON_RANDOM_FILE_UUID = "random-file-uuid";
     protected static final String DEFAULT_COLLECTION = "collection";
     protected static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
@@ -327,13 +330,57 @@ public class PreservationRequestHandlerTest {
 
         verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
     }
+
+    @Test
+    public void testRequestWithFile() throws Exception {
+        StateDatabase states = mock(StateDatabase.class);
+        Bitrepository bitrepository = mock(Bitrepository.class);
+        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        PreservationRequest request = makeRequest();
+        request.File_UUID = NON_RANDOM_FILE_UUID;
+        request.Content_URI = "http://localhost/test.txt";
+        request.metadata = MetadataContentUtils.getExampleContentFileMetadata();
+        String payloadText = "Content file content";
+        
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
+        HttpPayload payload = new HttpPayload(new ByteArrayInputStream(payloadText.getBytes()), null, "application/octetstream", (long) "Content file content".length());
+        when(httpCommunication.get(anyString())).thenReturn(payload);
+
+        when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
+        when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
+        
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
+        PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
+
+        prh.handleRequest(request);
+
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_REQUEST_RECEIVED));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
+        verify(updater, timeout(1500)).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_UPLOAD_SUCCESS));
+        verifyNoMoreInteractions(updater);
+
+        verify(states, times(3)).putPreservationRecord(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
+        verify(states, timeout(1500)).delete(eq(NON_RANDOM_UUID));
+        verifyNoMoreInteractions(states);
+
+        verify(bitrepository).getKnownCollections();
+        verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
+        verifyNoMoreInteractions(bitrepository);
+        
+        verify(httpCommunication).get(anyString());
+        verifyNoMoreInteractions(httpCommunication);
+    }
     
     public static PreservationRequest makeRequest() {
         PreservationRequest request = new PreservationRequest();
         request.Content_URI = null;
         request.File_UUID = null;
         request.metadata = MetadataContentUtils.getExampleInstanceMetadata();
-        request.Model = "instance";
+        request.Model = "contentfile";
         request.Preservation_profile = DEFAULT_COLLECTION;
         request.UUID = NON_RANDOM_UUID;
         request.Valhal_ID = "ID";

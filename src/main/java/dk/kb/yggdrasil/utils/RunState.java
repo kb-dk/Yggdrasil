@@ -57,7 +57,6 @@ public class RunState implements Runnable {
             if (!sock.isBound()) {
                 sock.bind(endpoint);
             }
-
         } catch (YggdrasilException e) {
             logger.error("Caught exception while getting monitor port form config file", e);
         } catch (IOException e) {
