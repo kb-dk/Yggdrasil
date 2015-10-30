@@ -332,11 +332,12 @@ public class PreservationRequestHandlerTest {
     }
 
     @Test
-    public void testRequestWithFile() throws Exception {
+    public void testContentFileRequest() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
         RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
         PreservationRequest request = makeRequest();
+        request.Model = "contentfile";
         request.File_UUID = NON_RANDOM_FILE_UUID;
         request.Content_URI = "http://localhost/test.txt";
         request.metadata = MetadataContentUtils.getExampleContentFileMetadata();
@@ -380,7 +381,7 @@ public class PreservationRequestHandlerTest {
         request.Content_URI = null;
         request.File_UUID = null;
         request.metadata = MetadataContentUtils.getExampleInstanceMetadata();
-        request.Model = "contentfile";
+        request.Model = "instance";
         request.Preservation_profile = DEFAULT_COLLECTION;
         request.UUID = NON_RANDOM_UUID;
         request.Valhal_ID = "ID";
