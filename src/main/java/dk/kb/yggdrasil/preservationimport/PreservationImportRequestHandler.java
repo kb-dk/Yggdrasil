@@ -11,9 +11,6 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +36,7 @@ import dk.kb.yggdrasil.json.JSONMessaging;
 import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.Security;
 import dk.kb.yggdrasil.messaging.MessageRequestHandler;
+import dk.kb.yggdrasil.utils.TimeUtils;
 
 /**
  * The handler class for preservation import requests.
@@ -53,9 +51,6 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
     /** The size of the buffer. */
     private static final int BUFFER_SIZE = 16*1024;
     
-    /** The format for the timeout date. */
-    private static final String DEFAULT_TIMEOUT_DATE_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
-
     /**
      * Constructor.
      * @param context The context for the preservation import.
@@ -356,14 +351,9 @@ public class PreservationImportRequestHandler extends MessageRequestHandler<Pres
     private void validateTokenDate(PreservationImportRequestState state) throws YggdrasilException {
         Security s = state.getRequest().security;
         if(s != null && s.token != null && s.token_timeout != null) {
-            try {
-                DateFormat formatter = new SimpleDateFormat(DEFAULT_TIMEOUT_DATE_FORMAT);
-                Date d = formatter.parse(s.token_timeout);
-                if(d.getTime() < new Date().getTime()) {
-                    throw new YggdrasilException("Token timeout (" + d.toString() + ") exceeded.");
-                }
-            } catch (ParseException e) {
-                logger.warn("Could not parse the timeout date. Trying to continue anyway.", e);
+            Date d = TimeUtils.parseDate(s.token_timeout);
+            if(d.getTime() < new Date().getTime()) {
+                throw new YggdrasilException("Token timeout (" + d.toString() + ") exceeded.");
             }
         } else {
             logger.debug("No timeout of the token to validate.");

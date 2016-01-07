@@ -257,7 +257,7 @@ public class Bitrepository {
             throws IOException, URISyntaxException {
         FileExchange fileexchange = getFileExchange(bitmagSettings);
 //        BlockingPutFileClient bpfc = new BlockingPutFileClient(client);
-        URL url = fileexchange.uploadToServer(packageFile);
+        URL url = fileexchange.putFile(packageFile);
         String fileId = packageFile.getName();
         ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(this.bitmagSettings);
         ChecksumDataForFileTYPE validationChecksum = BitrepositoryUtils.getValidationChecksum(
@@ -284,7 +284,7 @@ public class Bitrepository {
             }
         } finally {
             // delete the uploaded file from server
-            fileexchange.deleteFromServer(url);
+            fileexchange.deleteFile(url);
         }
         logger.info("The putFile Operation succeeded (" + putFileMessage + ")");
         return OperationEventType.COMPLETE;
@@ -338,7 +338,7 @@ public class Bitrepository {
     private File downloadFile(URL fileUrl) throws IOException {
         File outputFile = File.createTempFile("Extracted", null);
         FileExchange fileexchange = getFileExchange(bitmagSettings);
-        fileexchange.downloadFromServer(outputFile, fileUrl.toExternalForm());
+        fileexchange.getFile(outputFile, fileUrl.toExternalForm());
         return outputFile;
     }
 

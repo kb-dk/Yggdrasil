@@ -129,7 +129,7 @@ public class BitrepositoryTest {
         
         br.setPutFileClient(mockClient);
         
-        when(fe.uploadToServer(any(File.class))).thenReturn(new URL("http://localhost:80/dav/test.txt"));
+        when(fe.putFile(any(File.class))).thenReturn(new URL("http://localhost:80/dav/test.txt"));
         br.setFileExchange(fe);
         
         String generatedName = "helloworld" + System.currentTimeMillis() + ".txt";
@@ -185,7 +185,7 @@ public class BitrepositoryTest {
                 fos.close();
                 return null;
             }
-        }).when(fe).downloadFromServer(any(File.class), anyString());
+        }).when(fe).getFile(any(File.class), anyString());
         when(fe.getURL(anyString())).thenReturn(new URL("http://localhost:80/dav/test.txt"));
         br.setFileExchange(fe);
         
@@ -195,7 +195,7 @@ public class BitrepositoryTest {
         assertEquals(FILE_CONTENT, helloWorldReturned);
         
         verify(fe).getURL(anyString());
-        verify(fe).downloadFromServer(any(File.class), anyString());
+        verify(fe).getFile(any(File.class), anyString());
         verifyNoMoreInteractions(fe);
 
         verify(mockClient).getFileFromFastestPillar(anyString(), anyString(), any(), any(), any(), anyString());
@@ -262,7 +262,7 @@ public class BitrepositoryTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 throw new IOException("Fail downloading file.");
             }
-        }).when(fe).downloadFromServer(any(File.class), anyString());
+        }).when(fe).getFile(any(File.class), anyString());
         when(fe.getURL(anyString())).thenReturn(new URL("http://localhost:80/dav/test.txt"));
         br.setFileExchange(fe);
         
@@ -298,7 +298,7 @@ public class BitrepositoryTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 throw new IOException("Fail downloading file.");
             }
-        }).when(fe).downloadFromServer(any(File.class), anyString());
+        }).when(fe).getFile(any(File.class), anyString());
         when(fe.getURL(anyString())).thenReturn(new URL("http://localhost:80/dav/test.txt"));
         br.setFileExchange(fe);
         
