@@ -115,13 +115,6 @@
                     <xsl:value-of select="techMetadata/fields/file_uuid" />
                   </xsl:element>
                 </xsl:element>
-                <!-- BEGIN significantProperties -->
-                <xsl:element name="premis:significantProperties">
-                  <xsl:element name="premis:significantPropertiesExtension">
-                    <xsl:copy-of select="fitsMetadata1"/> 
-                  </xsl:element>
-                </xsl:element>
-                <!-- END significantProperties -->
                 <!-- BEGIN objectCharacteristics -->
                 <xsl:element name="premis:objectCharacteristics">
                   <!--Mandatory for a PREMIS File object, set to 0 (zero - the default value) here as no information is received from the repository.-->
@@ -150,6 +143,11 @@
                       </xsl:element>
                     </xsl:element>
                   </xsl:element>
+                  <!-- BEGIN embedding FITS -->
+                  <xsl:element name="premis:objectCharacteristicsExtension">
+                    <xsl:copy-of select="fitsMetadata1"/> 
+                  </xsl:element>
+                  <!-- END embedding FITS -->
                 </xsl:element>
                 <!-- END objectCharacteristics -->
                 <!-- BEGIN originalName -->
