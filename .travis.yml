@@ -1,7 +1,7 @@
+sudo: required
 language: java
 os:
   - linux
-sudo: required
 jdk:
   - oraclejdk8
 services:
