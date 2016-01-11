@@ -1,4 +1,7 @@
 language: java
+os:
+  - linux
+sudo: true
 jdk:
   - oraclejdk8
 services:
