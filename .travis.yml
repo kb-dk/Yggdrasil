@@ -1,7 +1,8 @@
 sudo: required
+dist: precise
+group: legacy
+os: linux
 language: java
-os:
-  - linux
 jdk:
   - oraclejdk8
 services:
