@@ -273,7 +273,6 @@ public class PreservationPacker {
      */
     private void updateRequestState(PreservationState preservationState, PreservationRequestState prs) 
             throws YggdrasilException {
-        prs.setState(preservationState);
         context.getRemotePreservationStateUpdater().sendPreservationResponse(prs, preservationState);
         context.getStateDatabase().putPreservationRecord(prs.getUUID(), prs);
     }

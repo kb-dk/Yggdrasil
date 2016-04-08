@@ -28,12 +28,18 @@ import dk.kb.yggdrasil.utils.TravisUtils;
 public class MainTest {
 
     File goodConfigDir = new File("src/test/resources/config");
+    
+    protected static File tmpDir = new File("temporarydir");
 
     @BeforeClass
     public static void beforeClass() throws YggdrasilException, IOException {
-    	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
+        System.setProperty("dk.kb.yggdrasil.runningmode", "test");
+        
+        if(tmpDir.isDirectory()) {
+            FileUtils.cleanDirectory(tmpDir);
+        }
     }
-    
+
     @Test
     public void testMainMethodWithGoodConfigDir() throws Exception {
         if (TravisUtils.runningOnTravis()) {
@@ -44,7 +50,7 @@ public class MainTest {
         FileUtils.deleteDirectory(c.getDatabaseDir());
         Main.main(new String[]{"test"});
     }
-    
+
     @Test(expected = YggdrasilException.class)
     public void testMainMethodWithBadConfigDir() throws Exception {
         String userHome = System.getProperty("user.home");
@@ -53,23 +59,23 @@ public class MainTest {
         System.setProperty(Config.CONFIGURATION_DIRECTORY_PROPERTY, badConfigDir.getAbsolutePath());
         Main.main(new String[]{});
     }
-    
+
     @Test
     public void testRunningWorkflow() throws Exception {
         StateDatabase stateDatabase = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
         HttpCommunication httpCommunication = mock(HttpCommunication.class);
         Main m = new Main(stateDatabase, bitrepository);
-        
+
         System.setProperty(Config.CONFIGURATION_DIRECTORY_PROPERTY, goodConfigDir.getAbsolutePath());
         Config config = new Config();
-        
+
         MQ mq = new MQ(config.getMqSettings());
         mq.publishOnQueue(config.getMqSettings().getPreservationDestination(), "Please terminate Yggdrasil".getBytes(), MQ.SHUTDOWN_MESSAGE_TYPE);
         mq.close();
-                
+
         m.runWorkflow(config, httpCommunication);
-        
+
         verifyNoMoreInteractions(bitrepository);
         verifyNoMoreInteractions(stateDatabase);
         verifyNoMoreInteractions(httpCommunication);

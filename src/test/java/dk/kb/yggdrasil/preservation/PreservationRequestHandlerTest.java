@@ -1,6 +1,18 @@
 package dk.kb.yggdrasil.preservation;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -12,6 +24,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import dk.kb.yggdrasil.HttpCommunication;
 import dk.kb.yggdrasil.HttpPayload;
@@ -37,7 +51,6 @@ public class PreservationRequestHandlerTest {
     protected static PreservationRequest request;
     protected static YggdrasilConfig config;
     protected static Models models;
-    protected static HttpCommunication httpCommunication;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -45,7 +58,6 @@ public class PreservationRequestHandlerTest {
 
         config = new YggdrasilConfig(generalConfigFile);
         models = new Models(modelsFile);
-        httpCommunication = new HttpCommunication();
         
         request = makeRequest();
     }
@@ -54,7 +66,8 @@ public class PreservationRequestHandlerTest {
     public void testSuccessCase() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
@@ -67,20 +80,26 @@ public class PreservationRequestHandlerTest {
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_REQUEST_RECEIVED));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_UPLOAD_SUCCESS));
+        verifyNoMoreInteractions(updater);
         
         verify(states, times(2)).putPreservationRecord(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
         verify(states).delete(eq(NON_RANDOM_UUID));
+        verifyNoMoreInteractions(states);
 
         verify(bitrepository).getKnownCollections();
         verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
+        
+        verifyZeroInteractions(httpCommunication);
     }
     
     @Test
     public void testInvalidRequest() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
@@ -94,13 +113,15 @@ public class PreservationRequestHandlerTest {
         verifyZeroInteractions(updater);
         verifyZeroInteractions(bitrepository);
         verifyZeroInteractions(states);
+        verifyZeroInteractions(httpCommunication);
     }
 
     @Test
     public void testInvalidModelInRequest() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
@@ -120,19 +141,22 @@ public class PreservationRequestHandlerTest {
         
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_REQUEST_RECEIVED));
         verify(updater).sendPreservationResponseWithSpecificDetails(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_REQUEST_FAILED), anyString());
+        verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
         verifyNoMoreInteractions(bitrepository);
         verify(states).putPreservationRecord(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
         verify(states).delete(eq(NON_RANDOM_UUID));
         verifyNoMoreInteractions(states);
+        verifyZeroInteractions(httpCommunication);
     }
 
     @Test
     public void testInvalidMetadataInRequest() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
@@ -152,19 +176,22 @@ public class PreservationRequestHandlerTest {
         
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_REQUEST_RECEIVED));
         verify(updater).sendPreservationResponseWithSpecificDetails(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_METADATA_PACKAGED_FAILURE), anyString());
+        verifyNoMoreInteractions(updater);
 
         verify(bitrepository).getKnownCollections();
         verifyNoMoreInteractions(bitrepository);
         verify(states).putPreservationRecord(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
         verify(states).delete(eq(NON_RANDOM_UUID));
         verifyNoMoreInteractions(states);
+        verifyZeroInteractions(httpCommunication);
     }
     
     @Test(expected = YggdrasilException.class)
     public void testBadFileURL() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
@@ -182,7 +209,8 @@ public class PreservationRequestHandlerTest {
     public void testMissingCollection() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         // Do not return an array with the default collection in it.
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(""));
@@ -194,20 +222,23 @@ public class PreservationRequestHandlerTest {
 
         verify(updater).sendPreservationResponseWithSpecificDetails(any(PreservationRequestState.class), 
                 eq(PreservationState.PRESERVATION_REQUEST_FAILED), anyString());
-        
+        verifyNoMoreInteractions(updater);
+
         verify(bitrepository).getKnownCollections();
         verifyNoMoreInteractions(states, bitrepository);
+        verifyZeroInteractions(httpCommunication);
     }
     
     @Test
     public void testFailedUpload() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
         when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(false);
-        
+
         RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
         PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
 
@@ -216,20 +247,25 @@ public class PreservationRequestHandlerTest {
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_REQUEST_RECEIVED));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_UPLOAD_FAILURE));
+        verifyNoMoreInteractions(updater);
         
         verify(states, times(2)).putPreservationRecord(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
         verify(states).delete(eq(NON_RANDOM_UUID));
+        verifyNoMoreInteractions(states);
 
         verify(bitrepository).getKnownCollections();
         verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
+        verifyZeroInteractions(httpCommunication);
     }
     
     @Test
     public void testTimeout() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         // Setup for huge warc-size, low wait-limit and condition checking interval.
         YggdrasilConfig spyConfig = spy(config);
@@ -249,22 +285,26 @@ public class PreservationRequestHandlerTest {
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
-        verify(bitrepository).getKnownCollections();
-
-        // Wait for timeout
         verify(updater, timeout(1500)).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_UPLOAD_SUCCESS));
+        verifyNoMoreInteractions(updater);
 
         verify(states, timeout(500)).delete(eq(NON_RANDOM_UUID));
         verify(states, times(2)).putPreservationRecord(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
+        verifyNoMoreInteractions(states);
 
+        verify(bitrepository).getKnownCollections();
         verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
+        verifyNoMoreInteractions(bitrepository);
+        
+        verifyZeroInteractions(httpCommunication);
     }
     
     @Test
     public void testMultipleWarcFiles() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         String uuid1 = "UUID-1";
         String uuid2 = "UUID-2";
@@ -294,13 +334,15 @@ public class PreservationRequestHandlerTest {
         verify(states).delete(eq(uuid2));
 
         verify(bitrepository, times(2)).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
+        verifyZeroInteractions(httpCommunication);
     }
     
     @Test
     public void testMultipleRecords() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
 
         // Setup for huge warc-size, low wait-limit and condition checking interval.
         YggdrasilConfig spyConfig = spy(config);
@@ -320,22 +362,27 @@ public class PreservationRequestHandlerTest {
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
-        verify(bitrepository).getKnownCollections();
-
-        // Wait for timeout
         verify(updater, timeout(1500)).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_UPLOAD_SUCCESS));
+        verifyNoMoreInteractions(updater);
 
         verify(states, timeout(1500)).delete(eq(NON_RANDOM_UUID));
         verify(states, times(2)).putPreservationRecord(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
+        verifyNoMoreInteractions(states);
 
+        verify(bitrepository).getKnownCollections();
         verify(bitrepository).uploadFile(any(File.class), eq(DEFAULT_COLLECTION));
+        verifyNoMoreInteractions(bitrepository);
+
+        verifyZeroInteractions(httpCommunication);
     }
 
     @Test
     public void testContentFileRequest() throws Exception {
         StateDatabase states = mock(StateDatabase.class);
         Bitrepository bitrepository = mock(Bitrepository.class);
-        RemotePreservationStateUpdater updater = mock(RemotePreservationStateUpdater.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
+        
         PreservationRequest request = makeRequest();
         request.Model = "contentfile";
         request.File_UUID = NON_RANDOM_FILE_UUID;
@@ -343,8 +390,7 @@ public class PreservationRequestHandlerTest {
         request.metadata = MetadataContentUtils.getExampleContentFileMetadata();
         String payloadText = "Content file content";
         
-        HttpCommunication httpCommunication = mock(HttpCommunication.class);
-        HttpPayload payload = new HttpPayload(new ByteArrayInputStream(payloadText.getBytes()), null, "application/octetstream", (long) "Content file content".length());
+        HttpPayload payload = new HttpPayload(new ByteArrayInputStream(payloadText.getBytes()), null, "application/octetstream", (long) payloadText.length());
         when(httpCommunication.get(anyString())).thenReturn(payload);
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
@@ -356,8 +402,8 @@ public class PreservationRequestHandlerTest {
         prh.handleRequest(request);
 
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_REQUEST_RECEIVED));
-        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_DOWNLOAD_SUCCESS));
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_METADATA_PACKAGED_SUCCESSFULLY));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_PACKAGE_SUCCESS));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_COMPLETE));
         verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_PACKAGE_WAITING_FOR_MORE_DATA));
@@ -376,6 +422,48 @@ public class PreservationRequestHandlerTest {
         verifyNoMoreInteractions(httpCommunication);
     }
     
+    @Test
+    public void testContentFileDownloadFailure() throws Exception {
+        StateDatabase states = mock(StateDatabase.class);
+        Bitrepository bitrepository = mock(Bitrepository.class);
+        RemotePreservationStateUpdater updater = getMockUpdater();
+        HttpCommunication httpCommunication = mock(HttpCommunication.class);
+        
+        PreservationRequest request = makeRequest();
+        request.Model = "contentfile";
+        request.File_UUID = NON_RANDOM_FILE_UUID;
+        request.Content_URI = "http://localhost/test.txt";
+        request.metadata = MetadataContentUtils.getExampleContentFileMetadata();
+
+        when(httpCommunication.get(anyString())).thenReturn(null);
+        when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));
+        when(bitrepository.uploadFile(any(File.class), anyString())).thenReturn(true);
+        
+        RequestHandlerContext context = new RequestHandlerContext(bitrepository, config, states, updater, httpCommunication);
+        PreservationRequestHandler prh = new PreservationRequestHandler(context, models);
+
+        try {
+            prh.handleRequest(request);
+            Assert.fail();
+        } catch (YggdrasilException e) {
+            // Expected
+        }
+
+        verify(updater).sendPreservationResponse(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_REQUEST_RECEIVED));
+        verify(updater).sendPreservationResponseWithSpecificDetails(any(PreservationRequestState.class), eq(PreservationState.PRESERVATION_RESOURCES_DOWNLOAD_FAILURE), anyString());
+        verifyNoMoreInteractions(updater);
+
+        verify(states).putPreservationRecord(eq(NON_RANDOM_UUID), any(PreservationRequestState.class));
+        verify(states, timeout(1500)).delete(eq(NON_RANDOM_UUID));
+        verifyNoMoreInteractions(states);
+
+        verify(bitrepository).getKnownCollections();
+        verifyNoMoreInteractions(bitrepository);
+        
+        verify(httpCommunication).get(anyString());
+        verifyNoMoreInteractions(httpCommunication);
+    }
+    
     public static PreservationRequest makeRequest() {
         PreservationRequest request = new PreservationRequest();
         request.Content_URI = null;
@@ -386,5 +474,22 @@ public class PreservationRequestHandlerTest {
         request.UUID = NON_RANDOM_UUID;
         request.Valhal_ID = "ID";
         return request;
+    }
+    
+    public static RemotePreservationStateUpdater getMockUpdater() throws YggdrasilException {
+        RemotePreservationStateUpdater res = mock(RemotePreservationStateUpdater.class);
+
+        // Needed for setting of the preservation import state by the updater, when failing.
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                PreservationRequestState prs = (PreservationRequestState) invocation.getArguments()[0];
+                PreservationState newState = (PreservationState) invocation.getArguments()[1];
+                prs.setState(newState);
+                return null;
+            }
+        }).when(res).sendPreservationResponse(any(PreservationRequestState.class), any(PreservationState.class));
+        
+        return res;
     }
 }

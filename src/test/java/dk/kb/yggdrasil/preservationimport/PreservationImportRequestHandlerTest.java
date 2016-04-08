@@ -3,20 +3,17 @@ package dk.kb.yggdrasil.preservationimport;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doAnswer;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.junit.BeforeClass;
@@ -39,7 +36,6 @@ import dk.kb.yggdrasil.json.preservationimport.PreservationImportRequest;
 import dk.kb.yggdrasil.json.preservationimport.Security;
 import dk.kb.yggdrasil.json.preservationimport.Warc;
 import dk.kb.yggdrasil.messaging.RemotePreservationStateUpdater;
-import org.junit.Assert;
 
 @RunWith(JUnit4.class)
 public class PreservationImportRequestHandlerTest {
