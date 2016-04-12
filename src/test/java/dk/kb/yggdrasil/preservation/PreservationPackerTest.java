@@ -42,6 +42,7 @@ public class PreservationPackerTest {
     protected static final String WARC_FILE_ID = "warc-file.warc";
 
     private static File generalConfigFile = new File("config/yggdrasil.yml");
+    protected static File testFileDir = new File("temporarydir");
     
     protected static Bitrepository bitrepository;
     protected static YggdrasilConfig config;
@@ -61,7 +62,7 @@ public class PreservationPackerTest {
         bitrepository = Mockito.mock(Bitrepository.class);
 
         stateDatabase = new StateDatabase(config.getDatabaseDir());
-        httpCommunication = new HttpCommunication();
+        httpCommunication = new HttpCommunication(testFileDir);
         
         metadataPayloadFile = new File(config.getTemporaryDir(), "metadataPayloadFile.txt");
         if(!metadataPayloadFile.isFile()) {

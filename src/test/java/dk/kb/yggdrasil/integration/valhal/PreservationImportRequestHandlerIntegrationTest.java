@@ -46,6 +46,7 @@ public class PreservationImportRequestHandlerIntegrationTest {
 
     protected static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
+    protected static File testFileDir = new File("temporarydir");
 
     protected static YggdrasilConfig config;
     protected static RabbitMqSettings mqSettings;
@@ -69,7 +70,7 @@ public class PreservationImportRequestHandlerIntegrationTest {
         MQ mq = new MQ(mqSettings);
         RemotePreservationStateUpdater updater = new RemotePreservationStateUpdater(mq);
 //        HttpCommunication httpCommunication = Mockito.mock(HttpCommunication.class);
-        HttpCommunication httpCommunication = new HttpCommunication();
+        HttpCommunication httpCommunication = new HttpCommunication(testFileDir);
         PreservationImportRequest request = makeRequestWithSecurity();
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));

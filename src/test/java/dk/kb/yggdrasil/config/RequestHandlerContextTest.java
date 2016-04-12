@@ -22,7 +22,8 @@ import dk.kb.yggdrasil.messaging.RemotePreservationStateUpdater;
 public class RequestHandlerContextTest {
 
     private static File generalConfigFile = new File("config/yggdrasil.yml");
-    
+    protected static File testFileDir = new File("temporarydir");
+
     protected static Bitrepository bitrepository;
     protected static YggdrasilConfig config;
     protected static StateDatabase stateDatabase;
@@ -42,7 +43,7 @@ public class RequestHandlerContextTest {
         
         updater = Mockito.mock(RemotePreservationStateUpdater.class);
         
-        httpCommunication = new HttpCommunication();
+        httpCommunication = new HttpCommunication(testFileDir);
     }
 
     @Test

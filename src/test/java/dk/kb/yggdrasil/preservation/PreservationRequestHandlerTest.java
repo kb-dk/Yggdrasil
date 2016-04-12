@@ -47,6 +47,7 @@ public class PreservationRequestHandlerTest {
     protected static final String DEFAULT_COLLECTION = "collection";
     protected static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
+    protected static File testFileDir = new File("temporarydir");
 
     protected static PreservationRequest request;
     protected static YggdrasilConfig config;
@@ -390,7 +391,7 @@ public class PreservationRequestHandlerTest {
         request.metadata = MetadataContentUtils.getExampleContentFileMetadata();
         String payloadText = "Content file content";
         
-        HttpPayload payload = new HttpPayload(new ByteArrayInputStream(payloadText.getBytes()), null, "application/octetstream", (long) payloadText.length());
+        HttpPayload payload = new HttpPayload(new ByteArrayInputStream(payloadText.getBytes()), null, "application/octetstream", (long) payloadText.length(), testFileDir);
         when(httpCommunication.get(anyString())).thenReturn(payload);
 
         when(bitrepository.getKnownCollections()).thenReturn(Arrays.asList(DEFAULT_COLLECTION));

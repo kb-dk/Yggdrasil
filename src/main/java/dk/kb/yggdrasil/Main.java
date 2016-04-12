@@ -74,7 +74,7 @@ public class Main {
 
         // Initiate call of StateDatabase
         StateDatabase sd = new StateDatabase(config.getYggdrasilConfig().getDatabaseDir());
-        HttpCommunication httpCommunication = new HttpCommunication();
+        HttpCommunication httpCommunication = new HttpCommunication(config.getYggdrasilConfig().getTemporaryDir());
 
         RunState runnableRunState = new RunState();
         Thread runstate = new Thread(runnableRunState);

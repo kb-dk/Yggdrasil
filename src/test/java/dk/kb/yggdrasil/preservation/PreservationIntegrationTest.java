@@ -43,6 +43,7 @@ public class PreservationIntegrationTest {
     protected static File generalConfigFile = new File("src/test/resources/config/yggdrasil.yml");
     protected static File modelsFile = new File("src/test/resources/config/models.yml");
     protected static File testStateDir = new File("temporarydir/statedir");
+    protected static File testFileDir = new File("temporarydir");
 
     protected static YggdrasilConfig config;
     protected static Models models;
@@ -55,12 +56,14 @@ public class PreservationIntegrationTest {
         models = new Models(modelsFile);
         
         testStateDir.mkdirs();
+        testFileDir.mkdirs();
         FileUtils.cleanDirectory(testStateDir);
     }
     
     @AfterClass
     public static void afterClass() throws Exception {
         FileUtils.deleteDirectory(testStateDir);
+        FileUtils.deleteDirectory(testFileDir);
     }
 
     @Test
@@ -100,7 +103,7 @@ public class PreservationIntegrationTest {
 
         String payloadText = "Content file content";
 
-        HttpPayload payload = new HttpPayload(new ByteArrayInputStream(payloadText.getBytes()), null, "application/octetstream", (long) payloadText.length());
+        HttpPayload payload = new HttpPayload(new ByteArrayInputStream(payloadText.getBytes()), null, "application/octetstream", (long) payloadText.length(), testFileDir);
         when(httpCommunication.get(anyString())).thenReturn(payload);
 
         StateDatabase states = new StateDatabase(testStateDir);

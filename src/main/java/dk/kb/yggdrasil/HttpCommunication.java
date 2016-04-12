@@ -1,5 +1,6 @@
 package dk.kb.yggdrasil;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -25,11 +26,15 @@ public class HttpCommunication {
 
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(HttpCommunication.class.getName());
+    /** The directory, where the file should be placed. */
+    private final File tmpDir;
 
     /** 
      * Constructor.
      */
-    public HttpCommunication() {}
+    public HttpCommunication(File tmpDir) {
+        this.tmpDir = tmpDir;
+    }
     
     /**
      * Send a HTTP GET request and return the result, if any, to the caller.
@@ -67,7 +72,7 @@ public class HttpCommunication {
                         contentType = contentTypeHeader.getValue();
                     }
                     httpResponse = new HttpPayload(in, contentEncoding,
-                            contentType, responseEntity.getContentLength());
+                            contentType, responseEntity.getContentLength(), tmpDir);
                 } else {
                     if (in != null) {
                         in.close();

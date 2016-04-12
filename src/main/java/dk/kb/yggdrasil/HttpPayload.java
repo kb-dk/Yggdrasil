@@ -21,6 +21,8 @@ public class HttpPayload {
     private Long contentLength;
     /** The amount of data read into the buffer. */
     private static final int READBUFFERSIZE = 16384; // 16 Kbytes
+    /** The directory, where the file should be placed. */
+    private final File tmpDir;
     
     /**
      * Construct a payload object with the supplied parameters.
@@ -29,11 +31,13 @@ public class HttpPayload {
      * @param contentType content type, null if not returned
      * @param contentLength content length, null if not returned
      */
-    public HttpPayload(InputStream contentBody, String contentEncoding, String contentType, Long contentLength) {
+    public HttpPayload(InputStream contentBody, String contentEncoding, String contentType, Long contentLength,
+            File tmpDir) {
         this.contentBody = contentBody;
         this.contentEncoding = contentEncoding;
         this.contentType = contentType;
         this.contentLength = contentLength;
+        this.tmpDir = tmpDir;
     }
 
     /**
@@ -58,7 +62,7 @@ public class HttpPayload {
         File tmpFile = null;
         RandomAccessFile raf;
         UUID uuid = UUID.randomUUID();
-        tmpFile = new File(uuid.toString());
+        tmpFile = new File(tmpDir, uuid.toString());
         raf = new RandomAccessFile(tmpFile, "rw");
         InputStream in = contentBody;
         while ((read = in.read(tmpBuf)) != -1 ) {

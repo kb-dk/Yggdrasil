@@ -1,6 +1,7 @@
 package dk.kb.yggdrasil;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -26,8 +28,14 @@ import org.mortbay.jetty.servlet.ServletHandler;
  */
 @RunWith(JUnit4.class)
 public class HttpCommunicationTest {
+    protected static File testFileDir = new File("temporarydir");
 
-    private HttpCommunication httpCommunication = new HttpCommunication();
+    private HttpCommunication httpCommunication = new HttpCommunication(testFileDir);
+    
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        testFileDir.mkdirs();
+    }
     
     @Test
     public void testAllSuccess() throws Exception{
