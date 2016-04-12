@@ -113,6 +113,7 @@ public class Main {
         this.mq = null;
         try {
             this.mq = new MQ(rabbitMqSettings);
+            this.mq.purgeQueue(rabbitMqSettings.getShutdownDestination());
         } catch (RabbitException e) {
             String errMsg = "initializeRabbitMQ exception "; 
             logger.error(errMsg, e);

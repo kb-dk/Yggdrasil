@@ -94,6 +94,7 @@ public class MQ implements AutoCloseable {
             theChannel = conn.createChannel();
             configureChannel(settings.getPreservationDestination());
             configureChannel(settings.getPreservationResponseDestination());
+            configureChannel(settings.getShutdownDestination());
         } catch (KeyManagementException e1) {
             throw new YggdrasilException("Error connecting to Broker at '"
                     + settings.getBrokerUri() + "' : ", e1);
@@ -232,6 +233,19 @@ public class MQ implements AutoCloseable {
         }
 
         return new MqResponse(messageType, payload);
+    }
+    
+    /**
+     * Purges the queue.
+     * @param queue The queue to purge.
+     * @throws RabbitException 
+     */
+    public void purgeQueue(String queue) throws RabbitException {
+        try {
+            theChannel.queuePurge(queue);
+        } catch (IOException e) {
+            throw new RabbitException("Could not purge the queue.", e);
+        }
     }
     
     /**

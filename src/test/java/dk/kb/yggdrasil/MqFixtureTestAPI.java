@@ -15,6 +15,7 @@ public class MqFixtureTestAPI {
         TestRabbitMQ mq = new TestRabbitMQ(settings);
         mq.purgeQueue(settings.getPreservationDestination());
         mq.purgeQueue(settings.getPreservationResponseDestination());
+        mq.purgeQueue(settings.getShutdownDestination());
         return mq;
     }
     
@@ -27,15 +28,6 @@ public class MqFixtureTestAPI {
         public TestRabbitMQ(RabbitMqSettings settings) throws YggdrasilException,
                 RabbitException {
             super(settings);
-        }
-
-        /**
-         * Purges a queue, which removes all messages. 
-         * @param queue The queue to purge.
-         * @throws IOException If it goes wrong.
-         */
-        public void purgeQueue(String queue) throws IOException {
-            theChannel.queuePurge(queue);
         }
         
         /**
