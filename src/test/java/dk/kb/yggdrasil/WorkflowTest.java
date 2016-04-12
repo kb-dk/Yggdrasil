@@ -1,6 +1,7 @@
 package dk.kb.yggdrasil;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,8 +73,8 @@ public class WorkflowTest extends MqFixtureTestAPI {
 
         verifyNoMoreInteractions(bitrepository);
 
-        verify(mq).getSettings();
-        verify(mq).receiveMessageFromQueue(anyString());
+        verify(mq, times(2)).getSettings();
+        verify(mq, atLeastOnce()).receiveMessageFromQueue(anyString());
         verifyNoMoreInteractions(mq);
     }
     
@@ -131,7 +132,7 @@ public class WorkflowTest extends MqFixtureTestAPI {
         verifyNoMoreInteractions(bitrepository);
 
         verify(mq, times(2)).getSettings();
-        verify(mq, times(2)).receiveMessageFromQueue(anyString());
+        verify(mq, atLeastOnce()).receiveMessageFromQueue(anyString());
         verifyNoMoreInteractions(mq);
     }
 }

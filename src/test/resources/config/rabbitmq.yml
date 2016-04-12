@@ -1,21 +1,24 @@
 development:
   mq_uri: "amqp://localhost:5672"
+  shutdown: "shutdown-dev-queue"
   preservation:
     destination: "preservation-dev-queue"
-    response: "preservation-dev-response-queue"
+    response: "preservation-response-dev-queue"
     polling_interval_in_minutes: 1
 
 test:
   mq_uri: "amqp://localhost:5672"
+  shutdown: "shutdown-test-queue"
   preservation:
     destination: "preservation-test-queue"
-    response: "preservation-test-response-queue"
+    response: "preservation-response-test-queue"
     polling_interval_in_minutes: 1
 
 production:
-  mq_uri: "amqp://localhost:5672"
+  mq_uri: "amqp://sifd-staging-03:5672"
+  shutdown: "shutdown-prod-queue"
   preservation:
     destination: "preservation-prod-queue"
-    response: "preservation-prod-response-queue"
+    response: "preservation-response-prod-queue"
     polling_interval_in_minutes: 1
 

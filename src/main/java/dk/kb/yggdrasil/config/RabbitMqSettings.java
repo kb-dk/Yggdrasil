@@ -13,10 +13,10 @@ import dk.kb.yggdrasil.utils.YamlTools;
  * 
  * development:
  *   mq_uri: "amqp://localhost:5672"
+ *   shutdown: "dev-shutdown"
  *   preservation:
  *       destination: "dev-queue"
- *   dissemination:
- *       destination: "dev-queue"
+ *       response: "dev-response-queue"
  */
 public final class RabbitMqSettings {
 
@@ -39,6 +39,11 @@ public final class RabbitMqSettings {
     /** Default value for the rabbitmq hostname. */
     public static final String RABBIT_MQ_DEFAULT_HOSTNAME = "localhost";
 
+    /** Use this property for the rabbitmq shutdown destination.*/
+    public static final String RABBIT_MQ_SHUTDOWN_DESTINATION_PROPERTY = "shutdown";
+    /** Default value for the shutdown destination name.*/
+    public static final String RABBIT_MQ_DEFAULT_SHUTDOWN_DESTINATION = "default-shutdown-queue";
+
     /** The broker address as a URI. */
     private String brokerUri;
     
@@ -47,6 +52,9 @@ public final class RabbitMqSettings {
 
     /** The name of the preservation response queue. **/
     private String preservationResponseDestination;
+    
+    /** The name of the shutdown queue.*/
+    private String shutdownDestination;
 
     /** The interval for polling the MQ in minutes. **/
     private int pollingIntervalInMinutes;
@@ -87,6 +95,12 @@ public final class RabbitMqSettings {
         } else {
             throw new YggdrasilException("Missing some or all of the required properties in the settings file");
         }
+        
+        if(settings.containsKey(RABBIT_MQ_SHUTDOWN_DESTINATION_PROPERTY)) {
+            this.shutdownDestination = (String) settings.get(RABBIT_MQ_SHUTDOWN_DESTINATION_PROPERTY);
+        } else {
+            this.shutdownDestination = RABBIT_MQ_DEFAULT_SHUTDOWN_DESTINATION;            
+        }
 
         // Check if rabbitmq-port or rabbitmq-hostname is overridden by defined properties
         // If either is overriden, set the BrokerURI to the overridden values and use the default value if only
@@ -111,6 +125,7 @@ public final class RabbitMqSettings {
         this.brokerUri = brokerUri;
         this.preservationDestination = preservationDestination;
         this.preservationResponseDestination = preservationResponseDestination;
+        this.shutdownDestination = RABBIT_MQ_DEFAULT_SHUTDOWN_DESTINATION;
     }
 
     /**
@@ -136,11 +151,17 @@ public final class RabbitMqSettings {
     }
     
     /**
-     *
      * @return the preservation response destination
      */
     public String getPreservationResponseDestination() {
         return preservationResponseDestination;
+    }
+    
+    /**
+     * @return The destination for shutdown messages.
+     */
+    public String getShutdownDestination() {
+        return shutdownDestination;
     }
 
     /**
@@ -152,7 +173,6 @@ public final class RabbitMqSettings {
     }
 
     /**
-     *
      * @return the interval for polling the MQ in minutes
      */
     public int getPollingIntervalInMinutes() {

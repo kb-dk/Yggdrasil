@@ -1,11 +1,9 @@
 package dk.kb.yggdrasil;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
 import dk.kb.yggdrasil.config.Config;
-import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.exceptions.RabbitException;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
 import dk.kb.yggdrasil.messaging.MQ;
@@ -28,9 +26,10 @@ public class Shutdown {
         Config config = new Config();
         MQ mq = new MQ(config.getMqSettings());
         String message = "Shutdown Yggdrasil, please";
-        mq.publishOnQueue(config.getMqSettings().getPreservationDestination(), 
+        mq.publishOnQueue(config.getMqSettings().getShutdownDestination(), 
                 message.getBytes(Charset.defaultCharset()), MQ.SHUTDOWN_MESSAGE_TYPE);
         mq.close();
+        System.err.println("Sent shutdown upon queue: " + config.getMqSettings().getShutdownDestination());
     }
 
 }

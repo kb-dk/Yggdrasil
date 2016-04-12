@@ -33,6 +33,9 @@ public class Workflow {
     /** The mapping between message type and message request handlers.*/
     private final Map<String, MessageRequestHandler> requestHandlers;
     
+    /** Whether or not to shutdown. */
+    private boolean shutdown = false;
+    
     /**
      * Constructor for the Workflow class.
      * @param rabbitconnector The rabbitmq connector object
@@ -67,41 +70,78 @@ public class Workflow {
      * @throws RabbitException When message queue connection fails.
      */
     public void run() throws YggdrasilException, RabbitException {
-        boolean shutdown = false;
+        RequestReceiver requestReceiver = new RequestReceiver(mq.getSettings().getPreservationDestination());
+        RequestReceiver shutdownReceiver = new RequestReceiver(mq.getSettings().getShutdownDestination());
+
+        requestReceiver.run();
+        shutdownReceiver.run();
+
         while (!shutdown) {
             try {
-                shutdown = handleNextRequest();
-            } catch (YggdrasilException e) {
-                logger.error("Caught exception while retrieving message from rabbitmq. Skipping message", e);
-                continue;
+                synchronized(this) {
+                    this.wait();
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Ignore interruption.", e);
             }
+        }
+
+        synchronized(requestReceiver) {
+            requestReceiver.notify();
+        }
+        synchronized(shutdownReceiver) {
+            shutdownReceiver.notify();
         }
     }
 
-    /**
-     * Wait until the next request arrives on the queue and handle it responsively.
-     * @return whether a shutdown message was received.
-     * @throws YggdrasilException If bad messagetype
-     * @throws RabbitException When message queue connection fails.
-     */
-    private boolean handleNextRequest() throws YggdrasilException, RabbitException {
-        // TODO Should there be a timeout here?
-        MqResponse requestContent = mq.receiveMessageFromQueue(
-                mq.getSettings().getPreservationDestination());
-        final String messageType = requestContent.getMessageType();
-        if (messageType == null) {
-            throw new YggdrasilException("'null' messagetype is not handled. message ignored ");
-        } else if (messageType.equalsIgnoreCase(MQ.SHUTDOWN_MESSAGE_TYPE)) {
+    class RequestReceiver extends Thread {
+        protected String queue;
+        RequestReceiver(String queue) {
+            this.queue = queue;
+        }
+        
+        public void run() {
+            while (!shutdown) {
+                try {
+                    this.handleNextRequest();
+                } catch (YggdrasilException e) {
+                    logger.error("Caught exception while retrieving message from rabbitmq. Skipping message", e);
+                    continue;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        
+        /**
+         * Wait until the next request arrives on the queue and handle it responsively.
+         * @return whether a shutdown message was received.
+         * @throws YggdrasilException If bad messagetype
+         * @throws RabbitException When message queue connection fails.
+         */
+        private void handleNextRequest() throws YggdrasilException, RabbitException {
+            MqResponse requestContent = mq.receiveMessageFromQueue(queue);
+            String messageType = (requestContent == null ? null : requestContent.getMessageType());
+            if (requestContent == null || messageType == null) {
+                throw new YggdrasilException("'null' messagetype is not handled. message ignored ");
+            } else if (messageType.equalsIgnoreCase(MQ.SHUTDOWN_MESSAGE_TYPE)) {
+                terminate();
+            } else if (requestHandlers.containsKey(messageType.toUpperCase())) {
+                MessageRequestHandler mrh = requestHandlers.get(messageType.toUpperCase());
+                mrh.handleRequest(mrh.extractRequest(requestContent.getPayload()));
+            } else {
+                throw new YggdrasilException("The message type '"
+                        + messageType + "' is not handled by Yggdrasil.");
+            }
+        }
+        
+        /**
+         * Shutting down.
+         */
+        private synchronized void terminate() {
             logger.warn("Shutdown message received");
-            // Shutdown message received
-            return true;
-        } else if (requestHandlers.containsKey(messageType.toUpperCase())) {
-            MessageRequestHandler mrh = requestHandlers.get(messageType.toUpperCase());
-            mrh.handleRequest(mrh.extractRequest(requestContent.getPayload()));
-            return false;
-        } else {
-            throw new YggdrasilException("The message type '"
-                    + messageType + "' is not handled by Yggdrasil.");
+            shutdown = true;
+            this.notifyAll();
         }
     }
 }

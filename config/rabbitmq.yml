@@ -1,5 +1,6 @@
 development:
   mq_uri: "amqp://localhost:5672"
+  shutdown: "shutdown-dev-queue"
   preservation:
     destination: "preservation-dev-queue"
     response: "preservation-response-dev-queue"
@@ -7,6 +8,7 @@ development:
 
 test:
   mq_uri: "amqp://localhost:5672"
+  shutdown: "shutdown-test-queue"
   preservation:
     destination: "preservation-test-queue"
     response: "preservation-response-test-queue"
@@ -14,6 +16,7 @@ test:
 
 production:
   mq_uri: "amqp://sifd-staging-03:5672"
+  shutdown: "shutdown-prod-queue"
   preservation:
     destination: "preservation-prod-queue"
     response: "preservation-response-prod-queue"
