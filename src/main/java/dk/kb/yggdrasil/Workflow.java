@@ -94,12 +94,25 @@ public class Workflow {
         }
     }
 
+    /**
+     * Receiver thread class.
+     * The receiving from a queue needs to be split into dedicated threads to be able to receive from different queues simultaneous.
+     * 
+     * TODO: Handle shutdown receiver differently from request-receiver?
+     */
     class RequestReceiver extends Thread {
-        protected String queue;
-        RequestReceiver(String queue) {
+        /** The queue to listen to. */
+        final String queue;
+        
+        /**
+         * Constructor.
+         * @param queue The name of the queue.
+         */
+        protected RequestReceiver(String queue) {
             this.queue = queue;
         }
         
+        @Override
         public void run() {
             while (!shutdown) {
                 try {
