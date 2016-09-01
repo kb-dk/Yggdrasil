@@ -3,6 +3,9 @@ package dk.kb.yggdrasil.messaging;
 import java.io.File;
 import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +24,8 @@ import dk.kb.yggdrasil.preservation.PreservationState;
 public class RemotePreservationStateUpdaterTest {
     protected static PreservationRequest request;
     protected static final String NON_RANDOM_UUID = "random-uuid";
+    
+    protected static File tempDir;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -32,6 +37,14 @@ public class RemotePreservationStateUpdaterTest {
         request.Preservation_profile = "collectionId";
         request.UUID = NON_RANDOM_UUID;
         request.Valhal_ID = "ID";
+        
+        tempDir = new File("tempDir");
+        tempDir.mkdirs();
+    }
+    
+    @AfterClass
+    public static void afterClass() throws Exception {
+        FileUtils.deleteDirectory(tempDir);
     }
 
     @Test
@@ -60,8 +73,9 @@ public class RemotePreservationStateUpdaterTest {
     public void testAllElements() throws Exception {
         MQ mq = Mockito.mock(MQ.class);
         final String warcId = UUID.randomUUID().toString();
-        File warc = new File("temporarydir", warcId);
+        File warc = new File(tempDir, warcId);
         try {
+            Assert.assertFalse(warc.exists());
             warc.createNewFile();
             PreservationRequestState prs = new PreservationRequestState(request, PreservationState.PRESERVATION_REQUEST_RECEIVED, NON_RANDOM_UUID);
             prs.setMetadataWarcFile(warc);
