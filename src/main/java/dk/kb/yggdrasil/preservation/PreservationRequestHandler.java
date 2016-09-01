@@ -145,6 +145,7 @@ public class PreservationRequestHandler extends MessageRequestHandler<Preservati
         }
         
         transformMetadata(prs);
+        context.getStateDatabase().putPreservationRecord(prs.getUUID(), prs);
         preservationManager.addToWarcFile(prs.getRequest().Preservation_profile, prs);
         logger.info("Finished handling the preservation request with UUID '" + prs.getUUID() + "' successfully");
     }

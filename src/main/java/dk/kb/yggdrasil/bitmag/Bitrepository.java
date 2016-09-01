@@ -69,15 +69,10 @@ public class Bitrepository {
     /** Logging mechanism. */
     private static final Logger logger = Logger.getLogger(Bitrepository.class.getName());
 
-    /** The archive settings directory needed to upload to
-     * a bitmag style repository */
-    private File settingsDir = null;
 
     /** National bitrepository settings. */
     private Settings bitmagSettings = null;
 
-    /** The bitrepository component id. */
-    private final String componentId;
 
     /** The bitmag security manager.*/
     protected SecurityManager bitMagSecurityManager;
@@ -102,24 +97,11 @@ public class Bitrepository {
     private DeleteFileClient bitMagDeleteFileClient;
      */
 
-    /** The authentication key used by the putfileClient. */
-    private File privateKeyFile;
 
     /** The message bus used by the putfileClient. */
     protected MessageBus bitMagMessageBus;
-
-    /** Name of YAML property used to find settings dir. */
-    public static final String YAML_BITMAG_SETTINGS_DIR_PROPERTY = "settings_dir";
-    /** Name of YAML property used to find keyfile. */
-    public static final String YAML_BITMAG_KEYFILE_PROPERTY = "keyfile";
-
-    /** Name of the YAML sub-map client*/
-    public static final String YAML_BITMAG_CLIENTS = "client";
-    /** Name of the YAML property under the client sub-map for maximum number of pillars accept to fail.*/
-    public static final String YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES = "putfile_max_pillars_failures";
-
-    /** The maximum number of failing pillars. Default is 0, can be overridden by settings in the bitmag.yml. */
-    private int maxNumberOfFailingPillars = 0; 
+    
+    protected BitrepositoryConfig config;
 
     /**
      * Constructor for the BitRepository class.
@@ -127,10 +109,8 @@ public class Bitrepository {
      * @throws YggdrasilException If the config file points to missing keyfile or settings directory
      * @throws ArgumentCheck if configFile is null or
      */
-    public Bitrepository(File configFile) throws YggdrasilException {
-        ArgumentCheck.checkExistsNormalFile(configFile, "File configFile");
-        componentId = BitrepositoryUtils.generateComponentID();
-        readConfigFile(configFile);
+    public Bitrepository(BitrepositoryConfig config) throws YggdrasilException {
+        this.config = config;
         initBitmagSettings();
         initBitmagSecurityManager();
         initBitmagMessageBus();
@@ -142,7 +122,7 @@ public class Bitrepository {
      */
     protected void initBitMagClients() {
         bitMagPutClient = ModifyComponentFactory.getInstance().retrievePutClient(
-                bitmagSettings, bitMagSecurityManager, componentId);
+                bitmagSettings, bitMagSecurityManager, config.getComponentId());
         // Maybe needed later
         // bitMagDeleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
         //        bitmagSettings, bitMagSecurityManager, COMPONENT_ID);
@@ -161,10 +141,10 @@ public class Bitrepository {
         // ChecksumSpecTYPE checksumRequestsForNewFile, EventHandler eventHandler, String auditTrailInformation);
         //
         AccessComponentFactory acf = AccessComponentFactory.getInstance();
-        bitMagGetClient = acf.createGetFileClient(bitmagSettings, bitMagSecurityManager, componentId);
-        bitMagGetFileIDsClient = acf.createGetFileIDsClient(bitmagSettings, bitMagSecurityManager, componentId);
+        bitMagGetClient = acf.createGetFileClient(bitmagSettings, bitMagSecurityManager, config.getComponentId());
+        bitMagGetFileIDsClient = acf.createGetFileIDsClient(bitmagSettings, bitMagSecurityManager, config.getComponentId());
 
-        bitMagGetChecksumsClient = acf.createGetChecksumsClient(bitmagSettings, bitMagSecurityManager, componentId);
+        bitMagGetChecksumsClient = acf.createGetChecksumsClient(bitmagSettings, bitMagSecurityManager, config.getComponentId());
     }
     
     /**
@@ -173,42 +153,6 @@ public class Bitrepository {
     protected void initBitmagMessageBus() {
         bitMagMessageBus = ProtocolComponentFactory.getInstance().getMessageBus(
                 bitmagSettings, bitMagSecurityManager);
-    }
-
-    /**
-     * Read the configfile, and initialize the settingsDir and privateKeyFile variables.
-     * @param configFile The YAML configuration file.
-     * @throws YggdrasilException If unable to find the relevant information in the given configFile
-     *  or the configFile is null or does not exist.
-     */
-    private void readConfigFile(File configFile) throws YggdrasilException {
-        if (configFile == null || !configFile.isFile()) {
-            throw new YggdrasilException("ConfigFile '" + (configFile == null? "null" : configFile.getAbsolutePath())
-                    + "' is undefined or missing. ");
-        }
-        Map yamlMap = YamlTools.loadYamlSettings(configFile);
-        RunningMode mode = RunningMode.getMode();
-        if (!yamlMap.containsKey(mode.toString())) {
-            throw new YggdrasilException("Unable to find bitmag settings for the mode '"
-                    + mode + "' in the given YAML file ' " + configFile.getAbsolutePath() + "'");
-        }
-        Map modeMap = (Map) yamlMap.get(mode.toString());
-        if (!modeMap.containsKey(YAML_BITMAG_KEYFILE_PROPERTY)
-                || !modeMap.containsKey(YAML_BITMAG_SETTINGS_DIR_PROPERTY)) {
-            throw new YggdrasilException("Unable to find one or both properties (" + YAML_BITMAG_KEYFILE_PROPERTY 
-                    + "," + YAML_BITMAG_SETTINGS_DIR_PROPERTY + ") using the current running mode '"
-                    + mode + "' in the given YAML file ' " + configFile.getAbsolutePath() + "'");
-        }
-
-        this.settingsDir = new File((String) modeMap.get(YAML_BITMAG_SETTINGS_DIR_PROPERTY));
-        this.privateKeyFile = new File((String) modeMap.get(YAML_BITMAG_KEYFILE_PROPERTY));
-        if(modeMap.containsKey(YAML_BITMAG_CLIENTS)) {
-            Map clientMap = (Map) modeMap.get(YAML_BITMAG_CLIENTS);
-            if(clientMap.containsKey(YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES)) {
-                this.maxNumberOfFailingPillars = (Integer) clientMap.get(
-                        YAML_BITMAG_CLIENT_PUTFILE_MAX_PILLAR_FAILURES);
-            }            
-        }
     }
 
     /**
@@ -268,7 +212,7 @@ public class Bitrepository {
                 + fileId + "' from Yggdrasil - the preservation service of Chronos.";
 
         YggdrasilBlockingEventHandler putFileEventHandler = new YggdrasilBlockingEventHandler(collectionID, 
-                maxNumberOfFailingPillars);
+                config.getMaxNumberOfFailingPillars());
         try {
             client.putFile(collectionID, url, fileId, packageFile.length(), validationChecksum, requestChecksum,
                     putFileEventHandler, putFileMessage);
@@ -443,7 +387,7 @@ public class Bitrepository {
     }
 
     private File getPrivateKeyFile() {
-        return this.privateKeyFile;
+        return config.getPrivateKeyFile();
     }
 
     /**
@@ -454,8 +398,8 @@ public class Bitrepository {
             SettingsProvider settingsLoader =
                     new SettingsProvider(
                             new XMLFileSettingsLoader(
-                                    settingsDir.getAbsolutePath()),
-                                    componentId);
+                                    config.getSettingsDir().getAbsolutePath()),
+                                    config.getComponentId());
             bitmagSettings = settingsLoader.getSettings();
             SettingsUtils.initialize(bitmagSettings);
         }

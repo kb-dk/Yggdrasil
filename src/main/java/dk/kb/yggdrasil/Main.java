@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import dk.kb.yggdrasil.bitmag.Bitrepository;
+import dk.kb.yggdrasil.bitmag.BitrepositoryConfig;
 import dk.kb.yggdrasil.config.Config;
 import dk.kb.yggdrasil.config.RabbitMqSettings;
 import dk.kb.yggdrasil.config.RunningMode;
@@ -70,7 +71,7 @@ public class Main {
 
         Config config = new Config();
 
-        Bitrepository bitrepository = new Bitrepository(config.getBitmagConfigFile());
+        Bitrepository bitrepository = new Bitrepository(new BitrepositoryConfig(config.getBitmagConfigFile()));
 
         // Initiate call of StateDatabase
         StateDatabase sd = new StateDatabase(config.getYggdrasilConfig().getDatabaseDir());

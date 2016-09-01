@@ -77,7 +77,7 @@ public class BitrepositoryTest {
     public void testMissingYamlFile() throws Exception {
         File missingConfigFile = new File(MISSING_YAML_FILE);
         assertFalse(missingConfigFile.exists());
-        new Bitrepository(missingConfigFile);
+        new Bitrepository(new BitrepositoryConfig(missingConfigFile));
     }
 
 //    @Ignore
@@ -85,7 +85,7 @@ public class BitrepositoryTest {
     public void testIncorrectYamlFile() throws Exception {
         File badConfigFile = new File(INCORRECT_YAML_FILE);
         assertTrue(badConfigFile.exists());
-        new Bitrepository(badConfigFile);
+        new Bitrepository(new BitrepositoryConfig(badConfigFile));
     }
 
     @Test

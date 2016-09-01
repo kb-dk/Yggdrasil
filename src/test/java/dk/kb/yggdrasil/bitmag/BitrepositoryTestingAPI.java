@@ -23,7 +23,7 @@ public class BitrepositoryTestingAPI extends Bitrepository {
     FileExchange fileExchange = null;
     
     public BitrepositoryTestingAPI(File configFile) throws YggdrasilException {
-        super(configFile);
+        super(new BitrepositoryConfig(configFile));
     }
 
     public void setPutFileClient(PutFileClient client) {

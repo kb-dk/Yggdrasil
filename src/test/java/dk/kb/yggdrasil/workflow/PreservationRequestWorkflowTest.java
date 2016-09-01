@@ -90,7 +90,7 @@ public class PreservationRequestWorkflowTest extends MqFixtureTestAPI {
 
         workflow.run();
 
-        verify(stateDatabase, times(2)).putPreservationRecord(eq(uuid), any(PreservationRequestState.class));
+        verify(stateDatabase, times(3)).putPreservationRecord(eq(uuid), any(PreservationRequestState.class));
         verify(stateDatabase, timeout(1500)).delete(eq(uuid));
         verifyNoMoreInteractions(stateDatabase);
 
@@ -268,7 +268,7 @@ public class PreservationRequestWorkflowTest extends MqFixtureTestAPI {
 
         workflow.run();
 
-        verify(stateDatabase, times(2)).putPreservationRecord(eq(uuid), any(PreservationRequestState.class));
+        verify(stateDatabase, times(3)).putPreservationRecord(eq(uuid), any(PreservationRequestState.class));
         verify(stateDatabase, timeout(1500)).delete(eq(uuid));
         verifyNoMoreInteractions(stateDatabase);
 
