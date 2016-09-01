@@ -13,10 +13,9 @@ import dk.kb.yggdrasil.utils.YamlTools;
  */
 public class BitrepositoryConfig {
 
-    /** The archive settings directory needed to upload to
-     * a bitmag style repository. May not be null. */
+    /** The archive settings directory needed to upload to a bitmag style repository. May not be null. */
     private final File settingsDir;
-    /** The authentication key used by the putfileClient. */
+    /** The authentication key used by the bitrepository clients and the messagequeue. */
     private File privateKeyFile;
     /** The maximum number of failing pillars. Default is 0, can be overridden by settings in the bitmag.yml. */
     private int maxNumberOfFailingPillars = 0; 
@@ -66,6 +65,25 @@ public class BitrepositoryConfig {
         }
         
         componentId = BitrepositoryUtils.generateComponentID();
+    }
+    
+    /**
+     * Constructor.
+     * @param settingsDir The settings directory.
+     * @param privateKeyFile The private key/certificate file.
+     * @param maxNumberOfFailingPillars The maximum number of pillars allowed to fail a given operation, 
+     * before calling it a failure.
+     * @param componentId The id of the bitrepository client.
+     */
+    public BitrepositoryConfig(File settingsDir, File privateKeyFile, int maxNumberOfFailingPillars, 
+            String componentId) {
+        ArgumentCheck.checkExistsDirectory(settingsDir, "File settingsDir");
+        ArgumentCheck.checkNotNegativeInt(maxNumberOfFailingPillars, "int maxNumberOfFailingPillars");
+        ArgumentCheck.checkNotNullOrEmpty(componentId, "String componentId");
+        this.settingsDir = settingsDir;
+        this.privateKeyFile = privateKeyFile;
+        this.maxNumberOfFailingPillars = maxNumberOfFailingPillars; 
+        this.componentId = componentId;
     }
 
     /**
