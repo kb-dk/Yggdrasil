@@ -30,6 +30,7 @@ public class HttpPayload {
      * @param contentEncoding content encoding, null if not returned
      * @param contentType content type, null if not returned
      * @param contentLength content length, null if not returned
+     * @param tmpDir The temporary directory, where the files will be stored while downloading.
      */
     public HttpPayload(InputStream contentBody, String contentEncoding, String contentType, Long contentLength,
             File tmpDir) {

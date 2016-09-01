@@ -10,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
-import dk.kb.yggdrasil.exceptions.YggdrasilException;
 
+/**
+ * Utility class for dealing with time/date.
+ */
 public class TimeUtils {
     /** Logging mechanism. */
     private static Logger logger = LoggerFactory.getLogger(TimeUtils.class);
@@ -19,7 +21,13 @@ public class TimeUtils {
     /** The format for the timeout date. */
     private static final String[] DEFAULT_TIMEOUT_DATE_FORMAT = {"EEE MMM dd HH:mm:ss zzz yyyy"};
     
-    public static Date parseDate(String date) throws YggdrasilException {
+    /**
+     * Parses a date in our specified format. First attempts to use the system default locale, if that
+     * does not work, then it will attempt to parse it with the english locale.
+     * @param date The date in text format.
+     * @return The Date object for the date, or null if it could not be parsed.
+     */
+    public static Date parseDate(String date) {
         ArgumentCheck.checkNotNullOrEmpty(date, "String date");
         
         for(String dateFormat : DEFAULT_TIMEOUT_DATE_FORMAT) {

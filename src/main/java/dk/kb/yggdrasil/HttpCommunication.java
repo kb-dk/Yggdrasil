@@ -12,7 +12,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +30,7 @@ public class HttpCommunication {
 
     /** 
      * Constructor.
+     * @param tmpDir The temporary directory, where the files will be stored while downloading.
      */
     public HttpCommunication(File tmpDir) {
         this.tmpDir = tmpDir;
@@ -50,7 +50,7 @@ public class HttpCommunication {
             /*
              * HTTP request.
              */
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            CloseableHttpClient httpClient = HttpClients.createDefault();;
             HttpGet getRequest = new HttpGet(url);
             /*
              * HTTP response.
@@ -155,7 +155,7 @@ public class HttpCommunication {
             /*
              * HTTP request.
              */
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpPost postRequest = new HttpPost(url);
             StringEntity putEntity = new StringEntity(new String(contentBody, Charset.defaultCharset()));
             putEntity.setContentType(contentType);

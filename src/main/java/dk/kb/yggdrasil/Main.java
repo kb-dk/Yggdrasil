@@ -1,6 +1,5 @@
 package dk.kb.yggdrasil;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -131,7 +130,6 @@ public class Main {
     /**
      * Run Yggdrasil workflow with slow down if needed.
      * @throws YggdrasilException When unable to connect to message queue.
-     * @throws FileNotFoundException Pass through from workflow run method.
      */
     protected void runWorkflow(final Config config, final HttpCommunication httpCommunication) 
             throws YggdrasilException {

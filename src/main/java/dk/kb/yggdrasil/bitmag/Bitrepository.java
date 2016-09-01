@@ -55,10 +55,8 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.ClientSettings;
 import org.bitrepository.settings.repositorysettings.Collection;
 
-import dk.kb.yggdrasil.config.RunningMode;
 import dk.kb.yggdrasil.exceptions.ArgumentCheck;
 import dk.kb.yggdrasil.exceptions.YggdrasilException;
-import dk.kb.yggdrasil.utils.YamlTools;
 
 /**
  * The class for interacting with the BitRepository, e.g. put files, get files, etc.
@@ -69,10 +67,8 @@ public class Bitrepository {
     /** Logging mechanism. */
     private static final Logger logger = Logger.getLogger(Bitrepository.class.getName());
 
-
     /** National bitrepository settings. */
     private Settings bitmagSettings = null;
-
 
     /** The bitmag security manager.*/
     protected SecurityManager bitMagSecurityManager;
@@ -97,19 +93,18 @@ public class Bitrepository {
     private DeleteFileClient bitMagDeleteFileClient;
      */
 
-
     /** The message bus used by the putfileClient. */
     protected MessageBus bitMagMessageBus;
-    
+    /** Configuration for the bitrepository.*/
     protected BitrepositoryConfig config;
 
     /**
      * Constructor for the BitRepository class.
-     * @param configFile A YAML config file with links to the bitrepository settingsdir and keyfile
-     * @throws YggdrasilException If the config file points to missing keyfile or settings directory
-     * @throws ArgumentCheck if configFile is null or
+     * @param config The configuration for the Bitrepository.
+     * @throws ArgumentCheck if configuration is null.
      */
-    public Bitrepository(BitrepositoryConfig config) throws YggdrasilException {
+    public Bitrepository(BitrepositoryConfig config) {
+        ArgumentCheck.checkNotNull(config, "BitrepositoryConfig config");
         this.config = config;
         initBitmagSettings();
         initBitmagSecurityManager();
@@ -142,9 +137,11 @@ public class Bitrepository {
         //
         AccessComponentFactory acf = AccessComponentFactory.getInstance();
         bitMagGetClient = acf.createGetFileClient(bitmagSettings, bitMagSecurityManager, config.getComponentId());
-        bitMagGetFileIDsClient = acf.createGetFileIDsClient(bitmagSettings, bitMagSecurityManager, config.getComponentId());
+        bitMagGetFileIDsClient = acf.createGetFileIDsClient(bitmagSettings, bitMagSecurityManager, 
+                config.getComponentId());
 
-        bitMagGetChecksumsClient = acf.createGetChecksumsClient(bitmagSettings, bitMagSecurityManager, config.getComponentId());
+        bitMagGetChecksumsClient = acf.createGetChecksumsClient(bitmagSettings, bitMagSecurityManager, 
+                config.getComponentId());
     }
     
     /**
@@ -337,7 +334,6 @@ public class Bitrepository {
      * @param packageID A given package ID (if null, checksums for the whole collection is requested)
      * @param collectionID A given collection ID
      * @return a map with the results from the pillars
-     * @throws YggdrasilException If it fails to retrieve the checksums.
      */
     public Map<String, ChecksumsCompletePillarEvent> getChecksums(String packageID, String collectionID) {
         ArgumentCheck.checkNotNullOrEmpty(collectionID, "String collectionId");

@@ -88,26 +88,37 @@ public class Config {
         }
     }
     
+    /**
+     * @return The models.
+     */
     public Models getModels() {
         return models;
     }
     
+    /**
+     * @return The rabbitmq settings.
+     */
     public RabbitMqSettings getMqSettings() {
         return mqSettings;
     }
     
+    /**
+     * @return The Yggdrasil configuration.
+     */
     public YggdrasilConfig getYggdrasilConfig() {
         return yggdrasilConfig;
     }
     
+    /**
+     * @return The bitmag configuration file.
+     */
     public File getBitmagConfigFile() {
         return bitmagConfigFile;
     }
     
-
     /** 
      * @return the configuration directory.
-     * @throws If the configuration directory does not exist.
+     * @throws YggdrasilException If the configuration directory does not exist.
      */
     public static File getConfigDir() throws YggdrasilException {
         File configdir = null;
