@@ -206,7 +206,7 @@ public class Bitrepository {
 
         ChecksumSpecTYPE requestChecksum = null;
         String putFileMessage = "Putting the file '" + packageFile + "' with the file id '"
-                + fileId + "' from Yggdrasil - the preservation service of Chronos.";
+                + fileId + "' from " + config.getComponentId();
 
         YggdrasilBlockingEventHandler putFileEventHandler = new YggdrasilBlockingEventHandler(collectionID, 
                 config.getMaxNumberOfFailingPillars());
