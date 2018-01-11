@@ -204,6 +204,7 @@ public class WarcWriterWrapper {
             header.warcDate = new Date();
             header.warcWarcinfoIdUri = warcinfoRecordId;
             header.warcRecordIdUri = warcRecordIdUri;
+            header.warcTargetUriUri = warcRecordIdUri;
             header.warcRefersToUri = refersTo;
             header.warcBlockDigest = blockDigest;
             header.contentType = contentType;
@@ -249,6 +250,7 @@ public class WarcWriterWrapper {
             header.warcDate = new Date();
             header.warcWarcinfoIdUri = warcinfoRecordId;
             header.warcRecordIdUri = warcRecordIdUri;
+            header.warcTargetUriUri = warcRecordIdUri;
             header.warcConcurrentToList.addAll(concurrentTo);
             header.warcRefersToUri = refersTo;
             header.warcBlockDigest = blockDigest;
