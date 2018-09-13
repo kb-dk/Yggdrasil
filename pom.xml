@@ -8,10 +8,26 @@
   <packaging>jar</packaging>
   <name>Yggdrasil</name>
 
+  <parent>
+    <groupId>dk.statsbiblioteket.sbprojects</groupId>
+    <artifactId>sbprojects-parent</artifactId>
+    <version>9</version>
+  </parent>
+  <scm>
+    <connection>scm:git:https://github.com/Det-Kongelige-Bibliotek/Yggdrasil</connection>
+    <developerConnection>scm:git:https://github.com/Det-Kongelige-Bibliotek/Yggdrasil</developerConnection>
+    <url>scm:git:https://github.com/Det-Kongelige-Bibliotek/Yggdrasil</url>
+  </scm>
   <repositories>
     <repository>
-      <id>bitrepository</id>
-      <url>https://sbforge.org/nexus/content/repositories/releases/</url>
+      <id>sbprojects-nexus</id>
+      <url>https://sbprojects.statsbiblioteket.dk/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
