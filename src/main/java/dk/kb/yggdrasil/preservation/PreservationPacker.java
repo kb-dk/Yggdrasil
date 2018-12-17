@@ -128,7 +128,7 @@ public class PreservationPacker {
                     WarcDigest blockDigest = digestor.getDigestOfFile(metadata);
                     writer.writeMetadataRecord(in, metadata.length(),
                             ContentType.parseContentType("text/xml"), resourceId, blockDigest,
-                            prs.getRequest().UUID);
+                            prs.getRequest().UUID, prs.getRequest().UUID);
                     in.close();
                 } finally {
                     if(in != null) {

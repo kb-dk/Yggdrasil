@@ -185,26 +185,29 @@ public class WarcWriterWrapper {
      * @param refersTo The refers to header element.
      * @param contentType payload content-type
      * @param blockDigest optional block digest
-     * @param uuid The UUID for the record.
+     * @param warcUuid The UUID for the record.
+     * @param targetUuid The UUID for the target uri of the record. 
      * @return WarcRecordId of newly created record
      * @throws YggdrasilException if an exception occurs while writing record
      */
     public Uri writeMetadataRecord(InputStream in, long len, ContentType contentType, Uri refersTo, 
-            WarcDigest blockDigest, String uuid) throws YggdrasilException {
+            WarcDigest blockDigest, String warcUuid, String targetUuid) throws YggdrasilException {
         ArgumentCheck.checkNotNull(in, "in");
         ArgumentCheck.checkNotNull(len, "len");
         ArgumentCheck.checkNotNull(contentType, "contentType");
-        ArgumentCheck.checkNotNull(uuid, "uuid");
+        ArgumentCheck.checkNotNull(warcUuid, "uuid");
         Uri warcRecordIdUri = null;
+        Uri warcTargetUri = null;
         try {
-            warcRecordIdUri = new Uri("urn:uuid:" + uuid);
+            warcRecordIdUri = new Uri("urn:uuid:" + warcUuid);
+            warcTargetUri = new Uri("urn:uuid:" + targetUuid);
             WarcRecord record = WarcRecord.createRecord(writer);
             WarcHeader header = record.header;
             header.warcTypeIdx = WarcConstants.RT_IDX_METADATA;
             header.warcDate = new Date();
             header.warcWarcinfoIdUri = warcinfoRecordId;
             header.warcRecordIdUri = warcRecordIdUri;
-            header.warcTargetUriUri = warcRecordIdUri;
+            header.warcTargetUriUri = warcTargetUri;
             header.warcRefersToUri = refersTo;
             header.warcBlockDigest = blockDigest;
             header.contentType = contentType;
@@ -217,7 +220,7 @@ public class WarcWriterWrapper {
         } catch (IOException e) {
             throw new YggdrasilException("Exception while writing WARC metadata record!", e);
         }
-        logger.debug("Written Metadata Record '" + uuid + "'.");
+        logger.debug("Written Metadata Record '" + warcUuid + "'.");
 
         return warcRecordIdUri;
     }

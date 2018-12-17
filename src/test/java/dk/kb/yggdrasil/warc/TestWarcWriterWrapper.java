@@ -103,7 +103,7 @@ public class TestWarcWriterWrapper {
             contentType = ContentType.parseContentType("text/xml; charset=\"utf-8\"");
             blockDigest = WarcDigest.createWarcDigest("SHA1", digestBytes, "Base32", Base32.encodeArray(digestBytes));
             Uri warcMetadataId = w3.writeMetadataRecord(in, metadataBytes.length, contentType, warcResourceId, 
-                    blockDigest, metadataUUID);
+                    blockDigest, metadataUUID, metadataUUID);
 
             Assert.assertNotNull(warcMetadataId);
             Assert.assertTrue("Resource ID '" + warcMetadataId + "' should contain uuid '" + metadataUUID + "'",
