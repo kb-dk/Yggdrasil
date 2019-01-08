@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -40,6 +41,7 @@ public class MainTest {
         }
     }
 
+    @Ignore
     @Test
     public void testMainMethodWithGoodConfigDir() throws Exception {
         if (TravisUtils.runningOnTravis()) {
@@ -60,6 +62,7 @@ public class MainTest {
         Main.main(new String[]{});
     }
 
+    @Ignore
     @Test
     public void testRunningWorkflow() throws Exception {
         StateDatabase stateDatabase = mock(StateDatabase.class);

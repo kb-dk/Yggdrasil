@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -59,6 +60,7 @@ public class MqTest extends MqFixtureTestAPI {
      * @throws IOException
      * @throws RabbitException
      */
+    @Ignore
     @Test
     public void finalTest() throws YggdrasilException, IOException, RabbitException {
         String methodName = this.getClass().getName()
@@ -89,6 +91,7 @@ public class MqTest extends MqFixtureTestAPI {
      * @throws IOException
      * @throws RabbitException
      */
+    @Ignore
     @Test
     public void sendShutdown() throws YggdrasilException, IOException, RabbitException {
         String methodName = this.getClass().getName()
@@ -119,6 +122,7 @@ public class MqTest extends MqFixtureTestAPI {
      * @throws ConsumerCancelledException
      * @throws InterruptedException
      */
+    @Ignore
     @Test
     public void testReceived() throws KeyManagementException,NoSuchAlgorithmException, URISyntaxException, IOException, 
     YggdrasilException, ShutdownSignalException, ConsumerCancelledException, InterruptedException {
@@ -167,6 +171,7 @@ public class MqTest extends MqFixtureTestAPI {
      * @throws YggdrasilException
      * @throws FileNotFoundException
      */
+    @Ignore
     @Test
     public void testRabbitMqSettingsAlternateConstructor() throws YggdrasilException, FileNotFoundException {
         File f = new File(RABBITMQ_CONF_FILE);

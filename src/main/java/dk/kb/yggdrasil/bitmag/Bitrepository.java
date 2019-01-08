@@ -319,10 +319,11 @@ public class Bitrepository {
         GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
 
         long timeout = getClientTimeout(bitmagSettings);
-
+        int pageSize = getMaxPageSize(bitmagSettings);
+        
         output.debug("Instantiation GetFileID paging client.");
         PagingGetFileIDsClient pagingClient = new PagingGetFileIDsClient(
-                bitMagGetFileIDsClient, timeout, outputFormatter, output);
+                bitMagGetFileIDsClient, timeout, pageSize, outputFormatter, output);
 
         Boolean success = pagingClient.getFileIDs(collectionID, packageId,
                 getCollectionPillars(collectionID));
@@ -433,6 +434,15 @@ public class Bitrepository {
         ClientSettings clSettings = bitmagSettings.getRepositorySettings().getClientSettings();
         return clSettings.getIdentificationTimeout().longValue()
                 + clSettings.getOperationTimeout().longValue();
+    }
+    
+    /**
+     * Helper method to extract the maximum page size from the settings.
+     * @param bitmagSettings The settings.
+     * @return The maximum page size.
+     */
+    private int getMaxPageSize(Settings bitmagSettings) {
+        return bitmagSettings.getReferenceSettings().getClientSettings().getMaxPageSize().intValue();
     }
 
     protected FileExchange getFileExchange(Settings bitmagSettings) {

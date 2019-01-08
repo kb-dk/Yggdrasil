@@ -73,6 +73,7 @@ public class BitrepositoryTest {
     	System.setProperty("dk.kb.yggdrasil.runningmode", "test");
     }
     
+    @Ignore
     @Test(expected = ArgumentCheck.class)
     public void testMissingYamlFile() throws Exception {
         File missingConfigFile = new File(MISSING_YAML_FILE);
@@ -80,7 +81,7 @@ public class BitrepositoryTest {
         new Bitrepository(new BitrepositoryConfig(missingConfigFile));
     }
 
-//    @Ignore
+    @Ignore
     @Test(expected = YggdrasilException.class)
     public void testIncorrectYamlFile() throws Exception {
         File badConfigFile = new File(INCORRECT_YAML_FILE);
@@ -88,6 +89,7 @@ public class BitrepositoryTest {
         new Bitrepository(new BitrepositoryConfig(badConfigFile));
     }
 
+    @Ignore
     @Test
     public void testOkYamlFile() throws Exception {
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
@@ -139,6 +141,7 @@ public class BitrepositoryTest {
         payloadFile.delete();
     }
 
+    @Ignore
     @Test
     public void testUploadOnUnknownCollection() throws YggdrasilException, IOException {
         File okConfigFile = new File(OK_YAML_BITMAG_FILE);
@@ -150,6 +153,7 @@ public class BitrepositoryTest {
         payloadFile.delete();
     }
 
+    @Ignore
     @Test
     public void testGetFileSuccess() throws Exception {
 //        if (TravisUtils.runningOnTravis()) {
@@ -203,6 +207,7 @@ public class BitrepositoryTest {
         FileUtils.delete(fr);
     }
 
+    @Ignore
     @Test(expected = YggdrasilException.class)
     public void testGetFileFailureOperation() throws Exception {
 //        if (TravisUtils.runningOnTravis()) {
@@ -233,6 +238,7 @@ public class BitrepositoryTest {
         br.getFile("helloworld.txt", "books", null);
     }
     
+    @Ignore
     @Test(expected = YggdrasilException.class)
     public void testGetFileFailuredDownload() throws Exception {
 //        if (TravisUtils.runningOnTravis()) {
@@ -269,6 +275,7 @@ public class BitrepositoryTest {
         br.getFile("helloworld.txt", "books", null);
     }
     
+    @Ignore
     @Test(expected = YggdrasilException.class)
     public void getFileFailureBadURL() throws Exception {
 //        if (TravisUtils.runningOnTravis()) {
@@ -305,6 +312,7 @@ public class BitrepositoryTest {
         br.getFile("helloworld.txt", "books", null);
     }
     
+    @Ignore
     @Test
     public void testGetChecksumsSuccessEmptyResults() throws YggdrasilException, IOException {
 //        if (TravisUtils.runningOnTravis()) {
@@ -337,6 +345,7 @@ public class BitrepositoryTest {
         assertTrue("Should be empty.", res.isEmpty());
     }
 
+    @Ignore
     @Test
     public void testGetChecksumsSuccessFullResults() throws YggdrasilException, IOException {
 //        if (TravisUtils.runningOnTravis()) {
@@ -388,6 +397,7 @@ public class BitrepositoryTest {
         }
     }
 
+    @Ignore
     @Test
     public void testGetChecksumsFailure() throws YggdrasilException, IOException {
 //        if (TravisUtils.runningOnTravis()) {
@@ -429,6 +439,7 @@ public class BitrepositoryTest {
         assertTrue("Should be empty.", res.isEmpty());
     }
 
+    @Ignore
     @Test
     public void testGetFileIDsSuccess() throws YggdrasilException, IOException {
 //        if (TravisUtils.runningOnTravis()) {
@@ -458,6 +469,7 @@ public class BitrepositoryTest {
         assertTrue(success);
     }
 
+    @Ignore
     @Test
     public void testGetFileIDsResponseFailure() throws YggdrasilException, IOException {
 //        if (TravisUtils.runningOnTravis()) {
@@ -494,6 +506,7 @@ public class BitrepositoryTest {
         assertFalse(success);
     }
 
+    @Ignore
     @Test
     public void testGetFileIDsCollectionFailure() throws YggdrasilException, IOException {
 //        if (TravisUtils.runningOnTravis()) {
@@ -508,6 +521,7 @@ public class BitrepositoryTest {
         assertFalse(success);
     }
 
+    @Ignore
     @Test
     public void testGetCollections() throws YggdrasilException {
 //        if (TravisUtils.runningOnTravis()) {

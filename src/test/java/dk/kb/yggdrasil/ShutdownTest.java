@@ -3,6 +3,7 @@ package dk.kb.yggdrasil;
 import java.io.File;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -19,6 +20,7 @@ public class ShutdownTest {
 
     File goodConfigDir = new File("src/test/resources/config");
 
+    @Ignore
     @SuppressWarnings("static-access")
     @Test
     public void testRunningWorkflow() throws Exception {

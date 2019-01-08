@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -32,11 +33,13 @@ public class HttpCommunicationTest {
 
     private HttpCommunication httpCommunication = new HttpCommunication(testFileDir);
     
+    @Ignore
     @BeforeClass
     public static void beforeClass() throws Exception {
         testFileDir.mkdirs();
     }
     
+    @Ignore
     @Test
     public void testAllSuccess() throws Exception{
         HttpPayload httpPayload = null;

@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -26,6 +27,7 @@ public class RunStateTest {
 
     private static File generalConfigFile = new File("config/yggdrasil.yml");
 
+    @Ignore
     @Test
     public void testReadRunState() throws Exception {
         if (TravisUtils.runningOnTravis()) {
